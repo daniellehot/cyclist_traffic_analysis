@@ -1,0 +1,11 @@
+dataset_folder: /home/daniel/cyclist_traffic_analysis/traffic_detection_dataset_generic
+model_definition: /workspace/detectron2/projects/ViTDet/configs/COCO/cascade_mask_rcnn_swin_b_in21k_50ep.py
+weights: /home/daniel/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl
+output_dir: /home/daniel/cyclist_traffic_analysis/output/swin_base
+
+num_of_workers: 12
+batch_size: 4
+
+train_dataset: ["traffic_dataset_train", "traffic_dataset_validation"]
+test_dataset: ["traffic_dataset_test"]
+classes: ['bicycle', 'bus', 'car', 'motorbike', 'person']

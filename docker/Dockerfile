@@ -35,7 +35,9 @@ RUN pip3 install seaborn && \
     pip3 uninstall -y matplotlib && \
     pip3 uninstall -y shapely && \
     pip3 install matplotlib==3.7.3 && \
-    pip3 install shapely==1.8.0
+    pip3 install shapely==1.8.0 
+    
+RUN pip3 install pip install omegaconf
     
 RUN apt-get autoremove -y && \
     apt-get autoclean -y && \
