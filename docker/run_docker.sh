@@ -1,3 +1,4 @@
+USER=daniel
 CODE_HOST=/home/daniel/cyclist_traffic_analysis/
 CODE_CONTAINER=/home/daniel/cyclist_traffic_analysis/
 #DATA_HOST=/home/daniel/OneDrive/autofish_groups/
@@ -17,3 +18,5 @@ docker run --gpus all -it --rm \
     $IMAGE
 xhost -local:docker
 
+echo "Reclaiming all files created by the container with sudo chown -Rc $USER $CODE_HOST"
+sudo chown -Rc $USER $CODE_HOST

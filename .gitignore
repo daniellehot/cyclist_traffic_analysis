@@ -1,9 +1,14 @@
+# training files
+output/*/events*
+
 # Weights
 weights
+*.pth
 
 # Dataset
 traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip
+dataset_samples
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

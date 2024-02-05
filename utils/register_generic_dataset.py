@@ -1,12 +1,17 @@
 import os
 #from pycocotools.coco import COCO
-#import numpy as np
+import numpy as np
 #import copy
 import random
-from detectron2.data import MetadataCatalog, DatasetCatalog, datasets
-from detectron2.structures import BoxMode
+import argparse
+import yaml
+#import cv2
+from PIL import Image
 #import shutil
 #from tabulate import tabulate
+
+from detectron2.data import MetadataCatalog, DatasetCatalog, datasets
+from detectron2.structures import BoxMode
 
 
 class TrafficDataset:
@@ -78,6 +83,12 @@ class TrafficDataset:
         return x_min, y_min, x_max, y_max
 
 
+    def _get_image_dimensions(self, file_path):
+        with Image.open(file_path) as img:
+            width, height = img.size
+        return width, height
+
+
     def register_split(self, path):
         images =  os.listdir(f"{path}/images")
         annotation_files = [img.replace(".jpg", ".txt") for img in images]
@@ -91,9 +102,9 @@ class TrafficDataset:
             record["file_name"] = image_path
             record['image_id'] = self.image_id_map[image_path]
 
-            image = cv2.imread(image_path)
-            record['height'] = image.shape[0]
-            record['width'] = image.shape[1] 
+            record['width'], record['height'] = self._get_image_dimensions(image_path)                  
+            #record['height'] = 640
+            #record['width'] = 640 
 
             detectron2_annotations = []
             for annotation in annotations:
@@ -118,39 +129,41 @@ class TrafficDataset:
 def parse_arguments():
     parser = argparse.ArgumentParser()
     # Define the argument for the YAML file path
-    parser.add_argument('-f', '--dataset_root_folder', type=str, help='Path to the dataset folder.')
+    parser.add_argument('-y', '--yaml', type=str, help="Path to a yaml file.")
+    parser.add_argument('-d', '--dataset_root_folder', type=str, help='Path to the dataset folder.')
     parser.add_argument('-s', '--save', action='store_true', help='Indicate if you would like to save the dataset as COCO JSON files.')
     parser.add_argument('-o', '--output', type=str, help='Where to save the COCO JSON files.')
     args = parser.parse_args()
     return args
 
 
-def draw_samples(dataset_name, window_name="dataset", number_of_samples = 10):
-    print("draw_samples")
-    dataset = DatasetCatalog.get(dataset_name)
-    print("DatasetCatalog")
-    metadata = MetadataCatalog.get(dataset_name)
-    print("MetadataCatalog")
-    for d in random.sample(dataset, number_of_samples):
-        img = cv2.imread(d["file_name"])
-        visualizer = Visualizer(img[:, :, ::-1], metadata=metadata, scale=1)
-        out = visualizer.draw_dataset_dict(d)
-        cv2.imshow(window_name, out.get_image()[:, :, ::-1])
-        cv2.waitKey(0)
-
-
-if __name__=="__main__":
+def draw_samples(dataset_name, output_dir="./dataset_samples", number_of_samples = 10):
     from detectron2.utils.visualizer import Visualizer
-    import cv2
-    import yaml
-    import argparse
+    dataset = DatasetCatalog.get(dataset_name)
+    metadata = MetadataCatalog.get(dataset_name)
+    os.makedirs(output_dir, exist_ok=True)
 
-    args = parse_arguments()
+    for idx, sample in enumerate(random.sample(dataset, number_of_samples)):
+        img = Image.open(sample["file_name"])
+        visualizer = Visualizer(np.array(img), metadata=metadata, scale=1)
+        out = visualizer.draw_dataset_dict(sample)
+        output_path = os.path.join(output_dir, f"sample_{idx + 1}.png")
+        out.save(output_path)
 
-    dataset = TrafficDataset(args.dataset_root_folder)
+
+def main(args):
+    with open(args.yaml, "r") as f:
+        experiment_configuration = yaml.safe_load(f)
+
+    dataset_root_folder = experiment_configuration['dataset_folder'] or args.dataset_root_folder
+    dataset = TrafficDataset(dataset_root_folder)
     dataset.register_dataset()
     
     for d in DatasetCatalog.list():
         print(d)
 
     draw_samples("traffic_dataset_train")
+
+
+if __name__=="__main__":
+    main(parse_arguments())
