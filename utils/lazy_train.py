@@ -1,91 +1,85 @@
 # common
-import os
+import os, shutil
 import argparse
 import yaml
-from omegaconf import OmegaConf
+from torch.cuda.amp import autocast
+import logging
 
 # detectron2 
-import logging
 from detectron2.checkpoint import DetectionCheckpointer
-from detectron2.config import instantiate, LazyConfig
+from detectron2.config import instantiate
 from detectron2.engine import (
-    AMPTrainer,
-    default_argument_parser,
-    default_setup,
+    #default_argument_parser, #replaced with my arguments
+    #default_setup, #replaced with my create_log()
+    launch, #used for distributed training 
     default_writers,
     hooks,
-    launch,
+    AMPTrainer,
     SimpleTrainer,
 )
 from detectron2.engine.defaults import create_ddp_model
-from detectron2.evaluation import inference_on_dataset, print_csv_format
 from detectron2.utils import comm
-from detectron2.utils.logger import setup_logger
+from detectron2.evaluation import inference_on_dataset, print_csv_format
 
 # shared
 from register_generic_dataset import TrafficDataset
-import augmentations_utils
+from train_utils import (
+    save_training_images, 
+    ValidationLoss, 
+    plot_metrics_json, 
+    create_log,
+    get_config
+)
+from test_utils import get_COCO_evaluator, get_test_data_loader
 
-
-#logger = logging.getLogger("detectron2")
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-y', '--yaml', type=str, help="Path to a yaml experiment file.")
-    parser.add_argument('-r', '--resume', action='store_true', help="Resume from a checkpoint.")
-    parser.add_argument('--checkpoint', type=str, help="Checkpoint to resume from.")
+    parser.add_argument('--eval-only', action='store_true', help="Run only evaluation")
+    parser.add_argument('--save-training-images', action='store_true', help="Save a sample of training images")
+    parser.add_argument('--sample-size', type=int, default=10, help="How many train images to save. Default is 10")
+    parser.add_argument('--show-annotations', action='store_true', help="Overlay train images with annotations. Default is False")
+    #parser.add_argument('-r', '--resume', action='store_true', help="Resume from a checkpoint.")
+    #parser.add_argument('--checkpoint', type=str, help="Checkpoint to resume from.")
     args = parser.parse_args()
     return args
 
 
-def get_config(experiment):
-    cfg = LazyConfig.load(experiment['model_definition'])
-    cfg.train.init_checkpoint = experiment['weights']
-    # save default model configuration
-    OmegaConf.save(cfg, os.path.join(experiment['output_dir'], "swin_base_default.yaml"))
-    cfg.train.output_dir = experiment['output_dir']
+
+def eval(configuration, weights_to_evaluate):
+    logger = logging.getLogger("ViTDet")
+    logger.info(f"eval(). weight_to_evaluate{weights_to_evaluate}")
+
+    model = instantiate(configuration.model)
+    model.to(configuration.train.device)
+    model = create_ddp_model(model)
+    DetectionCheckpointer(model).load(weights_to_evaluate)
+
+    test_data_loader = get_test_data_loader(configuration)
+    print(test_data_loader)
     
-    cfg.train.max_iter = experiment['training_iterations']
-    cfg.lr_multiplier.scheduler.num_updates = experiment['training_iterations']
-    cfg.lr_multiplier.scheduler.milestones = experiment['lr_milestones']
-    cfg.train.checkpointer.period = experiment['checkpoint_rate']
-    cfg.train.eval_period = experiment['eval_period']
+    evaluator = get_COCO_evaluator(configuration)
+    print(evaluator)
 
-    if experiment['log_period'] != 'default':
-        cfg.train.log_period = experiment['log_period']
-    if experiment['learning_rate'] != 'default':
-        cfg.optimizer.lr = experiment['lr']
-
-    cfg.dataloader.evaluator.output_dir = experiment['output_dir']
+    with autocast():
+        results = inference_on_dataset(model, test_data_loader, evaluator)
     
-    cfg.dataloader.train.dataset.names = experiment['train_dataset']
-    cfg.dataloader.test.dataset.names = experiment['test_dataset']
-
-    train_augmentations, test_augmentations = augmentations_utils.get_augmentations(experiment)
-    cfg.dataloader.train.mapper.augmentations = train_augmentations
-    cfg.dataloader.test.mapper.augmentations = test_augmentations
-
-    cfg.dataloader.train.num_workers = experiment['num_of_workers'] 
-    cfg.dataloader.test.num_workers = experiment['num_of_workers']
-    cfg.dataloader.train.total_batch_size = experiment['batch_size']
-
-    # Validation setup (same as train except for the dataset name and augmentations)
-    cfg.dataloader.validation = cfg.dataloader.train
-    cfg.dataloader.validation.dataset.names = experiment['val_dataset']
-    cfg.dataloader.validation.mapper.augmentations = test_augmentations
-
-    cfg.model.roi_heads.num_classes = len(experiment['classes'])
-    # save experiment model configuration
-    OmegaConf.save(cfg, os.path.join(experiment['output_dir'], "swin_base_experiment.yaml"))
-    return cfg
-
+    logger.info(f"Results {results}")
+    """
+    if "evaluator" in configuration.dataloader:
+        ret = inference_on_dataset(
+            model,
+            instantiate(configuration.dataloader.test),
+            instantiate(configuration.dataloader.evaluator),
+        )
+        print_csv_format(ret)
+        return ret
+    """
 
 # TODO Implement resuming from checkpoint
-# TODO Validation Hook, Image Saver Hook
 def train(configuration, resume=False, checkpoint=None):
     model = instantiate(configuration.model)
-    #logger = logging.getLogger("detectron2")
-    #logger.info("Model:\n{}".format(model))
     model.to(configuration.train.device)
 
     configuration.optimizer.params.model = model
@@ -107,40 +101,57 @@ def train(configuration, resume=False, checkpoint=None):
         hooks.IterationTimer(),
         hooks.LRScheduler(scheduler=instantiate(configuration.lr_multiplier)),
         hooks.PeriodicCheckpointer(checkpointer, **configuration.train.checkpointer) if comm.is_main_process() else None,
+        ValidationLoss(configuration),
         #hooks.EvalHook(cfg.train.eval_period, lambda: test(cfg, model)),
-        hooks.PeriodicWriter( writer, period=configuration.train.log_period) if comm.is_main_process() else None,
+        hooks.PeriodicWriter(writer, period=configuration.train.log_period) if comm.is_main_process() else None,
     ])
     
     trainer.train(0, configuration.train.max_iter)
-    
-
-    # The checkpoint stores the training iteration that just finished, thus we start
-    # at the next iteration
-    #    start_iter = trainer.iter + 1
-    #else:
-    #    start_iter = 0
-   # trainer.train(start_iter, cfg.train.max_iter)
     
 
 def main(args):
     # Read the experiment file
     with open(args.yaml, "r") as f:
         experiment_configuration = yaml.safe_load(f)
+    
     # Create output directory 
-    os.makedirs(experiment_configuration['output_dir'], exist_ok=True)
+    if os.path.exists(experiment_configuration['output_dir']) and not args.eval_only:
+        shutil.rmtree(experiment_configuration['output_dir'])
+    else:
+        os.makedirs(experiment_configuration['output_dir'], exist_ok=True)
 
-    setup_logger(output=experiment_configuration['output_dir'], distributed_rank=comm.get_rank(), name="cowi_traffic_analysis")
+    # Create logger 
+    create_log(args=args, output_dir=experiment_configuration['output_dir'])
 
     # dataset
     dataset = TrafficDataset(experiment_configuration['dataset_folder'])
-    dataset.register_dataset()
+    dataset.register_dataset()  
 
     # configuration
     configuration = get_config(experiment_configuration)
-    
-    #training
-    train(configuration, resume=args.resume, checkpoint=args.checkpoint)
+
+    # save some training images
+    if args.save_training_images:
+        save_training_images(configuration, output_dir=experiment_configuration['output_dir'], sample_size=args.sample_size, show_annotations=args.show_annotations)
+
+    # training/evaluation
+    if args.eval_only:
+        eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+    else:
+        #train(configuration, resume=args.resume, checkpoint=args.checkpoint)
+        train(configuration)
+        eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+
+    # plot collected metrics
+    plot_metrics_json(
+        input=os.path.join(experiment_configuration['output_dir'], "metrics.json"),
+        output_dir=os.path.join(experiment_configuration['output_dir']),
+    )
     
 
 if __name__=="__main__":
-    main(parse_arguments())
+    #main(parse_arguments())
+    launch(
+        main(parse_arguments()), 
+        num_gpus_per_machine=1
+    )

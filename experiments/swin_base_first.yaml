@@ -42,7 +42,7 @@ eval_period: 1500
 learning_rate: default
 lr_milestones: [60, 85]  #[600, 850]
 checkpoint_rate: 1100
-log_period: default
+log_period: 10
 
 
 

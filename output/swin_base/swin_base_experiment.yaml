@@ -349,7 +349,7 @@ train:
     period: 1100
     max_to_keep: 100
   eval_period: 1500
-  log_period: 20
+  log_period: 10
   device: cuda
 lr_multiplier:
   scheduler:

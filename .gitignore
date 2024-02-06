@@ -1,9 +1,11 @@
 # training files
-output/*/events*
+output/**/events*
+output/**/plots
+output/**/training_images
+*.pth
 
 # Weights
 weights
-*.pth
 
 # Dataset
 traffic_detection_dataset_generic
