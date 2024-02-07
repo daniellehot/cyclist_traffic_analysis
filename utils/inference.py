@@ -19,7 +19,6 @@ from detectron2.config import instantiate
 
 # shared
 from train_utils import get_config
-import augmentations_utils
 
 
 class Predictor:
@@ -78,11 +77,11 @@ def main(args):
     os.makedirs(args.output)
 
     # Config
-    configuration = get_config(experiment_configuration)
+    configuration = get_config(experiment_configuration, add_augmentations=False)
 
     # Predictor
-    #predictor = Predictor(configuration, os.path.join(experiment_configuration['output_dir'], 'model_final.pth'))
-    predictor = Predictor(configuration, configuration.train.init_checkpoint)
+    predictor = Predictor(configuration, os.path.join(experiment_configuration['output_dir'], 'model_final.pth'))
+    #predictor = Predictor(configuration, configuration.train.init_checkpoint)
     img = np.array(Image.open(args.input))
     print(img.shape)
     print(predictor(img))

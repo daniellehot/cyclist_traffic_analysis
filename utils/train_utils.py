@@ -143,7 +143,7 @@ def plot_metrics_json(input, output_dir):
         "loss_cls_stage0",
         "loss_cls_stage1",
         "loss_cls_stage2",
-        "loss_mask",
+        #"loss_mask",
         "loss_rpn_cls",
         "loss_rpn_loc",
     ]
@@ -208,7 +208,7 @@ def create_log(args, output_dir, logger_name="ViTDet"):
         #)
 
 
-def get_config(experiment):
+def get_config(experiment, add_augmentations=True):
     cfg = LazyConfig.load(experiment['model_definition'])
     cfg.train.init_checkpoint = experiment['weights']
     # save default model configuration
@@ -235,11 +235,28 @@ def get_config(experiment):
     cfg.dataloader.train.total_batch_size = experiment['batch_size']
     cfg.dataloader.test.num_workers = experiment['num_of_workers']
 
-    # Validation setup (same as train except for the dataset name and augmentations)
     cfg.dataloader.validation = cfg.dataloader.train
     cfg.dataloader.validation.dataset.names = experiment['val_dataset']
 
+    if add_augmentations:
+        train_augmentations, test_augmentations = augmentations_utils.get_augmentations(experiment)
+        cfg.dataloader.train.mapper.augmentations = train_augmentations
+        cfg.dataloader.test.mapper.augmentations = test_augmentations
+        cfg.dataloader.validation.mapper.augmentations = test_augmentations
+
+    # Do not use masks in mappers
+    cfg.dataloader.train.mapper.use_instance_mask = False
+    cfg.dataloader.train.mapper.recompute_boxes = False
+    cfg.dataloader.validation.mapper.use_instance_mask = False
+    cfg.dataloader.validation.mapper.recompute_boxes = False
+
+    # Remove mask predictions 
+    cfg.model.roi_heads.mask_in_features = None  # Remove mask-related features
+    cfg.model.roi_heads.mask_pooler = None       # Disable mask pooler
+    cfg.model.roi_heads.mask_head = None         # Disable mask head
+
     cfg.model.roi_heads.num_classes = len(experiment['classes'])
+
     # save experiment model configuration
     OmegaConf.save(cfg, os.path.join(experiment['output_dir'], "swin_base_experiment.yaml"))
     return cfg

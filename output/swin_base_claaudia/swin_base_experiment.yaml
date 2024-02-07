@@ -19,9 +19,9 @@ dataloader:
         pad: false
         _target_: &id005 !!python/name:detectron2.data.transforms.augmentation_impl.FixedSizeCrop ''
       image_format: RGB
-      use_instance_mask: true
+      use_instance_mask: false
       _target_: &id002 !!python/name:detectron2.data.dataset_mapper.DatasetMapper ''
-      recompute_boxes: true
+      recompute_boxes: false
     total_batch_size: 3
     num_workers: 32
     _target_: &id006 !!python/name:detectron2.data.build.build_detection_train_loader ''
@@ -64,9 +64,9 @@ dataloader:
         pad: false
         _target_: *id005
       image_format: RGB
-      use_instance_mask: true
+      use_instance_mask: false
       _target_: *id002
-      recompute_boxes: true
+      recompute_boxes: false
     total_batch_size: 3
     num_workers: 32
     _target_: *id006
@@ -139,14 +139,14 @@ model:
       - -1
       - 1
       allow_low_quality_matches: true
-      _target_: &id011 !!python/name:detectron2.modeling.matcher.Matcher ''
+      _target_: &id010 !!python/name:detectron2.modeling.matcher.Matcher ''
     box2box_transform:
       weights:
       - 1.0
       - 1.0
       - 1.0
       - 1.0
-      _target_: &id009 !!python/name:detectron2.modeling.box_regression.Box2BoxTransform ''
+      _target_: &id008 !!python/name:detectron2.modeling.box_regression.Box2BoxTransform ''
     batch_size_per_image: 256
     positive_fraction: 0.5
     pre_nms_topk:
@@ -175,37 +175,10 @@ model:
       - 0.03125
       sampling_ratio: 0
       pooler_type: ROIAlignV2
-      _target_: &id007 !!python/name:detectron2.modeling.poolers.ROIPooler ''
-    mask_in_features:
-    - p2
-    - p3
-    - p4
-    - p5
-    mask_pooler:
-      output_size: 14
-      scales:
-      - 0.25
-      - 0.125
-      - 0.0625
-      - 0.03125
-      sampling_ratio: 0
-      pooler_type: ROIAlignV2
-      _target_: *id007
-    mask_head:
-      input_shape:
-        channels: 256
-        height: 14
-        width: 14
-        stride: null
-      num_classes: ${..num_classes}
-      conv_dims:
-      - 256
-      - 256
-      - 256
-      - 256
-      - 256
-      _target_: !!python/name:detectron2.modeling.roi_heads.mask_head.MaskRCNNConvUpsampleHead ''
-      conv_norm: LN
+      _target_: !!python/name:detectron2.modeling.poolers.ROIPooler ''
+    mask_in_features: null
+    mask_pooler: null
+    mask_head: null
     _target_: !!python/name:detectron2.modeling.roi_heads.cascade_rcnn.CascadeROIHeads ''
     box_heads:
     - input_shape:
@@ -221,7 +194,7 @@ model:
       fc_dims:
       - 1024
       conv_norm: LN
-      _target_: &id008 !!python/name:detectron2.modeling.roi_heads.box_head.FastRCNNConvFCHead ''
+      _target_: &id007 !!python/name:detectron2.modeling.roi_heads.box_head.FastRCNNConvFCHead ''
     - input_shape:
         channels: 256
         height: 7
@@ -235,7 +208,7 @@ model:
       fc_dims:
       - 1024
       conv_norm: LN
-      _target_: *id008
+      _target_: *id007
     - input_shape:
         channels: 256
         height: 7
@@ -249,7 +222,7 @@ model:
       fc_dims:
       - 1024
       conv_norm: LN
-      _target_: *id008
+      _target_: *id007
     box_predictors:
     - input_shape:
         channels: 1024
@@ -263,10 +236,10 @@ model:
         - 10
         - 5
         - 5
-        _target_: *id009
+        _target_: *id008
       cls_agnostic_bbox_reg: true
       num_classes: ${...num_classes}
-      _target_: &id010 !!python/name:detectron2.modeling.roi_heads.fast_rcnn.FastRCNNOutputLayers ''
+      _target_: &id009 !!python/name:detectron2.modeling.roi_heads.fast_rcnn.FastRCNNOutputLayers ''
     - input_shape:
         channels: 1024
         height: null
@@ -279,10 +252,10 @@ model:
         - 20
         - 10
         - 10
-        _target_: *id009
+        _target_: *id008
       cls_agnostic_bbox_reg: true
       num_classes: ${...num_classes}
-      _target_: *id010
+      _target_: *id009
     - input_shape:
         channels: 1024
         height: null
@@ -295,10 +268,10 @@ model:
         - 30
         - 15
         - 15
-        _target_: *id009
+        _target_: *id008
       cls_agnostic_bbox_reg: true
       num_classes: ${...num_classes}
-      _target_: *id010
+      _target_: *id009
     proposal_matchers:
     - thresholds:
       - 0.5
@@ -306,21 +279,21 @@ model:
       - 0
       - 1
       allow_low_quality_matches: false
-      _target_: *id011
+      _target_: *id010
     - thresholds:
       - 0.6
       labels:
       - 0
       - 1
       allow_low_quality_matches: false
-      _target_: *id011
+      _target_: *id010
     - thresholds:
       - 0.7
       labels:
       - 0
       - 1
       allow_low_quality_matches: false
-      _target_: *id011
+      _target_: *id010
   pixel_mean:
   - 123.675
   - 116.28
@@ -334,7 +307,7 @@ model:
 train:
   output_dir: /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia
   init_checkpoint: /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl
-  max_iter: 1000
+  max_iter: 250
   amp:
     enabled: true
   ddp:
@@ -354,9 +327,9 @@ lr_multiplier:
     - 0.1
     - 0.01
     milestones:
-    - 300
-    - 400
-    num_updates: 1000
+    - 150
+    - 200
+    num_updates: 250
     _target_: !!python/name:fvcore.common.param_scheduler.MultiStepParamScheduler ''
   warmup_length: 0.0013559322033898306
   warmup_factor: 0.001

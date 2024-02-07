@@ -1,5 +1,5 @@
-[02/07 12:42:12] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:42:14] detectron2 INFO: Environment info:
+[02/07 15:42:22] detectron2 INFO: Rank of current process: 0. World size: 1
+[02/07 15:42:24] detectron2 INFO: Environment info:
 -------------------------------  -----------------------------------------------------------------
 sys.platform                     linux
 Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
@@ -37,131 +37,53 @@ PyTorch built with:
   - Magma 2.6.1
   - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
 
-[02/07 12:42:14] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=False, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:43:29] d2.data.build INFO: Removed 93 images with no usable annotations. 5712 images left.
-[02/07 12:43:29] d2.data.build INFO: Distribution of instances among all 5 categories:
+[02/07 15:42:24] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=False, save_training_images=False, sample_size=10, show_annotations=False)
+[02/07 15:43:52] d2.data.build INFO: Removed 93 images with no usable annotations. 5712 images left.
+[02/07 15:43:52] d2.data.build INFO: Distribution of instances among all 5 categories:
 [36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
 |:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
 |  bicycle   | 2766         |    bus     | 1032         |    car     | 41478        |
 | motorbike  | 13995        |   person   | 10899        |            |              |
 |   total    | 70170        |            |              |            |              |[0m
-[02/07 12:43:29] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [RandomFlip(prob=0.5), RandomFlip(prob=0.5, horizontal=False, vertical=True), RandomBrightness(intensity_min=0.75, intensity_max=1.25), RandomContrast(intensity_min=0.75, intensity_max=1.25), RandomSaturation(intensity_min=0.75, intensity_max=1.25), Resize(shape=(160, 160))]
-[02/07 12:43:29] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:43:29] d2.data.common INFO: Serializing 5712 elements to byte tensors and concatenating them all ...
-[02/07 12:43:29] d2.data.common INFO: Serialized dataset takes 3.89 MiB
-[02/07 12:43:29] d2.data.build INFO: Making batched data loader with batch_size=3
-[02/07 12:43:29] ViTDet INFO: Building a validation dataloader for the ValidationLoss hook
-[02/07 12:43:35] d2.data.build INFO: Removed 8 images with no usable annotations. 541 images left.
-[02/07 12:43:35] d2.data.build INFO: Distribution of instances among all 5 categories:
+[02/07 15:43:52] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [RandomFlip(prob=0.5), RandomFlip(prob=0.5, horizontal=False, vertical=True), RandomBrightness(intensity_min=0.75, intensity_max=1.25), RandomContrast(intensity_min=0.75, intensity_max=1.25), RandomSaturation(intensity_min=0.75, intensity_max=1.25), Resize(shape=(160, 160))]
+[02/07 15:43:52] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[02/07 15:43:52] d2.data.common INFO: Serializing 5712 elements to byte tensors and concatenating them all ...
+[02/07 15:43:52] d2.data.common INFO: Serialized dataset takes 3.89 MiB
+[02/07 15:43:52] d2.data.build INFO: Making batched data loader with batch_size=3
+[02/07 15:43:52] ViTDet INFO: Building a validation dataloader for the ValidationLoss hook
+[02/07 15:43:57] d2.data.build INFO: Removed 8 images with no usable annotations. 541 images left.
+[02/07 15:43:58] d2.data.build INFO: Distribution of instances among all 5 categories:
 [36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
 |:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
 |  bicycle   | 250          |    bus     | 108          |    car     | 3842         |
 | motorbike  | 1238         |   person   | 832          |            |              |
 |   total    | 6270         |            |              |            |              |[0m
-[02/07 12:43:35] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [Resize(shape=(160, 160))]
-[02/07 12:43:35] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:43:35] d2.data.common INFO: Serializing 541 elements to byte tensors and concatenating them all ...
-[02/07 12:43:35] d2.data.common INFO: Serialized dataset takes 0.36 MiB
-[02/07 12:43:35] d2.data.build INFO: Making batched data loader with batch_size=3
-[02/07 12:43:35] d2.engine.train_loop INFO: Starting training from iteration 0
-[02/07 12:44:06] d2.utils.events INFO:  eta: 0:12:27  iter: 19  total_loss: 0.5949  loss_cls_stage0: 0.003075  loss_box_reg_stage0: 0  loss_cls_stage1: 0.002795  loss_box_reg_stage1: 0  loss_cls_stage2: 0.002788  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.5862  loss_rpn_loc: 0  total_val_loss: 0.5716  val_loss_cls_stage0: 0.001808  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 0.001601  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 0.001686  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.5665  val_loss_rpn_loc: 0    time: 0.7633  last_time: 0.7677  data_time: 0.0684  last_data_time: 0.0012   lr: 4e-05  max_mem: 19931M
-[02/07 12:44:30] d2.utils.events INFO:  eta: 0:12:10  iter: 39  total_loss: 0.06498  loss_cls_stage0: 1.345e-05  loss_box_reg_stage0: 0  loss_cls_stage1: 1.187e-05  loss_box_reg_stage1: 0  loss_cls_stage2: 1.515e-05  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.06494  loss_rpn_loc: 0  total_val_loss: 0.05049  val_loss_cls_stage0: 1.239e-05  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 1.111e-05  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 1.396e-05  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.05045  val_loss_rpn_loc: 0    time: 0.7569  last_time: 0.7352  data_time: 0.0036  last_data_time: 0.0032   lr: 4e-05  max_mem: 19931M
-[02/07 12:44:55] d2.utils.events INFO:  eta: 0:11:47  iter: 59  total_loss: 0.001756  loss_cls_stage0: 4.967e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 4.907e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 6.541e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.00174  loss_rpn_loc: 0  total_val_loss: 0.001435  val_loss_cls_stage0: 4.866e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 4.859e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 6.403e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.001419  val_loss_rpn_loc: 0    time: 0.7528  last_time: 0.7483  data_time: 0.0039  last_data_time: 0.0063   lr: 4e-05  max_mem: 19931M
-[02/07 12:45:20] d2.utils.events INFO:  eta: 0:11:26  iter: 79  total_loss: 0.0005795  loss_cls_stage0: 3.728e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 4.069e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 5.147e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0005668  loss_rpn_loc: 0  total_val_loss: 0.0006146  val_loss_cls_stage0: 3.682e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 4.01e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.108e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0006018  val_loss_rpn_loc: 0    time: 0.7501  last_time: 0.7379  data_time: 0.0037  last_data_time: 0.0042   lr: 4e-05  max_mem: 19931M
-[02/07 12:45:44] d2.utils.events INFO:  eta: 0:11:09  iter: 99  total_loss: 0.0004003  loss_cls_stage0: 3.117e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 3.522e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 4.224e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0003889  loss_rpn_loc: 0  total_val_loss: 0.0004053  val_loss_cls_stage0: 3.138e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 3.563e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.243e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0003936  val_loss_rpn_loc: 0    time: 0.7472  last_time: 0.7319  data_time: 0.0036  last_data_time: 0.0044   lr: 4e-05  max_mem: 19931M
-[02/07 12:46:09] d2.utils.events INFO:  eta: 0:10:52  iter: 119  total_loss: 0.0003439  loss_cls_stage0: 2.693e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 3.106e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 3.53e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0003344  loss_rpn_loc: 0  total_val_loss: 0.0003178  val_loss_cls_stage0: 2.682e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 3.141e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 3.488e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0003083  val_loss_rpn_loc: 0    time: 0.7452  last_time: 0.7454  data_time: 0.0036  last_data_time: 0.0054   lr: 4e-05  max_mem: 19931M
-[02/07 12:46:34] d2.utils.events INFO:  eta: 0:10:37  iter: 139  total_loss: 0.000279  loss_cls_stage0: 2.298e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 2.651e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 2.831e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0002717  loss_rpn_loc: 0  total_val_loss: 0.0002852  val_loss_cls_stage0: 2.28e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 2.681e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 2.799e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0002774  val_loss_rpn_loc: 0    time: 0.7437  last_time: 0.7412  data_time: 0.0037  last_data_time: 0.0049   lr: 4e-05  max_mem: 19931M
-[02/07 12:46:58] d2.utils.events INFO:  eta: 0:10:20  iter: 159  total_loss: 0.0002359  loss_cls_stage0: 1.978e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 2.282e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 2.292e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0002297  loss_rpn_loc: 0  total_val_loss: 0.0002552  val_loss_cls_stage0: 1.926e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 2.265e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 2.234e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0002491  val_loss_rpn_loc: 0    time: 0.7408  last_time: 0.7128  data_time: 0.0033  last_data_time: 0.0021   lr: 4e-05  max_mem: 19931M
-[02/07 12:47:22] d2.utils.events INFO:  eta: 0:10:04  iter: 179  total_loss: 0.0002062  loss_cls_stage0: 1.662e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 1.929e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 1.851e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0002009  loss_rpn_loc: 0  total_val_loss: 0.0001888  val_loss_cls_stage0: 1.642e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 1.95e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 1.864e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0001836  val_loss_rpn_loc: 0    time: 0.7386  last_time: 0.7270  data_time: 0.0033  last_data_time: 0.0037   lr: 4e-05  max_mem: 19931M
-[02/07 12:47:46] d2.utils.events INFO:  eta: 0:09:49  iter: 199  total_loss: 0.0001882  loss_cls_stage0: 1.44e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 1.573e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 1.46e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0001837  loss_rpn_loc: 0  total_val_loss: 0.000178  val_loss_cls_stage0: 1.425e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 1.587e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 1.435e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0001734  val_loss_rpn_loc: 0    time: 0.7372  last_time: 0.7346  data_time: 0.0035  last_data_time: 0.0073   lr: 4e-05  max_mem: 19931M
-[02/07 12:48:11] d2.utils.events INFO:  eta: 0:09:34  iter: 219  total_loss: 0.0001594  loss_cls_stage0: 1.255e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 1.336e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 1.227e-06  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0001554  loss_rpn_loc: 0  total_val_loss: 0.0001428  val_loss_cls_stage0: 1.214e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 1.321e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 1.198e-06  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.000139  val_loss_rpn_loc: 0    time: 0.7368  last_time: 0.7310  data_time: 0.0053  last_data_time: 0.0062   lr: 4e-05  max_mem: 19931M
-[02/07 12:48:35] d2.utils.events INFO:  eta: 0:09:18  iter: 239  total_loss: 0.0001434  loss_cls_stage0: 1.046e-06  loss_box_reg_stage0: 0  loss_cls_stage1: 1.114e-06  loss_box_reg_stage1: 0  loss_cls_stage2: 9.542e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0001401  loss_rpn_loc: 0  total_val_loss: 0.0001289  val_loss_cls_stage0: 1.034e-06  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 1.124e-06  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 9.545e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.0001259  val_loss_rpn_loc: 0    time: 0.7359  last_time: 0.7425  data_time: 0.0034  last_data_time: 0.0059   lr: 4e-05  max_mem: 19931M
-[02/07 12:48:59] d2.utils.events INFO:  eta: 0:09:03  iter: 259  total_loss: 0.0001103  loss_cls_stage0: 8.556e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 9.361e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 8.358e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 0.0001077  loss_rpn_loc: 0  total_val_loss: 0.0001186  val_loss_cls_stage0: 8.507e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 9.139e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 8.222e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 0.000116  val_loss_rpn_loc: 0    time: 0.7355  last_time: 0.7276  data_time: 0.0036  last_data_time: 0.0035   lr: 4e-05  max_mem: 19931M
-[02/07 12:49:24] d2.utils.events INFO:  eta: 0:08:48  iter: 279  total_loss: 9.356e-05  loss_cls_stage0: 8.013e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 7.631e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 6.452e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 9.149e-05  loss_rpn_loc: 0  total_val_loss: 9.341e-05  val_loss_cls_stage0: 7.957e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 7.899e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 6.545e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 9.134e-05  val_loss_rpn_loc: 0    time: 0.7349  last_time: 0.7372  data_time: 0.0034  last_data_time: 0.0035   lr: 4e-05  max_mem: 19931M
-[02/07 12:49:48] d2.utils.events INFO:  eta: 0:08:33  iter: 299  total_loss: 0.0001013  loss_cls_stage0: 7.262e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 6.443e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.929e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 9.928e-05  loss_rpn_loc: 0  total_val_loss: 9.055e-05  val_loss_cls_stage0: 7.213e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 6.424e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.747e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 8.856e-05  val_loss_rpn_loc: 0    time: 0.7347  last_time: 0.7277  data_time: 0.0043  last_data_time: 0.0026   lr: 4e-05  max_mem: 19931M
-[02/07 12:50:12] d2.utils.events INFO:  eta: 0:08:17  iter: 319  total_loss: 8.466e-05  loss_cls_stage0: 6.75e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 6.177e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.253e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 8.282e-05  loss_rpn_loc: 0  total_val_loss: 8.549e-05  val_loss_cls_stage0: 6.753e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 6.189e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.27e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 8.367e-05  val_loss_rpn_loc: 0    time: 0.7339  last_time: 0.7190  data_time: 0.0040  last_data_time: 0.0037   lr: 4e-06  max_mem: 19931M
-[02/07 12:50:36] d2.utils.events INFO:  eta: 0:08:02  iter: 339  total_loss: 7.944e-05  loss_cls_stage0: 6.599e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 6.149e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.206e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.762e-05  loss_rpn_loc: 0  total_val_loss: 7.316e-05  val_loss_cls_stage0: 6.633e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 6.086e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.206e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.137e-05  val_loss_rpn_loc: 0    time: 0.7330  last_time: 0.7152  data_time: 0.0030  last_data_time: 0.0024   lr: 4e-06  max_mem: 19931M
-[02/07 12:51:01] d2.utils.events INFO:  eta: 0:07:47  iter: 359  total_loss: 9.219e-05  loss_cls_stage0: 6.431e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.958e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.099e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 9.045e-05  loss_rpn_loc: 0  total_val_loss: 7.315e-05  val_loss_cls_stage0: 6.445e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.995e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.11e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.138e-05  val_loss_rpn_loc: 0    time: 0.7321  last_time: 0.7143  data_time: 0.0032  last_data_time: 0.0024   lr: 4e-06  max_mem: 19931M
-[02/07 12:51:25] d2.utils.events INFO:  eta: 0:07:32  iter: 379  total_loss: 8.369e-05  loss_cls_stage0: 6.339e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.916e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.092e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 8.199e-05  loss_rpn_loc: 0  total_val_loss: 7.669e-05  val_loss_cls_stage0: 6.367e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.961e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.072e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.494e-05  val_loss_rpn_loc: 0    time: 0.7314  last_time: 0.7264  data_time: 0.0031  last_data_time: 0.0042   lr: 4e-06  max_mem: 19931M
-[02/07 12:51:49] d2.utils.events INFO:  eta: 0:07:17  iter: 399  total_loss: 7.491e-05  loss_cls_stage0: 6.234e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.827e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.041e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.316e-05  loss_rpn_loc: 0  total_val_loss: 8.112e-05  val_loss_cls_stage0: 6.25e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.898e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 5.037e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.936e-05  val_loss_rpn_loc: 0    time: 0.7308  last_time: 0.7323  data_time: 0.0032  last_data_time: 0.0064   lr: 4e-06  max_mem: 19931M
-[02/07 12:52:13] d2.utils.events INFO:  eta: 0:07:02  iter: 419  total_loss: 7.545e-05  loss_cls_stage0: 6.165e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.721e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.021e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.375e-05  loss_rpn_loc: 0  total_val_loss: 8.051e-05  val_loss_cls_stage0: 6.19e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.864e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.999e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.879e-05  val_loss_rpn_loc: 0    time: 0.7305  last_time: 0.7311  data_time: 0.0037  last_data_time: 0.0046   lr: 4e-07  max_mem: 19931M
-[02/07 12:52:38] d2.utils.events INFO:  eta: 0:06:48  iter: 439  total_loss: 7.167e-05  loss_cls_stage0: 6.163e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.861e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.99e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.996e-05  loss_rpn_loc: 0  total_val_loss: 8.087e-05  val_loss_cls_stage0: 6.233e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.82e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.988e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.918e-05  val_loss_rpn_loc: 0    time: 0.7306  last_time: 0.7365  data_time: 0.0041  last_data_time: 0.0045   lr: 4e-07  max_mem: 19931M
-[02/07 12:53:02] d2.utils.events INFO:  eta: 0:06:33  iter: 459  total_loss: 8.548e-05  loss_cls_stage0: 6.17e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.821e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 8.377e-05  loss_rpn_loc: 0  total_val_loss: 7.951e-05  val_loss_cls_stage0: 6.181e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.828e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.99e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.781e-05  val_loss_rpn_loc: 0    time: 0.7311  last_time: 0.7317  data_time: 0.0043  last_data_time: 0.0026   lr: 4e-07  max_mem: 19931M
-[02/07 12:53:27] d2.utils.events INFO:  eta: 0:06:19  iter: 479  total_loss: 7.555e-05  loss_cls_stage0: 6.163e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.791e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.011e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.384e-05  loss_rpn_loc: 0  total_val_loss: 7.74e-05  val_loss_cls_stage0: 6.149e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.812e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.979e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.57e-05  val_loss_rpn_loc: 0    time: 0.7312  last_time: 0.7260  data_time: 0.0043  last_data_time: 0.0033   lr: 4e-07  max_mem: 19931M
-[02/07 12:53:51] d2.utils.events INFO:  eta: 0:06:04  iter: 499  total_loss: 8.049e-05  loss_cls_stage0: 6.114e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.774e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.99e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.882e-05  loss_rpn_loc: 0  total_val_loss: 8.058e-05  val_loss_cls_stage0: 6.164e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.799e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.997e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.889e-05  val_loss_rpn_loc: 0    time: 0.7312  last_time: 0.7311  data_time: 0.0039  last_data_time: 0.0029   lr: 4e-07  max_mem: 19931M
-[02/07 12:54:16] d2.utils.events INFO:  eta: 0:05:50  iter: 519  total_loss: 8.29e-05  loss_cls_stage0: 6.112e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.829e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 5.008e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 8.121e-05  loss_rpn_loc: 0  total_val_loss: 7.917e-05  val_loss_cls_stage0: 6.138e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.82e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.996e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.748e-05  val_loss_rpn_loc: 0    time: 0.7313  last_time: 0.7284  data_time: 0.0040  last_data_time: 0.0034   lr: 4e-07  max_mem: 19931M
-[02/07 12:54:41] d2.utils.events INFO:  eta: 0:05:35  iter: 539  total_loss: 7.465e-05  loss_cls_stage0: 6.104e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.719e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.98e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.298e-05  loss_rpn_loc: 0  total_val_loss: 7.757e-05  val_loss_cls_stage0: 6.15e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.779e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.979e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.59e-05  val_loss_rpn_loc: 0    time: 0.7314  last_time: 0.7400  data_time: 0.0041  last_data_time: 0.0031   lr: 4e-07  max_mem: 19931M
-[02/07 12:55:05] d2.utils.events INFO:  eta: 0:05:21  iter: 559  total_loss: 9.401e-05  loss_cls_stage0: 6.156e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.74e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.991e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 9.233e-05  loss_rpn_loc: 0  total_val_loss: 6.999e-05  val_loss_cls_stage0: 6.101e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.784e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.964e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 6.831e-05  val_loss_rpn_loc: 0    time: 0.7314  last_time: 0.7343  data_time: 0.0043  last_data_time: 0.0041   lr: 4e-07  max_mem: 19931M
-[02/07 12:55:29] d2.utils.events INFO:  eta: 0:05:06  iter: 579  total_loss: 7.463e-05  loss_cls_stage0: 6.063e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.719e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.979e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.296e-05  loss_rpn_loc: 0  total_val_loss: 7.998e-05  val_loss_cls_stage0: 6.155e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.787e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.982e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.828e-05  val_loss_rpn_loc: 0    time: 0.7314  last_time: 0.7113  data_time: 0.0039  last_data_time: 0.0020   lr: 4e-07  max_mem: 19931M
-[02/07 12:55:54] d2.utils.events INFO:  eta: 0:04:51  iter: 599  total_loss: 7.474e-05  loss_cls_stage0: 6.103e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.747e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.983e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.305e-05  loss_rpn_loc: 0  total_val_loss: 7.309e-05  val_loss_cls_stage0: 6.131e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.778e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.968e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.139e-05  val_loss_rpn_loc: 0    time: 0.7310  last_time: 0.7223  data_time: 0.0035  last_data_time: 0.0046   lr: 4e-07  max_mem: 19931M
-[02/07 12:56:18] d2.utils.events INFO:  eta: 0:04:37  iter: 619  total_loss: 7.155e-05  loss_cls_stage0: 6.073e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.789e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.988e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.984e-05  loss_rpn_loc: 0  total_val_loss: 7.971e-05  val_loss_cls_stage0: 6.035e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.776e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.978e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.802e-05  val_loss_rpn_loc: 0    time: 0.7307  last_time: 0.7246  data_time: 0.0033  last_data_time: 0.0051   lr: 4e-07  max_mem: 19931M
-[02/07 12:56:42] d2.utils.events INFO:  eta: 0:04:22  iter: 639  total_loss: 7.416e-05  loss_cls_stage0: 5.994e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.63e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.974e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.247e-05  loss_rpn_loc: 0  total_val_loss: 7.68e-05  val_loss_cls_stage0: 6.091e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.745e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.959e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.512e-05  val_loss_rpn_loc: 0    time: 0.7304  last_time: 0.7291  data_time: 0.0038  last_data_time: 0.0039   lr: 4e-07  max_mem: 19931M
-[02/07 12:57:07] d2.utils.events INFO:  eta: 0:04:07  iter: 659  total_loss: 7.797e-05  loss_cls_stage0: 6.07e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.773e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.999e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.628e-05  loss_rpn_loc: 0  total_val_loss: 8.251e-05  val_loss_cls_stage0: 6.062e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.733e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.949e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 8.083e-05  val_loss_rpn_loc: 0    time: 0.7304  last_time: 0.7265  data_time: 0.0039  last_data_time: 0.0029   lr: 4e-07  max_mem: 19931M
-[02/07 12:57:31] d2.utils.events INFO:  eta: 0:03:53  iter: 679  total_loss: 7.731e-05  loss_cls_stage0: 6.072e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.715e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.95e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.565e-05  loss_rpn_loc: 0  total_val_loss: 7.739e-05  val_loss_cls_stage0: 6.047e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.707e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.945e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.571e-05  val_loss_rpn_loc: 0    time: 0.7301  last_time: 0.7167  data_time: 0.0036  last_data_time: 0.0027   lr: 4e-07  max_mem: 19931M
-[02/07 12:57:55] d2.utils.events INFO:  eta: 0:03:38  iter: 699  total_loss: 7.008e-05  loss_cls_stage0: 6.054e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.692e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.961e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.841e-05  loss_rpn_loc: 0  total_val_loss: 7.344e-05  val_loss_cls_stage0: 6.037e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.713e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.942e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.178e-05  val_loss_rpn_loc: 0    time: 0.7298  last_time: 0.7142  data_time: 0.0032  last_data_time: 0.0024   lr: 4e-07  max_mem: 19931M
-[02/07 12:58:19] d2.utils.events INFO:  eta: 0:03:23  iter: 719  total_loss: 8.052e-05  loss_cls_stage0: 6.027e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.679e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.978e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.885e-05  loss_rpn_loc: 0  total_val_loss: 7.372e-05  val_loss_cls_stage0: 6.027e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.741e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.925e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.204e-05  val_loss_rpn_loc: 0    time: 0.7296  last_time: 0.7177  data_time: 0.0034  last_data_time: 0.0034   lr: 4e-07  max_mem: 19931M
-[02/07 12:58:43] d2.utils.events INFO:  eta: 0:03:09  iter: 739  total_loss: 7.548e-05  loss_cls_stage0: 6.003e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.616e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.954e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.384e-05  loss_rpn_loc: 0  total_val_loss: 6.986e-05  val_loss_cls_stage0: 6.053e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.748e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.951e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 6.819e-05  val_loss_rpn_loc: 0    time: 0.7293  last_time: 0.7161  data_time: 0.0035  last_data_time: 0.0029   lr: 4e-07  max_mem: 19931M
-[02/07 12:59:07] d2.utils.events INFO:  eta: 0:02:54  iter: 759  total_loss: 7.301e-05  loss_cls_stage0: 5.987e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.691e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.941e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.137e-05  loss_rpn_loc: 0  total_val_loss: 7.806e-05  val_loss_cls_stage0: 5.998e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.691e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.936e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.639e-05  val_loss_rpn_loc: 0    time: 0.7291  last_time: 0.7217  data_time: 0.0038  last_data_time: 0.0055   lr: 4e-07  max_mem: 19931M
-[02/07 12:59:32] d2.utils.events INFO:  eta: 0:02:39  iter: 779  total_loss: 7.959e-05  loss_cls_stage0: 6.026e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.572e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.967e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.796e-05  loss_rpn_loc: 0  total_val_loss: 7.009e-05  val_loss_cls_stage0: 5.957e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.683e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.922e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 6.843e-05  val_loss_rpn_loc: 0    time: 0.7289  last_time: 0.7282  data_time: 0.0035  last_data_time: 0.0042   lr: 4e-07  max_mem: 19931M
-[02/07 12:59:56] d2.utils.events INFO:  eta: 0:02:25  iter: 799  total_loss: 7.163e-05  loss_cls_stage0: 5.927e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.632e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.945e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.997e-05  loss_rpn_loc: 0  total_val_loss: 7.76e-05  val_loss_cls_stage0: 5.919e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.687e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.922e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.594e-05  val_loss_rpn_loc: 0    time: 0.7286  last_time: 0.7164  data_time: 0.0033  last_data_time: 0.0027   lr: 4e-07  max_mem: 19931M
-[02/07 13:00:20] d2.utils.events INFO:  eta: 0:02:10  iter: 819  total_loss: 8.152e-05  loss_cls_stage0: 5.926e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.595e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.95e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.988e-05  loss_rpn_loc: 0  total_val_loss: 7.27e-05  val_loss_cls_stage0: 5.968e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.686e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.922e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.106e-05  val_loss_rpn_loc: 0    time: 0.7284  last_time: 0.7149  data_time: 0.0036  last_data_time: 0.0020   lr: 4e-07  max_mem: 19931M
-[02/07 13:00:44] d2.utils.events INFO:  eta: 0:01:56  iter: 839  total_loss: 6.967e-05  loss_cls_stage0: 5.908e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.606e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.946e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.799e-05  loss_rpn_loc: 0  total_val_loss: 7.862e-05  val_loss_cls_stage0: 5.961e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.633e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.932e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.695e-05  val_loss_rpn_loc: 0    time: 0.7283  last_time: 0.7173  data_time: 0.0036  last_data_time: 0.0022   lr: 4e-07  max_mem: 19931M
-[02/07 13:01:08] d2.utils.events INFO:  eta: 0:01:41  iter: 859  total_loss: 8.162e-05  loss_cls_stage0: 5.912e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.638e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.946e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.996e-05  loss_rpn_loc: 0  total_val_loss: 7.786e-05  val_loss_cls_stage0: 5.894e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.613e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.898e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.625e-05  val_loss_rpn_loc: 0    time: 0.7281  last_time: 0.7158  data_time: 0.0033  last_data_time: 0.0041   lr: 4e-07  max_mem: 19931M
-[02/07 13:01:32] d2.utils.events INFO:  eta: 0:01:27  iter: 879  total_loss: 7.825e-05  loss_cls_stage0: 5.914e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.571e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.925e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.662e-05  loss_rpn_loc: 0  total_val_loss: 6.968e-05  val_loss_cls_stage0: 5.916e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.646e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.916e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 6.802e-05  val_loss_rpn_loc: 0    time: 0.7279  last_time: 0.7196  data_time: 0.0033  last_data_time: 0.0064   lr: 4e-07  max_mem: 19931M
-[02/07 13:01:56] d2.utils.events INFO:  eta: 0:01:12  iter: 899  total_loss: 7.971e-05  loss_cls_stage0: 5.854e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.552e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.922e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.807e-05  loss_rpn_loc: 0  total_val_loss: 7.633e-05  val_loss_cls_stage0: 5.9e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.624e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.911e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.468e-05  val_loss_rpn_loc: 0    time: 0.7278  last_time: 0.7236  data_time: 0.0040  last_data_time: 0.0037   lr: 4e-07  max_mem: 19931M
-[02/07 13:02:21] d2.utils.events INFO:  eta: 0:00:58  iter: 919  total_loss: 6.908e-05  loss_cls_stage0: 5.86e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.595e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.924e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 6.744e-05  loss_rpn_loc: 0  total_val_loss: 7.623e-05  val_loss_cls_stage0: 5.874e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.588e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.889e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.459e-05  val_loss_rpn_loc: 0    time: 0.7276  last_time: 0.7206  data_time: 0.0035  last_data_time: 0.0050   lr: 4e-07  max_mem: 19931M
-[02/07 13:02:45] d2.utils.events INFO:  eta: 0:00:43  iter: 939  total_loss: 7.539e-05  loss_cls_stage0: 5.745e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.5e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.912e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.378e-05  loss_rpn_loc: 0  total_val_loss: 8.299e-05  val_loss_cls_stage0: 5.837e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.617e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.906e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 8.136e-05  val_loss_rpn_loc: 0    time: 0.7274  last_time: 0.7178  data_time: 0.0034  last_data_time: 0.0021   lr: 4e-07  max_mem: 19931M
-[02/07 13:03:09] d2.utils.events INFO:  eta: 0:00:29  iter: 959  total_loss: 7.462e-05  loss_cls_stage0: 5.791e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.511e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.946e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.301e-05  loss_rpn_loc: 0  total_val_loss: 7.865e-05  val_loss_cls_stage0: 5.848e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.574e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.9e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.7e-05  val_loss_rpn_loc: 0    time: 0.7272  last_time: 0.7172  data_time: 0.0039  last_data_time: 0.0029   lr: 4e-07  max_mem: 19931M
-[02/07 13:03:33] d2.utils.events INFO:  eta: 0:00:14  iter: 979  total_loss: 7.995e-05  loss_cls_stage0: 5.777e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.496e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.911e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.831e-05  loss_rpn_loc: 0  total_val_loss: 7.31e-05  val_loss_cls_stage0: 5.71e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.569e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.89e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 7.147e-05  val_loss_rpn_loc: 0    time: 0.7271  last_time: 0.7197  data_time: 0.0035  last_data_time: 0.0040   lr: 4e-07  max_mem: 19931M
-[02/07 13:03:59] d2.utils.events INFO:  eta: 0:00:00  iter: 999  total_loss: 7.189e-05  loss_cls_stage0: 5.72e-07  loss_box_reg_stage0: 0  loss_cls_stage1: 5.48e-07  loss_box_reg_stage1: 0  loss_cls_stage2: 4.927e-07  loss_box_reg_stage2: 0  loss_mask: 0  loss_rpn_cls: 7.03e-05  loss_rpn_loc: 0  total_val_loss: 8.53e-05  val_loss_cls_stage0: 5.775e-07  val_loss_box_reg_stage0: 0  val_loss_cls_stage1: 5.596e-07  val_loss_box_reg_stage1: 0  val_loss_cls_stage2: 4.911e-07  val_loss_box_reg_stage2: 0  val_loss_mask: 0  val_loss_rpn_cls: 8.368e-05  val_loss_rpn_loc: 0    time: 0.7270  last_time: 0.7168  data_time: 0.0030  last_data_time: 0.0030   lr: 4e-07  max_mem: 19931M
-[02/07 13:03:59] d2.engine.hooks INFO: Overall training speed: 998 iterations in 0:12:05 (0.7270 s / it)
-[02/07 13:03:59] d2.engine.hooks INFO: Total training time: 0:20:16 (0:08:10 on hooks)
-[02/07 13:03:59] ViTDet INFO: Plotting collected metrics. output_dir /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/plots
-[02/07 13:03:59] ViTDet INFO: Plotting loss_box_reg_stage0 metric
-[02/07 13:03:59] ViTDet INFO: Plotting loss_box_reg_stage1 metric
-[02/07 13:03:59] ViTDet INFO: Plotting loss_box_reg_stage2 metric
-[02/07 13:03:59] ViTDet INFO: Plotting loss_cls_stage0 metric
-[02/07 13:04:00] ViTDet INFO: Plotting loss_cls_stage1 metric
-[02/07 13:04:00] ViTDet INFO: Plotting loss_cls_stage2 metric
-[02/07 13:04:00] ViTDet INFO: Plotting loss_mask metric
-[02/07 13:04:00] ViTDet INFO: Plotting loss_rpn_cls metric
-[02/07 13:04:00] ViTDet INFO: Plotting loss_rpn_loc metric
-[02/07 13:09:21] ViTDet INFO: Plotting total_loss metric
-[02/07 13:09:21] ViTDet INFO: Plotting lr metric
-[02/07 13:09:21] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth
-[02/07 13:09:23] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
-[02/07 13:09:47] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
-[02/07 13:09:47] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 13:09:47] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 13:09:47] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 13:09:47] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
-[02/07 13:09:47] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 13:09:47] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
-[02/07 13:09:47] d2.data.datasets.coco INFO: Converting annotations of dataset 'traffic_dataset_test' to COCO format ...)
-[02/07 13:09:47] d2.data.datasets.coco INFO: Converting dataset dicts into COCO format
-[02/07 13:09:47] d2.data.datasets.coco INFO: Conversion finished, #images: 279, #annotations: 3188
-[02/07 13:09:47] d2.data.datasets.coco INFO: Caching COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json' ...
-[02/07 13:09:47] d2.evaluation.evaluator INFO: Start inference on 270 batches
-[02/07 13:09:50] d2.evaluation.evaluator INFO: Inference done 11/270. Dataloading: 0.0002 s/iter. Inference: 0.0803 s/iter. Eval: 0.0001 s/iter. Total: 0.0805 s/iter. ETA=0:00:20
-[02/07 13:09:55] d2.evaluation.evaluator INFO: Inference done 74/270. Dataloading: 0.0003 s/iter. Inference: 0.0795 s/iter. Eval: 0.0001 s/iter. Total: 0.0799 s/iter. ETA=0:00:15
-[02/07 13:10:00] d2.evaluation.evaluator INFO: Inference done 137/270. Dataloading: 0.0006 s/iter. Inference: 0.0792 s/iter. Eval: 0.0001 s/iter. Total: 0.0799 s/iter. ETA=0:00:10
-[02/07 13:10:05] d2.evaluation.evaluator INFO: Inference done 200/270. Dataloading: 0.0007 s/iter. Inference: 0.0791 s/iter. Eval: 0.0001 s/iter. Total: 0.0799 s/iter. ETA=0:00:05
-[02/07 13:10:10] d2.evaluation.evaluator INFO: Inference done 263/270. Dataloading: 0.0007 s/iter. Inference: 0.0791 s/iter. Eval: 0.0001 s/iter. Total: 0.0798 s/iter. ETA=0:00:00
-[02/07 13:10:11] d2.evaluation.evaluator INFO: Total inference time: 0:00:21.261362 (0.080232 s / iter per device, on 1 devices)
-[02/07 13:10:11] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:20 (0.079059 s / iter per device, on 1 devices)
-[02/07 13:10:11] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 13:10:11] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 13:10:11] d2.evaluation.coco_evaluation INFO: Evaluating predictions with official COCO API...
-[02/07 13:10:11] d2.evaluation.coco_evaluation WARNING: No predictions from the model!
-[02/07 13:10:11] ViTDet INFO: Results OrderedDict([('bbox', {'AP': nan, 'AP50': nan, 'AP75': nan, 'APs': nan, 'APm': nan, 'APl': nan})])
-[02/07 13:10:11] ViTDet INFO: Results were saved to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/ap_traffic_dataset_test.csv
-[02/07 12:33:13] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:33:13] detectron2 INFO: Environment info:
+[02/07 15:43:58] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in training: [Resize(shape=(160, 160))]
+[02/07 15:43:58] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[02/07 15:43:58] d2.data.common INFO: Serializing 541 elements to byte tensors and concatenating them all ...
+[02/07 15:43:58] d2.data.common INFO: Serialized dataset takes 0.36 MiB
+[02/07 15:43:58] d2.data.build INFO: Making batched data loader with batch_size=3
+[02/07 15:43:58] d2.engine.train_loop INFO: Starting training from iteration 0
+[02/07 15:44:28] d2.utils.events INFO:  eta: 0:02:54  iter: 19  total_loss: 2.265  loss_cls_stage0: 0.2447  loss_box_reg_stage0: 0.03751  loss_cls_stage1: 0.2237  loss_box_reg_stage1: 0.02379  loss_cls_stage2: 0.2126  loss_box_reg_stage2: 0.0111  loss_rpn_cls: 0.6749  loss_rpn_loc: 0.9911  total_val_loss: 2.556  val_loss_cls_stage0: 0.3073  val_loss_box_reg_stage0: 0.0618  val_loss_cls_stage1: 0.2573  val_loss_box_reg_stage1: 0.03331  val_loss_cls_stage2: 0.2557  val_loss_box_reg_stage2: 0.01629  val_loss_rpn_cls: 0.6741  val_loss_rpn_loc: 0.9117    time: 0.7666  last_time: 0.7664  data_time: 0.0781  last_data_time: 0.0010   lr: 4e-05  max_mem: 19912M
+[02/07 15:44:53] d2.utils.events INFO:  eta: 0:02:41  iter: 39  total_loss: 1.696  loss_cls_stage0: 0.1737  loss_box_reg_stage0: 0.02776  loss_cls_stage1: 0.1562  loss_box_reg_stage1: 0.01039  loss_cls_stage2: 0.1533  loss_box_reg_stage2: 0.005905  loss_rpn_cls: 0.5301  loss_rpn_loc: 0.5772  total_val_loss: 1.502  val_loss_cls_stage0: 0.1503  val_loss_box_reg_stage0: 0.03022  val_loss_cls_stage1: 0.1338  val_loss_box_reg_stage1: 0.009917  val_loss_cls_stage2: 0.1253  val_loss_box_reg_stage2: 0.006805  val_loss_rpn_cls: 0.5344  val_loss_rpn_loc: 0.5605    time: 0.7702  last_time: 0.7674  data_time: 0.0058  last_data_time: 0.0074   lr: 4e-05  max_mem: 19912M
+[02/07 15:45:19] d2.utils.events INFO:  eta: 0:02:26  iter: 59  total_loss: 1.184  loss_cls_stage0: 0.1442  loss_box_reg_stage0: 0.01994  loss_cls_stage1: 0.1303  loss_box_reg_stage1: 0.007368  loss_cls_stage2: 0.1245  loss_box_reg_stage2: 0.002555  loss_rpn_cls: 0.2299  loss_rpn_loc: 0.489  total_val_loss: 1.18  val_loss_cls_stage0: 0.1501  val_loss_box_reg_stage0: 0.01786  val_loss_cls_stage1: 0.1376  val_loss_box_reg_stage1: 0.009649  val_loss_cls_stage2: 0.1328  val_loss_box_reg_stage2: 0.00263  val_loss_rpn_cls: 0.1921  val_loss_rpn_loc: 0.5166    time: 0.7716  last_time: 0.7628  data_time: 0.0065  last_data_time: 0.0054   lr: 4e-05  max_mem: 19912M
+[02/07 15:45:44] d2.utils.events INFO:  eta: 0:02:11  iter: 79  total_loss: 1.005  loss_cls_stage0: 0.1482  loss_box_reg_stage0: 0.02662  loss_cls_stage1: 0.1239  loss_box_reg_stage1: 0.01037  loss_cls_stage2: 0.1151  loss_box_reg_stage2: 0.002538  loss_rpn_cls: 0.1115  loss_rpn_loc: 0.4507  total_val_loss: 0.998  val_loss_cls_stage0: 0.1272  val_loss_box_reg_stage0: 0.01227  val_loss_cls_stage1: 0.1141  val_loss_box_reg_stage1: 0.003798  val_loss_cls_stage2: 0.1128  val_loss_box_reg_stage2: 0.00233  val_loss_rpn_cls: 0.09702  val_loss_rpn_loc: 0.5037    time: 0.7711  last_time: 0.7655  data_time: 0.0062  last_data_time: 0.0051   lr: 4e-05  max_mem: 19912M
+[02/07 15:46:10] d2.utils.events INFO:  eta: 0:01:55  iter: 99  total_loss: 1.215  loss_cls_stage0: 0.1825  loss_box_reg_stage0: 0.02552  loss_cls_stage1: 0.1606  loss_box_reg_stage1: 0.009221  loss_cls_stage2: 0.1526  loss_box_reg_stage2: 0.005515  loss_rpn_cls: 0.07205  loss_rpn_loc: 0.5516  total_val_loss: 1.028  val_loss_cls_stage0: 0.1409  val_loss_box_reg_stage0: 0.009178  val_loss_cls_stage1: 0.1298  val_loss_box_reg_stage1: 0.001815  val_loss_cls_stage2: 0.1275  val_loss_box_reg_stage2: 0.002187  val_loss_rpn_cls: 0.06705  val_loss_rpn_loc: 0.5086    time: 0.7709  last_time: 0.7771  data_time: 0.0057  last_data_time: 0.0056   lr: 4e-05  max_mem: 19912M
+[02/07 15:46:36] d2.utils.events INFO:  eta: 0:01:40  iter: 119  total_loss: 0.9615  loss_cls_stage0: 0.1554  loss_box_reg_stage0: 0.02255  loss_cls_stage1: 0.1342  loss_box_reg_stage1: 0.01314  loss_cls_stage2: 0.1285  loss_box_reg_stage2: 0.008201  loss_rpn_cls: 0.07459  loss_rpn_loc: 0.4512  total_val_loss: 0.9842  val_loss_cls_stage0: 0.1448  val_loss_box_reg_stage0: 0.02311  val_loss_cls_stage1: 0.1298  val_loss_box_reg_stage1: 0.01022  val_loss_cls_stage2: 0.1261  val_loss_box_reg_stage2: 0.004151  val_loss_rpn_cls: 0.07026  val_loss_rpn_loc: 0.4923    time: 0.7710  last_time: 0.7738  data_time: 0.0062  last_data_time: 0.0048   lr: 4e-05  max_mem: 19912M
+[02/07 15:47:01] d2.utils.events INFO:  eta: 0:01:24  iter: 139  total_loss: 1.055  loss_cls_stage0: 0.1495  loss_box_reg_stage0: 0.01471  loss_cls_stage1: 0.136  loss_box_reg_stage1: 0.008922  loss_cls_stage2: 0.1266  loss_box_reg_stage2: 0.006236  loss_rpn_cls: 0.06858  loss_rpn_loc: 0.4561  total_val_loss: 0.9434  val_loss_cls_stage0: 0.139  val_loss_box_reg_stage0: 0.01298  val_loss_cls_stage1: 0.1289  val_loss_box_reg_stage1: 0.007811  val_loss_cls_stage2: 0.1266  val_loss_box_reg_stage2: 0.005225  val_loss_rpn_cls: 0.06313  val_loss_rpn_loc: 0.4573    time: 0.7708  last_time: 0.7629  data_time: 0.0062  last_data_time: 0.0052   lr: 4e-05  max_mem: 19912M
+[02/07 15:47:27] d2.utils.events INFO:  eta: 0:01:09  iter: 159  total_loss: 1.041  loss_cls_stage0: 0.1575  loss_box_reg_stage0: 0.02025  loss_cls_stage1: 0.1467  loss_box_reg_stage1: 0.01028  loss_cls_stage2: 0.1387  loss_box_reg_stage2: 0.008989  loss_rpn_cls: 0.06026  loss_rpn_loc: 0.4729  total_val_loss: 1  val_loss_cls_stage0: 0.1275  val_loss_box_reg_stage0: 0.007802  val_loss_cls_stage1: 0.1178  val_loss_box_reg_stage1: 0.00614  val_loss_cls_stage2: 0.1152  val_loss_box_reg_stage2: 0.00771  val_loss_rpn_cls: 0.05786  val_loss_rpn_loc: 0.5001    time: 0.7707  last_time: 0.7634  data_time: 0.0061  last_data_time: 0.0054   lr: 4e-06  max_mem: 19912M
+[02/07 15:47:53] d2.utils.events INFO:  eta: 0:00:53  iter: 179  total_loss: 0.9719  loss_cls_stage0: 0.1492  loss_box_reg_stage0: 0.01777  loss_cls_stage1: 0.133  loss_box_reg_stage1: 0.01005  loss_cls_stage2: 0.1295  loss_box_reg_stage2: 0.002598  loss_rpn_cls: 0.0604  loss_rpn_loc: 0.4501  total_val_loss: 1.03  val_loss_cls_stage0: 0.1392  val_loss_box_reg_stage0: 0.01462  val_loss_cls_stage1: 0.1328  val_loss_box_reg_stage1: 0.003605  val_loss_cls_stage2: 0.1325  val_loss_box_reg_stage2: 0.002429  val_loss_rpn_cls: 0.05937  val_loss_rpn_loc: 0.5503    time: 0.7705  last_time: 0.7641  data_time: 0.0054  last_data_time: 0.0066   lr: 4e-06  max_mem: 19912M
+[02/07 15:48:18] d2.utils.events INFO:  eta: 0:00:38  iter: 199  total_loss: 1.122  loss_cls_stage0: 0.1614  loss_box_reg_stage0: 0.02313  loss_cls_stage1: 0.157  loss_box_reg_stage1: 0.008438  loss_cls_stage2: 0.1566  loss_box_reg_stage2: 0.001452  loss_rpn_cls: 0.05887  loss_rpn_loc: 0.5191  total_val_loss: 0.939  val_loss_cls_stage0: 0.1278  val_loss_box_reg_stage0: 0.009479  val_loss_cls_stage1: 0.1247  val_loss_box_reg_stage1: 0.002426  val_loss_cls_stage2: 0.1244  val_loss_box_reg_stage2: 0.0009638  val_loss_rpn_cls: 0.0582  val_loss_rpn_loc: 0.4706    time: 0.7706  last_time: 0.7637  data_time: 0.0061  last_data_time: 0.0055   lr: 4e-06  max_mem: 19912M
+[02/07 15:48:44] d2.utils.events INFO:  eta: 0:00:23  iter: 219  total_loss: 1.001  loss_cls_stage0: 0.1464  loss_box_reg_stage0: 0.0132  loss_cls_stage1: 0.1326  loss_box_reg_stage1: 0.007227  loss_cls_stage2: 0.1306  loss_box_reg_stage2: 0.001019  loss_rpn_cls: 0.06109  loss_rpn_loc: 0.4861  total_val_loss: 0.9197  val_loss_cls_stage0: 0.1452  val_loss_box_reg_stage0: 0.0109  val_loss_cls_stage1: 0.133  val_loss_box_reg_stage1: 0.0006833  val_loss_cls_stage2: 0.1292  val_loss_box_reg_stage2: 0.0007764  val_loss_rpn_cls: 0.06529  val_loss_rpn_loc: 0.4341    time: 0.7704  last_time: 0.7659  data_time: 0.0063  last_data_time: 0.0064   lr: 4e-07  max_mem: 19912M
+[02/07 15:49:09] d2.utils.events INFO:  eta: 0:00:07  iter: 239  total_loss: 1.097  loss_cls_stage0: 0.1721  loss_box_reg_stage0: 0.01465  loss_cls_stage1: 0.1565  loss_box_reg_stage1: 0.004249  loss_cls_stage2: 0.1504  loss_box_reg_stage2: 0.002711  loss_rpn_cls: 0.06335  loss_rpn_loc: 0.5136  total_val_loss: 0.9417  val_loss_cls_stage0: 0.1138  val_loss_box_reg_stage0: 0.007272  val_loss_cls_stage1: 0.1062  val_loss_box_reg_stage1: 0.005189  val_loss_cls_stage2: 0.1043  val_loss_box_reg_stage2: 0.0004697  val_loss_rpn_cls: 0.06537  val_loss_rpn_loc: 0.4463    time: 0.7704  last_time: 0.7634  data_time: 0.0060  last_data_time: 0.0054   lr: 4e-07  max_mem: 19912M
+[02/07 15:49:24] d2.utils.events INFO:  eta: 0:00:00  iter: 249  total_loss: 0.9881  loss_cls_stage0: 0.1512  loss_box_reg_stage0: 0.01465  loss_cls_stage1: 0.1416  loss_box_reg_stage1: 0.004981  loss_cls_stage2: 0.1325  loss_box_reg_stage2: 0.001015  loss_rpn_cls: 0.06191  loss_rpn_loc: 0.52  total_val_loss: 0.952  val_loss_cls_stage0: 0.1218  val_loss_box_reg_stage0: 0.01655  val_loss_cls_stage1: 0.1118  val_loss_box_reg_stage1: 0.006593  val_loss_cls_stage2: 0.1087  val_loss_box_reg_stage2: 0.00056  val_loss_rpn_cls: 0.06395  val_loss_rpn_loc: 0.4373    time: 0.7702  last_time: 0.7741  data_time: 0.0058  last_data_time: 0.0037   lr: 4e-07  max_mem: 19912M
+[02/07 15:49:24] d2.engine.hooks INFO: Overall training speed: 248 iterations in 0:03:11 (0.7702 s / it)
+[02/07 15:49:24] d2.engine.hooks INFO: Total training time: 0:05:19 (0:02:08 on hooks)
+[02/07 15:49:24] ViTDet INFO: Plotting collected metrics. output_dir /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/plots
+[02/07 15:49:24] ViTDet INFO: Plotting loss_box_reg_stage0 metric
+[02/07 15:49:25] ViTDet INFO: Plotting loss_box_reg_stage1 metric
+[02/07 15:53:33] detectron2 INFO: Rank of current process: 0. World size: 1
+[02/07 15:53:35] detectron2 INFO: Environment info:
 -------------------------------  -----------------------------------------------------------------
 sys.platform                     linux
 Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
@@ -174,7 +96,7 @@ PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-pac
 PyTorch debug build              False
 torch._C._GLIBCXX_USE_CXX11_ABI  False
 GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
+GPU 0                            NVIDIA A10 (arch=8.6)
 Driver version                   535.154.05
 CUDA_HOME                        /usr
 Pillow                           10.2.0
@@ -199,501 +121,37 @@ PyTorch built with:
   - Magma 2.6.1
   - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
 
-[02/07 12:33:13] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:33:15] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth
-[02/07 12:33:19] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
-[02/07 12:33:21] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
-[02/07 12:33:21] d2.data.build INFO: Distribution of instances among all 5 categories:
+[02/07 15:53:35] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
+[02/07 15:54:33] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth
+[02/07 15:54:37] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
+[02/07 15:54:39] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
+[02/07 15:54:39] d2.data.build INFO: Distribution of instances among all 5 categories:
 [36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
 |:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
 |  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
 | motorbike  | 650          |   person   | 452          |            |              |
 |   total    | 3188         |            |              |            |              |[0m
-[02/07 12:33:21] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:33:21] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:33:21] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
-[02/07 12:33:21] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:33:21] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
-[02/07 12:33:21] d2.data.datasets.coco INFO: Converting annotations of dataset 'traffic_dataset_test' to COCO format ...)
-[02/07 12:33:21] d2.data.datasets.coco INFO: Converting dataset dicts into COCO format
-[02/07 12:33:21] d2.data.datasets.coco INFO: Conversion finished, #images: 279, #annotations: 3188
-[02/07 12:33:21] d2.data.datasets.coco INFO: Caching COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json' ...
-[02/07 12:33:22] d2.evaluation.evaluator INFO: Start inference on 270 batches
-[02/07 12:33:25] d2.evaluation.evaluator INFO: Inference done 11/270. Dataloading: 0.0009 s/iter. Inference: 0.2393 s/iter. Eval: 0.0001 s/iter. Total: 0.2402 s/iter. ETA=0:01:02
-[02/07 12:33:30] d2.evaluation.evaluator INFO: Inference done 31/270. Dataloading: 0.0016 s/iter. Inference: 0.2473 s/iter. Eval: 0.0001 s/iter. Total: 0.2490 s/iter. ETA=0:00:59
-[02/07 12:33:36] d2.evaluation.evaluator INFO: Inference done 52/270. Dataloading: 0.0010 s/iter. Inference: 0.2445 s/iter. Eval: 0.0001 s/iter. Total: 0.2456 s/iter. ETA=0:00:53
-[02/07 12:33:41] d2.evaluation.evaluator INFO: Inference done 73/270. Dataloading: 0.0008 s/iter. Inference: 0.2456 s/iter. Eval: 0.0001 s/iter. Total: 0.2466 s/iter. ETA=0:00:48
-[02/07 12:33:46] d2.evaluation.evaluator INFO: Inference done 93/270. Dataloading: 0.0008 s/iter. Inference: 0.2466 s/iter. Eval: 0.0001 s/iter. Total: 0.2476 s/iter. ETA=0:00:43
-[02/07 12:33:51] d2.evaluation.evaluator INFO: Inference done 114/270. Dataloading: 0.0008 s/iter. Inference: 0.2465 s/iter. Eval: 0.0001 s/iter. Total: 0.2475 s/iter. ETA=0:00:38
-[02/07 12:33:56] d2.evaluation.evaluator INFO: Inference done 134/270. Dataloading: 0.0009 s/iter. Inference: 0.2470 s/iter. Eval: 0.0001 s/iter. Total: 0.2479 s/iter. ETA=0:00:33
-[02/07 12:34:01] d2.evaluation.evaluator INFO: Inference done 154/270. Dataloading: 0.0009 s/iter. Inference: 0.2480 s/iter. Eval: 0.0001 s/iter. Total: 0.2489 s/iter. ETA=0:00:28
-[02/07 12:34:06] d2.evaluation.evaluator INFO: Inference done 174/270. Dataloading: 0.0009 s/iter. Inference: 0.2487 s/iter. Eval: 0.0001 s/iter. Total: 0.2497 s/iter. ETA=0:00:23
-[02/07 12:34:11] d2.evaluation.evaluator INFO: Inference done 194/270. Dataloading: 0.0009 s/iter. Inference: 0.2498 s/iter. Eval: 0.0001 s/iter. Total: 0.2507 s/iter. ETA=0:00:19
-[02/07 12:34:16] d2.evaluation.evaluator INFO: Inference done 215/270. Dataloading: 0.0008 s/iter. Inference: 0.2487 s/iter. Eval: 0.0001 s/iter. Total: 0.2497 s/iter. ETA=0:00:13
-[02/07 12:34:21] d2.evaluation.evaluator INFO: Inference done 236/270. Dataloading: 0.0008 s/iter. Inference: 0.2480 s/iter. Eval: 0.0001 s/iter. Total: 0.2489 s/iter. ETA=0:00:08
-[02/07 12:34:26] d2.evaluation.evaluator INFO: Inference done 257/270. Dataloading: 0.0008 s/iter. Inference: 0.2471 s/iter. Eval: 0.0001 s/iter. Total: 0.2481 s/iter. ETA=0:00:03
-[02/07 12:34:30] d2.evaluation.evaluator INFO: Total inference time: 0:01:05.690702 (0.247889 s / iter per device, on 1 devices)
-[02/07 12:34:30] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:05 (0.246678 s / iter per device, on 1 devices)
-[02/07 12:34:30] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 12:34:30] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 12:34:30] d2.evaluation.coco_evaluation INFO: Evaluating predictions with official COCO API...
-[02/07 12:34:30] d2.evaluation.coco_evaluation WARNING: No predictions from the model!
-[02/07 12:34:30] ViTDet INFO: Results OrderedDict([('bbox', {'AP': nan, 'AP50': nan, 'AP75': nan, 'APs': nan, 'APm': nan, 'APl': nan})])
-[02/07 12:34:30] ViTDet INFO: Results were saved to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/ap_traffic_dataset_test.csv
-[02/07 12:36:19] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:36:19] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:36:19] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:36:24] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl ...
-[02/07 12:36:26] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 12:36:26] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:36:26] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:36:26] d2.data.common INFO: Serializing 279 elements to byte tensors and concatenating them all ...
-[02/07 12:36:26] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:36:26] d2.evaluation.coco_evaluation INFO: Trying to convert '['traffic_dataset_test']' to COCO format ...
-[02/07 12:36:26] d2.data.datasets.coco INFO: Converting annotations of dataset '['traffic_dataset_test']' to COCO format ...)
-[02/07 12:39:58] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:39:58] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:39:58] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:40:50] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:40:51] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:40:51] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:40:56] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl ...
-[02/07 12:40:58] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 12:40:58] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:40:58] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:40:58] d2.data.common INFO: Serializing 279 elements to byte tensors and concatenating them all ...
-[02/07 12:40:58] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:40:58] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
-[02/07 12:40:58] d2.data.datasets.coco WARNING: Using previously cached COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json'. You need to clear the cache file if your dataset has been modified.
-[02/07 12:40:58] d2.evaluation.evaluator INFO: Start inference on 279 batches
-[02/07 12:41:05] d2.evaluation.evaluator INFO: Inference done 11/279. Dataloading: 0.0003 s/iter. Inference: 0.3948 s/iter. Eval: 0.1498 s/iter. Total: 0.5449 s/iter. ETA=0:02:26
-[02/07 12:41:11] d2.evaluation.evaluator INFO: Inference done 21/279. Dataloading: 0.0008 s/iter. Inference: 0.3969 s/iter. Eval: 0.1504 s/iter. Total: 0.5482 s/iter. ETA=0:02:21
-[02/07 12:41:16] d2.evaluation.evaluator INFO: Inference done 31/279. Dataloading: 0.0013 s/iter. Inference: 0.3974 s/iter. Eval: 0.1508 s/iter. Total: 0.5494 s/iter. ETA=0:02:16
-[02/07 12:41:22] d2.evaluation.evaluator INFO: Inference done 41/279. Dataloading: 0.0012 s/iter. Inference: 0.3967 s/iter. Eval: 0.1508 s/iter. Total: 0.5488 s/iter. ETA=0:02:10
-[02/07 12:41:27] d2.evaluation.evaluator INFO: Inference done 51/279. Dataloading: 0.0010 s/iter. Inference: 0.3974 s/iter. Eval: 0.1507 s/iter. Total: 0.5491 s/iter. ETA=0:02:05
-[02/07 12:41:33] d2.evaluation.evaluator INFO: Inference done 61/279. Dataloading: 0.0008 s/iter. Inference: 0.3975 s/iter. Eval: 0.1507 s/iter. Total: 0.5491 s/iter. ETA=0:01:59
-[02/07 12:41:38] d2.evaluation.evaluator INFO: Inference done 71/279. Dataloading: 0.0008 s/iter. Inference: 0.3973 s/iter. Eval: 0.1508 s/iter. Total: 0.5490 s/iter. ETA=0:01:54
-[02/07 12:41:44] d2.evaluation.evaluator INFO: Inference done 81/279. Dataloading: 0.0008 s/iter. Inference: 0.3970 s/iter. Eval: 0.1507 s/iter. Total: 0.5486 s/iter. ETA=0:01:48
-[02/07 12:41:49] d2.evaluation.evaluator INFO: Inference done 91/279. Dataloading: 0.0008 s/iter. Inference: 0.3956 s/iter. Eval: 0.1506 s/iter. Total: 0.5472 s/iter. ETA=0:01:42
-[02/07 12:41:55] d2.evaluation.evaluator INFO: Inference done 101/279. Dataloading: 0.0008 s/iter. Inference: 0.3955 s/iter. Eval: 0.1506 s/iter. Total: 0.5470 s/iter. ETA=0:01:37
-[02/07 12:42:00] d2.evaluation.evaluator INFO: Inference done 110/279. Dataloading: 0.0008 s/iter. Inference: 0.3968 s/iter. Eval: 0.1507 s/iter. Total: 0.5484 s/iter. ETA=0:01:32
-[02/07 12:42:05] d2.evaluation.evaluator INFO: Inference done 119/279. Dataloading: 0.0008 s/iter. Inference: 0.3990 s/iter. Eval: 0.1507 s/iter. Total: 0.5505 s/iter. ETA=0:01:28
-[02/07 12:42:10] d2.evaluation.evaluator INFO: Inference done 129/279. Dataloading: 0.0009 s/iter. Inference: 0.3988 s/iter. Eval: 0.1507 s/iter. Total: 0.5505 s/iter. ETA=0:01:22
-[02/07 12:42:16] d2.evaluation.evaluator INFO: Inference done 138/279. Dataloading: 0.0009 s/iter. Inference: 0.4008 s/iter. Eval: 0.1508 s/iter. Total: 0.5526 s/iter. ETA=0:01:17
-[02/07 12:42:21] d2.evaluation.evaluator INFO: Inference done 147/279. Dataloading: 0.0009 s/iter. Inference: 0.4046 s/iter. Eval: 0.1509 s/iter. Total: 0.5564 s/iter. ETA=0:01:13
-[02/07 12:42:26] d2.evaluation.evaluator INFO: Inference done 156/279. Dataloading: 0.0009 s/iter. Inference: 0.4064 s/iter. Eval: 0.1509 s/iter. Total: 0.5582 s/iter. ETA=0:01:08
-[02/07 12:42:32] d2.evaluation.evaluator INFO: Inference done 165/279. Dataloading: 0.0009 s/iter. Inference: 0.4079 s/iter. Eval: 0.1509 s/iter. Total: 0.5598 s/iter. ETA=0:01:03
-[02/07 12:42:37] d2.evaluation.evaluator INFO: Inference done 175/279. Dataloading: 0.0009 s/iter. Inference: 0.4076 s/iter. Eval: 0.1509 s/iter. Total: 0.5595 s/iter. ETA=0:00:58
-[02/07 12:42:43] d2.evaluation.evaluator INFO: Inference done 185/279. Dataloading: 0.0009 s/iter. Inference: 0.4073 s/iter. Eval: 0.1509 s/iter. Total: 0.5592 s/iter. ETA=0:00:52
-[02/07 12:42:48] d2.evaluation.evaluator INFO: Inference done 194/279. Dataloading: 0.0009 s/iter. Inference: 0.4081 s/iter. Eval: 0.1510 s/iter. Total: 0.5600 s/iter. ETA=0:00:47
-[02/07 12:42:53] d2.evaluation.evaluator INFO: Inference done 203/279. Dataloading: 0.0009 s/iter. Inference: 0.4080 s/iter. Eval: 0.1511 s/iter. Total: 0.5601 s/iter. ETA=0:00:42
-[02/07 12:42:58] d2.evaluation.evaluator INFO: Inference done 213/279. Dataloading: 0.0009 s/iter. Inference: 0.4072 s/iter. Eval: 0.1513 s/iter. Total: 0.5594 s/iter. ETA=0:00:36
-[02/07 12:43:04] d2.evaluation.evaluator INFO: Inference done 222/279. Dataloading: 0.0009 s/iter. Inference: 0.4083 s/iter. Eval: 0.1514 s/iter. Total: 0.5606 s/iter. ETA=0:00:31
-[02/07 12:43:09] d2.evaluation.evaluator INFO: Inference done 231/279. Dataloading: 0.0009 s/iter. Inference: 0.4097 s/iter. Eval: 0.1516 s/iter. Total: 0.5622 s/iter. ETA=0:00:26
-[02/07 12:43:14] d2.evaluation.evaluator INFO: Inference done 240/279. Dataloading: 0.0009 s/iter. Inference: 0.4103 s/iter. Eval: 0.1516 s/iter. Total: 0.5629 s/iter. ETA=0:00:21
-[02/07 12:43:19] d2.evaluation.evaluator INFO: Inference done 249/279. Dataloading: 0.0009 s/iter. Inference: 0.4106 s/iter. Eval: 0.1516 s/iter. Total: 0.5632 s/iter. ETA=0:00:16
-[02/07 12:43:25] d2.evaluation.evaluator INFO: Inference done 259/279. Dataloading: 0.0009 s/iter. Inference: 0.4103 s/iter. Eval: 0.1516 s/iter. Total: 0.5628 s/iter. ETA=0:00:11
-[02/07 12:43:30] d2.evaluation.evaluator INFO: Inference done 268/279. Dataloading: 0.0009 s/iter. Inference: 0.4101 s/iter. Eval: 0.1516 s/iter. Total: 0.5627 s/iter. ETA=0:00:06
-[02/07 12:43:35] d2.evaluation.evaluator INFO: Inference done 277/279. Dataloading: 0.0009 s/iter. Inference: 0.4100 s/iter. Eval: 0.1516 s/iter. Total: 0.5626 s/iter. ETA=0:00:01
-[02/07 12:43:36] d2.evaluation.evaluator INFO: Total inference time: 0:02:34.223298 (0.562859 s / iter per device, on 1 devices)
-[02/07 12:43:36] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:52 (0.409972 s / iter per device, on 1 devices)
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Evaluating predictions with unofficial COCO API...
-[02/07 12:43:37] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *bbox*
-[02/07 12:43:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.evaluate() finished in 0.12 seconds.
-[02/07 12:43:37] d2.evaluation.fast_eval_api INFO: Accumulating evaluation results...
-[02/07 12:43:37] d2.evaluation.fast_eval_api INFO: COCOeval_opt.accumulate() finished in 0.03 seconds.
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Evaluation results for bbox: 
-|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
-|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
-| 0.041 | 0.090  | 0.057  | 0.103 |  nan  |  nan  |
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Some metrics cannot be computed and is shown as NaN.
-[02/07 12:43:37] d2.evaluation.coco_evaluation INFO: Per-category bbox AP: 
-| category   | AP    | category   | AP    | category   | AP    |
-|:-----------|:------|:-----------|:------|:-----------|:------|
-| bicycle    | 0.020 | bus        | 0.036 | car        | 0.149 |
-| motorbike  | 0.000 | person     | 0.000 |            |       |
-[02/07 12:43:38] d2.evaluation.fast_eval_api INFO: Evaluate annotation type *segm*
-[02/07 12:46:51] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:46:51] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:46:51] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:46:56] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
-[02/07 12:46:59] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 12:46:59] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:46:59] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:46:59] d2.data.common INFO: Serializing 279 elements to byte tensors and concatenating them all ...
-[02/07 12:46:59] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:46:59] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
-[02/07 12:46:59] d2.data.datasets.coco WARNING: Using previously cached COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json'. You need to clear the cache file if your dataset has been modified.
-[02/07 12:46:59] d2.evaluation.evaluator INFO: Start inference on 279 batches
-[02/07 12:47:03] d2.evaluation.evaluator INFO: Inference done 11/279. Dataloading: 0.0002 s/iter. Inference: 0.2617 s/iter. Eval: 0.0001 s/iter. Total: 0.2619 s/iter. ETA=0:01:10
-[02/07 12:47:08] d2.evaluation.evaluator INFO: Inference done 31/279. Dataloading: 0.0013 s/iter. Inference: 0.2598 s/iter. Eval: 0.0001 s/iter. Total: 0.2612 s/iter. ETA=0:01:04
-[02/07 12:47:13] d2.evaluation.evaluator INFO: Inference done 51/279. Dataloading: 0.0009 s/iter. Inference: 0.2578 s/iter. Eval: 0.0001 s/iter. Total: 0.2588 s/iter. ETA=0:00:59
-[02/07 12:47:18] d2.evaluation.evaluator INFO: Inference done 71/279. Dataloading: 0.0008 s/iter. Inference: 0.2571 s/iter. Eval: 0.0001 s/iter. Total: 0.2580 s/iter. ETA=0:00:53
-[02/07 12:47:23] d2.evaluation.evaluator INFO: Inference done 91/279. Dataloading: 0.0008 s/iter. Inference: 0.2565 s/iter. Eval: 0.0001 s/iter. Total: 0.2574 s/iter. ETA=0:00:48
-[02/07 12:47:29] d2.evaluation.evaluator INFO: Inference done 111/279. Dataloading: 0.0008 s/iter. Inference: 0.2568 s/iter. Eval: 0.0001 s/iter. Total: 0.2577 s/iter. ETA=0:00:43
-[02/07 12:47:34] d2.evaluation.evaluator INFO: Inference done 131/279. Dataloading: 0.0008 s/iter. Inference: 0.2563 s/iter. Eval: 0.0001 s/iter. Total: 0.2572 s/iter. ETA=0:00:38
-[02/07 12:47:39] d2.evaluation.evaluator INFO: Inference done 151/279. Dataloading: 0.0008 s/iter. Inference: 0.2558 s/iter. Eval: 0.0001 s/iter. Total: 0.2567 s/iter. ETA=0:00:32
-[02/07 12:47:44] d2.evaluation.evaluator INFO: Inference done 171/279. Dataloading: 0.0008 s/iter. Inference: 0.2558 s/iter. Eval: 0.0001 s/iter. Total: 0.2567 s/iter. ETA=0:00:27
-[02/07 12:47:49] d2.evaluation.evaluator INFO: Inference done 191/279. Dataloading: 0.0008 s/iter. Inference: 0.2556 s/iter. Eval: 0.0001 s/iter. Total: 0.2566 s/iter. ETA=0:00:22
-[02/07 12:47:54] d2.evaluation.evaluator INFO: Inference done 211/279. Dataloading: 0.0008 s/iter. Inference: 0.2551 s/iter. Eval: 0.0001 s/iter. Total: 0.2560 s/iter. ETA=0:00:17
-[02/07 12:47:59] d2.evaluation.evaluator INFO: Inference done 231/279. Dataloading: 0.0008 s/iter. Inference: 0.2548 s/iter. Eval: 0.0001 s/iter. Total: 0.2557 s/iter. ETA=0:00:12
-[02/07 12:48:04] d2.evaluation.evaluator INFO: Inference done 251/279. Dataloading: 0.0008 s/iter. Inference: 0.2552 s/iter. Eval: 0.0001 s/iter. Total: 0.2561 s/iter. ETA=0:00:07
-[02/07 12:48:09] d2.evaluation.evaluator INFO: Inference done 271/279. Dataloading: 0.0008 s/iter. Inference: 0.2551 s/iter. Eval: 0.0001 s/iter. Total: 0.2560 s/iter. ETA=0:00:02
-[02/07 12:48:12] d2.evaluation.evaluator INFO: Total inference time: 0:01:10.421097 (0.257011 s / iter per device, on 1 devices)
-[02/07 12:48:12] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:10 (0.255848 s / iter per device, on 1 devices)
-[02/07 12:48:12] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 12:48:12] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 12:48:12] d2.evaluation.coco_evaluation INFO: Evaluating predictions with unofficial COCO API...
-[02/07 12:48:12] d2.evaluation.coco_evaluation WARNING: No predictions from the model!
-[02/07 12:48:12] d2.evaluation.testing INFO: copypaste: Task: bbox
-[02/07 12:48:12] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75,APs,APm,APl
-[02/07 12:48:12] d2.evaluation.testing INFO: copypaste: nan,nan,nan,nan,nan,nan
-[02/07 12:49:58] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:49:59] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:49:59] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:50:00] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth
-[02/07 12:50:04] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
-[02/07 12:50:06] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
-[02/07 12:50:06] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 12:50:06] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:50:06] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:50:06] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
-[02/07 12:50:06] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:50:06] d2.evaluation.coco_evaluation INFO: Trying to convert 't' to COCO format ...
-[02/07 12:50:06] d2.data.datasets.coco INFO: Converting annotations of dataset 't' to COCO format ...)
-[02/07 12:50:30] detectron2 INFO: Rank of current process: 0. World size: 1
-[02/07 12:50:30] detectron2 INFO: Environment info:
--------------------------------  -----------------------------------------------------------------
-sys.platform                     linux
-Python                           3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]
-numpy                            1.26.3
-detectron2                       0.6 @/workspace/detectron2/detectron2
-Compiler                         GCC 11.4
-CUDA compiler                    not available
-DETECTRON2_ENV_MODULE            <not set>
-PyTorch                          2.0.1+cu117 @/usr/local/lib/python3.10/dist-packages/torch
-PyTorch debug build              False
-torch._C._GLIBCXX_USE_CXX11_ABI  False
-GPU available                    Yes
-GPU 0                            NVIDIA GeForce GTX 1080 Ti (arch=6.1)
-Driver version                   535.154.05
-CUDA_HOME                        /usr
-Pillow                           10.2.0
-torchvision                      0.15.2+cu117 @/usr/local/lib/python3.10/dist-packages/torchvision
-torchvision arch flags           3.5, 5.0, 6.0, 7.0, 7.5, 8.0, 8.6
-fvcore                           0.1.5.post20221221
-iopath                           0.1.9
-cv2                              4.8.0
--------------------------------  -----------------------------------------------------------------
-PyTorch built with:
-  - GCC 9.3
-  - C++ Version: 201703
-  - Intel(R) oneAPI Math Kernel Library Version 2022.2-Product Build 20220804 for Intel(R) 64 architecture applications
-  - Intel(R) MKL-DNN v2.7.3 (Git Hash 6dbeffbae1f23cbbeae17adb7b5b13f1f37c080e)
-  - OpenMP 201511 (a.k.a. OpenMP 4.5)
-  - LAPACK is enabled (usually provided by MKL)
-  - NNPACK is enabled
-  - CPU capability usage: AVX2
-  - CUDA Runtime 11.7
-  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
-  - CuDNN 8.5
-  - Magma 2.6.1
-  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -D_GLIBCXX_USE_CXX11_ABI=0 -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Werror=bool-operation -Wnarrowing -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_DISABLE_GPU_ASSERTS=ON, TORCH_VERSION=2.0.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=1, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
-
-[02/07 12:50:30] detectron2 INFO: Command line arguments: Namespace(yaml='../experiments/swin_base_first_claaudia.yaml', eval_only=True, save_training_images=False, sample_size=10, show_annotations=False)
-[02/07 12:50:31] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth
-[02/07 12:50:36] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/model_final.pth ...
-[02/07 12:50:38] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
-[02/07 12:50:38] d2.data.build INFO: Distribution of instances among all 5 categories:
-[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
-|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
-|  bicycle   | 134          |    bus     | 41           |    car     | 1911         |
-| motorbike  | 650          |   person   | 452          |            |              |
-|   total    | 3188         |            |              |            |              |[0m
-[02/07 12:50:38] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:50:38] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:50:38] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
-[02/07 12:50:38] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:50:38] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
-[02/07 12:50:38] d2.data.datasets.coco INFO: Converting annotations of dataset 'traffic_dataset_test' to COCO format ...)
-[02/07 12:50:38] d2.data.datasets.coco INFO: Converting dataset dicts into COCO format
-[02/07 12:50:38] d2.data.datasets.coco INFO: Conversion finished, #images: 279, #annotations: 3188
-[02/07 12:50:38] d2.data.datasets.coco INFO: Caching COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json' ...
-[02/07 12:50:38] d2.evaluation.evaluator INFO: Start inference on 270 batches
-[02/07 12:50:42] d2.evaluation.evaluator INFO: Inference done 11/270. Dataloading: 0.0002 s/iter. Inference: 0.2364 s/iter. Eval: 0.0001 s/iter. Total: 0.2366 s/iter. ETA=0:01:01
-[02/07 12:50:47] d2.evaluation.evaluator INFO: Inference done 30/270. Dataloading: 0.0012 s/iter. Inference: 0.2560 s/iter. Eval: 0.0001 s/iter. Total: 0.2573 s/iter. ETA=0:01:01
-[02/07 12:50:52] d2.evaluation.evaluator INFO: Inference done 49/270. Dataloading: 0.0010 s/iter. Inference: 0.2588 s/iter. Eval: 0.0001 s/iter. Total: 0.2599 s/iter. ETA=0:00:57
-[02/07 12:50:57] d2.evaluation.evaluator INFO: Inference done 68/270. Dataloading: 0.0008 s/iter. Inference: 0.2632 s/iter. Eval: 0.0001 s/iter. Total: 0.2641 s/iter. ETA=0:00:53
-[02/07 12:51:02] d2.evaluation.evaluator INFO: Inference done 88/270. Dataloading: 0.0008 s/iter. Inference: 0.2607 s/iter. Eval: 0.0001 s/iter. Total: 0.2616 s/iter. ETA=0:00:47
-[02/07 12:51:08] d2.evaluation.evaluator INFO: Inference done 109/270. Dataloading: 0.0008 s/iter. Inference: 0.2575 s/iter. Eval: 0.0001 s/iter. Total: 0.2584 s/iter. ETA=0:00:41
-[02/07 12:51:13] d2.evaluation.evaluator INFO: Inference done 130/270. Dataloading: 0.0008 s/iter. Inference: 0.2552 s/iter. Eval: 0.0001 s/iter. Total: 0.2562 s/iter. ETA=0:00:35
-[02/07 12:51:18] d2.evaluation.evaluator INFO: Inference done 150/270. Dataloading: 0.0008 s/iter. Inference: 0.2550 s/iter. Eval: 0.0001 s/iter. Total: 0.2559 s/iter. ETA=0:00:30
-[02/07 12:51:23] d2.evaluation.evaluator INFO: Inference done 171/270. Dataloading: 0.0008 s/iter. Inference: 0.2530 s/iter. Eval: 0.0001 s/iter. Total: 0.2540 s/iter. ETA=0:00:25
-[02/07 12:51:28] d2.evaluation.evaluator INFO: Inference done 192/270. Dataloading: 0.0008 s/iter. Inference: 0.2516 s/iter. Eval: 0.0001 s/iter. Total: 0.2525 s/iter. ETA=0:00:19
-[02/07 12:51:33] d2.evaluation.evaluator INFO: Inference done 213/270. Dataloading: 0.0008 s/iter. Inference: 0.2505 s/iter. Eval: 0.0001 s/iter. Total: 0.2515 s/iter. ETA=0:00:14
-[02/07 12:51:38] d2.evaluation.evaluator INFO: Inference done 234/270. Dataloading: 0.0008 s/iter. Inference: 0.2498 s/iter. Eval: 0.0001 s/iter. Total: 0.2507 s/iter. ETA=0:00:09
-[02/07 12:51:43] d2.evaluation.evaluator INFO: Inference done 255/270. Dataloading: 0.0008 s/iter. Inference: 0.2491 s/iter. Eval: 0.0001 s/iter. Total: 0.2500 s/iter. ETA=0:00:03
-[02/07 12:51:47] d2.evaluation.evaluator INFO: Total inference time: 0:01:06.207212 (0.249839 s / iter per device, on 1 devices)
-[02/07 12:51:47] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:05 (0.248609 s / iter per device, on 1 devices)
-[02/07 12:51:47] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 12:51:47] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 12:51:47] d2.evaluation.coco_evaluation INFO: Evaluating predictions with official COCO API...
-[02/07 12:51:47] d2.evaluation.coco_evaluation WARNING: No predictions from the model!
-[02/07 12:51:47] ViTDet INFO: Results OrderedDict([('bbox', {'AP': nan, 'AP50': nan, 'AP75': nan, 'APs': nan, 'APm': nan, 'APl': nan})])
-[02/07 12:51:47] ViTDet INFO: Results were saved to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/ap_t.csv
-[02/07 12:51:47] ViTDet INFO: Executing eval(). weights_to_evaluate /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl
-[02/07 12:51:50] d2.checkpoint.detection_checkpoint INFO: [DetectionCheckpointer] Loading from /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl ...
-[02/07 12:51:52] d2.data.build INFO: Removed 9 images with no usable annotations. 270 images left.
-[02/07 12:51:52] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
-[02/07 12:51:52] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
-[02/07 12:51:52] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
-[02/07 12:51:52] d2.data.common INFO: Serialized dataset takes 0.18 MiB
-[02/07 12:51:52] d2.evaluation.evaluator INFO: Start inference on 270 batches
-[02/07 12:51:58] d2.evaluation.evaluator INFO: Inference done 11/270. Dataloading: 0.0012 s/iter. Inference: 0.3587 s/iter. Eval: 0.1498 s/iter. Total: 0.5097 s/iter. ETA=0:02:12
-[02/07 12:52:04] d2.evaluation.evaluator INFO: Inference done 21/270. Dataloading: 0.0011 s/iter. Inference: 0.3614 s/iter. Eval: 0.1497 s/iter. Total: 0.5122 s/iter. ETA=0:02:07
-[02/07 12:52:09] d2.evaluation.evaluator INFO: Inference done 31/270. Dataloading: 0.0014 s/iter. Inference: 0.3710 s/iter. Eval: 0.1499 s/iter. Total: 0.5224 s/iter. ETA=0:02:04
-[02/07 12:52:14] d2.evaluation.evaluator INFO: Inference done 41/270. Dataloading: 0.0012 s/iter. Inference: 0.3756 s/iter. Eval: 0.1500 s/iter. Total: 0.5268 s/iter. ETA=0:02:00
-[02/07 12:52:20] d2.evaluation.evaluator INFO: Inference done 51/270. Dataloading: 0.0010 s/iter. Inference: 0.3745 s/iter. Eval: 0.1500 s/iter. Total: 0.5255 s/iter. ETA=0:01:55
-[02/07 12:52:25] d2.evaluation.evaluator INFO: Inference done 61/270. Dataloading: 0.0009 s/iter. Inference: 0.3735 s/iter. Eval: 0.1500 s/iter. Total: 0.5244 s/iter. ETA=0:01:49
-[02/07 12:52:30] d2.evaluation.evaluator INFO: Inference done 71/270. Dataloading: 0.0009 s/iter. Inference: 0.3704 s/iter. Eval: 0.1502 s/iter. Total: 0.5215 s/iter. ETA=0:01:43
-[02/07 12:52:35] d2.evaluation.evaluator INFO: Inference done 81/270. Dataloading: 0.0009 s/iter. Inference: 0.3687 s/iter. Eval: 0.1502 s/iter. Total: 0.5198 s/iter. ETA=0:01:38
-[02/07 12:52:40] d2.evaluation.evaluator INFO: Inference done 91/270. Dataloading: 0.0009 s/iter. Inference: 0.3679 s/iter. Eval: 0.1502 s/iter. Total: 0.5190 s/iter. ETA=0:01:32
-[02/07 12:52:45] d2.evaluation.evaluator INFO: Inference done 101/270. Dataloading: 0.0009 s/iter. Inference: 0.3683 s/iter. Eval: 0.1502 s/iter. Total: 0.5194 s/iter. ETA=0:01:27
-[02/07 12:52:50] d2.evaluation.evaluator INFO: Inference done 111/270. Dataloading: 0.0009 s/iter. Inference: 0.3684 s/iter. Eval: 0.1502 s/iter. Total: 0.5196 s/iter. ETA=0:01:22
-[02/07 12:52:56] d2.evaluation.evaluator INFO: Inference done 121/270. Dataloading: 0.0009 s/iter. Inference: 0.3678 s/iter. Eval: 0.1502 s/iter. Total: 0.5189 s/iter. ETA=0:01:17
-[02/07 12:53:01] d2.evaluation.evaluator INFO: Inference done 131/270. Dataloading: 0.0009 s/iter. Inference: 0.3673 s/iter. Eval: 0.1502 s/iter. Total: 0.5185 s/iter. ETA=0:01:12
-[02/07 12:53:06] d2.evaluation.evaluator INFO: Inference done 141/270. Dataloading: 0.0009 s/iter. Inference: 0.3672 s/iter. Eval: 0.1502 s/iter. Total: 0.5183 s/iter. ETA=0:01:06
-[02/07 12:53:11] d2.evaluation.evaluator INFO: Inference done 151/270. Dataloading: 0.0009 s/iter. Inference: 0.3669 s/iter. Eval: 0.1502 s/iter. Total: 0.5180 s/iter. ETA=0:01:01
-[02/07 12:53:16] d2.evaluation.evaluator INFO: Inference done 161/270. Dataloading: 0.0009 s/iter. Inference: 0.3661 s/iter. Eval: 0.1502 s/iter. Total: 0.5172 s/iter. ETA=0:00:56
-[02/07 12:53:21] d2.evaluation.evaluator INFO: Inference done 171/270. Dataloading: 0.0009 s/iter. Inference: 0.3656 s/iter. Eval: 0.1502 s/iter. Total: 0.5168 s/iter. ETA=0:00:51
-[02/07 12:53:26] d2.evaluation.evaluator INFO: Inference done 181/270. Dataloading: 0.0009 s/iter. Inference: 0.3649 s/iter. Eval: 0.1501 s/iter. Total: 0.5160 s/iter. ETA=0:00:45
-[02/07 12:53:31] d2.evaluation.evaluator INFO: Inference done 191/270. Dataloading: 0.0009 s/iter. Inference: 0.3643 s/iter. Eval: 0.1508 s/iter. Total: 0.5161 s/iter. ETA=0:00:40
-[02/07 12:53:36] d2.evaluation.evaluator INFO: Inference done 201/270. Dataloading: 0.0009 s/iter. Inference: 0.3639 s/iter. Eval: 0.1507 s/iter. Total: 0.5157 s/iter. ETA=0:00:35
-[02/07 12:53:42] d2.evaluation.evaluator INFO: Inference done 211/270. Dataloading: 0.0009 s/iter. Inference: 0.3637 s/iter. Eval: 0.1507 s/iter. Total: 0.5153 s/iter. ETA=0:00:30
-[02/07 12:53:47] d2.evaluation.evaluator INFO: Inference done 221/270. Dataloading: 0.0009 s/iter. Inference: 0.3633 s/iter. Eval: 0.1506 s/iter. Total: 0.5149 s/iter. ETA=0:00:25
-[02/07 12:53:52] d2.evaluation.evaluator INFO: Inference done 231/270. Dataloading: 0.0009 s/iter. Inference: 0.3629 s/iter. Eval: 0.1506 s/iter. Total: 0.5145 s/iter. ETA=0:00:20
-[02/07 12:53:57] d2.evaluation.evaluator INFO: Inference done 241/270. Dataloading: 0.0009 s/iter. Inference: 0.3626 s/iter. Eval: 0.1506 s/iter. Total: 0.5141 s/iter. ETA=0:00:14
-[02/07 12:54:02] d2.evaluation.evaluator INFO: Inference done 251/270. Dataloading: 0.0009 s/iter. Inference: 0.3622 s/iter. Eval: 0.1506 s/iter. Total: 0.5137 s/iter. ETA=0:00:09
-[02/07 12:54:07] d2.evaluation.evaluator INFO: Inference done 261/270. Dataloading: 0.0009 s/iter. Inference: 0.3619 s/iter. Eval: 0.1505 s/iter. Total: 0.5134 s/iter. ETA=0:00:04
-[02/07 12:54:12] d2.evaluation.evaluator INFO: Total inference time: 0:02:16.182003 (0.513894 s / iter per device, on 1 devices)
-[02/07 12:54:12] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:01:35 (0.361946 s / iter per device, on 1 devices)
-[02/07 12:54:12] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
-[02/07 12:54:12] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
-[02/07 12:54:12] d2.evaluation.coco_evaluation INFO: Evaluating predictions with official COCO API...
-[02/07 12:54:13] d2.evaluation.coco_evaluation INFO: Evaluation results for bbox: 
-|  AP   |  AP50  |  AP75  |  APs  |  APm  |  APl  |
-|:-----:|:------:|:------:|:-----:|:-----:|:-----:|
-| 1.414 | 2.649  | 1.511  | 4.547 |  nan  |  nan  |
-[02/07 12:54:13] d2.evaluation.coco_evaluation INFO: Some metrics cannot be computed and is shown as NaN.
-[02/07 12:54:13] d2.evaluation.coco_evaluation INFO: Per-category bbox AP: 
-| category   | AP    | category   | AP    | category   | AP    |
-|:-----------|:------|:-----------|:------|:-----------|:------|
-| bicycle    | 0.005 | bus        | 6.034 | car        | 1.032 |
-| motorbike  | 0.001 | person     | 0.000 |            |       |
+[02/07 15:54:39] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [Resize(shape=(160, 160))]
+[02/07 15:54:39] d2.data.common INFO: Serializing the dataset using: <class 'detectron2.data.common._TorchSerializedList'>
+[02/07 15:54:39] d2.data.common INFO: Serializing 270 elements to byte tensors and concatenating them all ...
+[02/07 15:54:39] d2.data.common INFO: Serialized dataset takes 0.18 MiB
+[02/07 15:54:39] d2.evaluation.coco_evaluation INFO: Trying to convert 'traffic_dataset_test' to COCO format ...
+[02/07 15:54:39] d2.data.datasets.coco INFO: Converting annotations of dataset 'traffic_dataset_test' to COCO format ...)
+[02/07 15:54:39] d2.data.datasets.coco INFO: Converting dataset dicts into COCO format
+[02/07 15:54:39] d2.data.datasets.coco INFO: Conversion finished, #images: 279, #annotations: 3188
+[02/07 15:54:39] d2.data.datasets.coco INFO: Caching COCO format annotations at '/home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/traffic_dataset_test_coco_format.json' ...
+[02/07 15:54:39] d2.evaluation.evaluator INFO: Start inference on 270 batches
+[02/07 15:54:43] d2.evaluation.evaluator INFO: Inference done 11/270. Dataloading: 0.0001 s/iter. Inference: 0.1012 s/iter. Eval: 0.0000 s/iter. Total: 0.1014 s/iter. ETA=0:00:26
+[02/07 15:54:48] d2.evaluation.evaluator INFO: Inference done 56/270. Dataloading: 0.0009 s/iter. Inference: 0.1093 s/iter. Eval: 0.0000 s/iter. Total: 0.1102 s/iter. ETA=0:00:23
+[02/07 15:54:53] d2.evaluation.evaluator INFO: Inference done 103/270. Dataloading: 0.0008 s/iter. Inference: 0.1080 s/iter. Eval: 0.0000 s/iter. Total: 0.1088 s/iter. ETA=0:00:18
+[02/07 15:54:58] d2.evaluation.evaluator INFO: Inference done 152/270. Dataloading: 0.0008 s/iter. Inference: 0.1061 s/iter. Eval: 0.0001 s/iter. Total: 0.1070 s/iter. ETA=0:00:12
+[02/07 15:55:03] d2.evaluation.evaluator INFO: Inference done 202/270. Dataloading: 0.0008 s/iter. Inference: 0.1048 s/iter. Eval: 0.0001 s/iter. Total: 0.1057 s/iter. ETA=0:00:07
+[02/07 15:55:08] d2.evaluation.evaluator INFO: Inference done 251/270. Dataloading: 0.0008 s/iter. Inference: 0.1042 s/iter. Eval: 0.0001 s/iter. Total: 0.1051 s/iter. ETA=0:00:01
+[02/07 15:55:10] d2.evaluation.evaluator INFO: Total inference time: 0:00:27.872597 (0.105180 s / iter per device, on 1 devices)
+[02/07 15:55:10] d2.evaluation.evaluator INFO: Total inference pure compute time: 0:00:27 (0.103983 s / iter per device, on 1 devices)
+[02/07 15:55:10] d2.evaluation.coco_evaluation INFO: Preparing results for COCO format ...
+[02/07 15:55:10] d2.evaluation.coco_evaluation INFO: Saving results to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/coco_instances_results.json
+[02/07 15:55:10] d2.evaluation.coco_evaluation INFO: Evaluating predictions with official COCO API...
+[02/07 15:55:10] d2.evaluation.coco_evaluation WARNING: No predictions from the model!
+[02/07 15:55:10] ViTDet INFO: Results OrderedDict([('bbox', {'AP': nan, 'AP50': nan, 'AP75': nan, 'APs': nan, 'APm': nan, 'APl': nan})])
+[02/07 15:55:10] ViTDet INFO: Results were saved to /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base_claaudia/ap_t.csv

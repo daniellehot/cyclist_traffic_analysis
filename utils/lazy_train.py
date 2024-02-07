@@ -69,7 +69,7 @@ def eval(configuration, weights_to_evaluate):
         results = inference_on_dataset(model, test_data_loader, evaluator)
     logger.info(f"Results {results}")
     
-    output_filename = f"ap_{configuration.dataloader.evaluator.dataset_name[0]}.csv"
+    output_filename = f"ap_{configuration.dataloader.evaluator.dataset_name}.csv"
     write_csv(output=os.path.join(configuration.dataloader.evaluator.output_dir, output_filename), data=results)      
     logger.info(f"Results were saved to {os.path.join(configuration.dataloader.evaluator.output_dir, output_filename)}")
 
@@ -139,7 +139,7 @@ def main(args):
     configuration = get_config(experiment_configuration)
 
     # add augmentations to the configuration 
-    configuration = add_augmentations_to_configuration(configuration, experiment_configuration)
+    # configuration = add_augmentations_to_configuration(configuration, experiment_configuration)
 
     # save some training images
     if args.save_training_images:
@@ -147,8 +147,8 @@ def main(args):
 
     # training/evaluation
     if args.eval_only:
-        #eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
-        eval(configuration, configuration.train.init_checkpoint)
+        eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+        #eval(configuration, configuration.train.init_checkpoint)
         #model = instantiate(configuration.model)
         #model.to(configuration.train.device)
         #model = create_ddp_model(model)

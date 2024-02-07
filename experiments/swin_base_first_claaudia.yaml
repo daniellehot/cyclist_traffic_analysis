@@ -37,10 +37,10 @@ test_augmentations: {
 # training parameters
 num_of_workers: 32
 batch_size: 3
-training_iterations: 1000 #1000
+training_iterations: 250 #1000
 eval_period: 1500
 learning_rate: default
-lr_milestones: [300, 400]  #[600, 850]
+lr_milestones: [150, 200]  #[600, 850]
 checkpoint_rate: 1100
 log_period: 20
 
