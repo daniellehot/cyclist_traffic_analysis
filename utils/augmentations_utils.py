@@ -5,12 +5,12 @@ import numpy as np
 #TODO Logic to ensure test resize scale and train resize scale results in similar image dimensions if jai and rs datasets are used. Currently, a user is expected to compute the scale
 def get_augmentations(configuration_file):
     #train augmentations
-    train_dataset = DatasetCatalog.get(configuration_file['train_dataset'][0])
+    train_dataset = DatasetCatalog.get(configuration_file['train_dataset'])
     train_img_height, train_img_width = train_dataset[0]['height'], train_dataset[0]['width']
     train_augmentations = _create_augmentations_list(configuration_file['train_augmentations'], train_img_height, train_img_width)
     
     #test augmentations
-    test_dataset = DatasetCatalog.get(configuration_file['test_dataset'][0])
+    test_dataset = DatasetCatalog.get(configuration_file['test_dataset'])
     test_img_height, test_img_width = test_dataset[0]['height'], test_dataset[0]['width']
     test_augmentations = _create_augmentations_list(configuration_file['test_augmentations'], test_img_height, test_img_width)
     return train_augmentations, test_augmentations

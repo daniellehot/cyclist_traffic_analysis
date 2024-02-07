@@ -28,7 +28,8 @@ from train_utils import (
     ValidationLoss, 
     plot_metrics_json, 
     create_log,
-    get_config
+    get_config,
+    add_augmentations_to_configuration
 )
 from test_utils import (
     get_COCO_evaluator, 
@@ -71,6 +72,17 @@ def eval(configuration, weights_to_evaluate):
     output_filename = f"ap_{configuration.dataloader.evaluator.dataset_name[0]}.csv"
     write_csv(output=os.path.join(configuration.dataloader.evaluator.output_dir, output_filename), data=results)      
     logger.info(f"Results were saved to {os.path.join(configuration.dataloader.evaluator.output_dir, output_filename)}")
+
+
+def do_test(cfg, model):
+    if "evaluator" in cfg.dataloader:
+        ret = inference_on_dataset(
+            model,
+            instantiate(cfg.dataloader.test),
+            instantiate(cfg.dataloader.evaluator),
+        )
+        print_csv_format(ret)
+        return ret
 
 
 # TODO Implement resuming from checkpoint
@@ -126,13 +138,22 @@ def main(args):
     # configuration
     configuration = get_config(experiment_configuration)
 
+    # add augmentations to the configuration 
+    configuration = add_augmentations_to_configuration(configuration, experiment_configuration)
+
     # save some training images
     if args.save_training_images:
         save_training_images(configuration, output_dir=experiment_configuration['output_dir'], sample_size=args.sample_size, show_annotations=args.show_annotations)
 
     # training/evaluation
     if args.eval_only:
-        eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+        #eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+        eval(configuration, configuration.train.init_checkpoint)
+        #model = instantiate(configuration.model)
+        #model.to(configuration.train.device)
+        #model = create_ddp_model(model)
+        #DetectionCheckpointer(model).load(os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
+        #print(do_test(configuration, model))
     else:
         #train(configuration, resume=args.resume, checkpoint=args.checkpoint)
         train(configuration)

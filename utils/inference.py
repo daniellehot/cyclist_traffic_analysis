@@ -1,56 +1,37 @@
 import torch
 #from torch.cuda.amp import autocast
-import os
+import os, shutil
 import numpy as np
 import cv2
+from PIL import Image
 import argparse
 import yaml
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 # detectron2
-from detectron2.config import get_cfg
-from detectron2.projects.deeplab import add_deeplab_config
-from detectron2.data import MetadataCatalog
-from detectron2.modeling import build_model
+#from detectron2.config import get_cfg
+#from detectron2.projects.deeplab import add_deeplab_config
+#from detectron2.data import MetadataCatalog
+#from detectron2.modeling import build_model
 from detectron2.checkpoint import DetectionCheckpointer
-# Mask2Former
-import sys
-sys.path.append("/workspace/Mask2Former")
-from mask2former import add_maskformer2_config
-from register_autofish_dataset import Autofish
-# custom
-from length_estimator import LengthEstimator
+from detectron2.engine.defaults import create_ddp_model
+from detectron2.config import instantiate
 
-#RGB
-VISUALIZER_COLORS = [(255, 0, 0),
-          (0, 255, 0),
-          (0, 0, 255),
-          (0, 255, 255),
-          (255, 0, 255),
-          (255, 255, 0)
-          ]
+# shared
+from train_utils import get_config
+import augmentations_utils
+
 
 class Predictor:
-    def __init__(self, cfg):
-        self.cfg = cfg.clone()
-        self.model = build_model(self.cfg)
+    def __init__(self, configuration, weights):
+        self.model = instantiate(configuration.model)
+        self.model.to(configuration.train.device)
+        self.model = create_ddp_model(self.model)
+        DetectionCheckpointer(self.model).load(weights)
         self.model.eval()
-        checkpointer = DetectionCheckpointer(self.model)
-        checkpointer.load(cfg.MODEL.WEIGHTS)
 
-
-    def __call__(self, original_image, augmentations=None, convert_BGR_to_RGB=False, convert_RGB_to_BGR=False, conversion_function=None):
-        assert_msg = f"Pick only one conversion. convert_BGR_to_RGB {convert_BGR_to_RGB} convert_RGB_to_BGR {convert_RGB_to_BGR}"
-        assert not all([convert_BGR_to_RGB, convert_RGB_to_BGR])==True, assert_msg
-        if any([convert_BGR_to_RGB, convert_RGB_to_BGR])==True and conversion_function is not None:
-            print("The provided conversion function takes precedences over other selected conversion methods.")
-       
+    def __call__(self, original_image, augmentations=None):  
         with torch.no_grad():  # https://github.com/sphinx-doc/sphinx/issues/4258
-            if conversion_function is not None:
-                original_image = conversion_function(original_image)
-            elif convert_BGR_to_RGB or convert_RGB_to_BGR:
-                original_image = original_image[:, :, ::-1]
-
             height, width = original_image.shape[:2]
             
             if augmentations != None:
@@ -63,92 +44,7 @@ class Predictor:
             inputs = {"image": image, "height": height, "width": width}
             predictions = self.model([inputs])[0]
             return predictions
-
-
-class Visualizer:
-    @classmethod
-    def draw(cls, image, masks, scores, labels, draw_text, color_map=None, text_scale=1):
-        # We'll start by creating a completely transparent overlay
-        overlay = image.copy()
-
-        for mask, score, cls in zip(masks, scores, labels):
-            if not np.all(mask==0):
-                # Convert mask to contour
-                contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                # Generate a random color for visualization
-                if color_map is None:
-                    color = tuple(np.random.randint(0, 256, 3).tolist())
-                else:
-                    color = color_map[cls]
-                # Fill contour (mask) on the overlay with semi-transparency
-                cv2.drawContours(overlay, contours, -1, color, -1)  # -1 fill the contour
-                # Draw contour border on the image
-                cv2.drawContours(image, contours, -1, color, 2)
-                # Get center of the mask
-                y_coords, x_coords = np.where(mask == 1)
-                # Compute the mean of the x and y coordinates
-                cX = int(np.mean(x_coords))
-                cY = int(np.mean(y_coords))
-                
-                if draw_text:
-                    # Overlay the class label and the score at the center of the mask
-                    label = f"{cls} {score*100:.0f}%"
-                    # Calculate text width & height to create the background rectangle
-                    (text_width, text_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, fontScale=text_scale, thickness=1)
-                    padding = int(np.round(2*text_scale))
-                    rect_start_point = (cX - text_width // 2 - padding, cY - text_height // 2 - padding)
-                    rect_end_point = (cX + text_width // 2 + padding, cY + text_height // 2 + padding)
-                    cv2.rectangle(image, rect_start_point, rect_end_point, (0, 0, 0), -1)
-                    cv2.rectangle(overlay, rect_start_point, rect_end_point, (0, 0, 0), -1)
-                    # Now, place the text on top of the rectangle
-                    cv2.putText(image, label, (cX - text_width // 2, cY + text_height // 2), cv2.FONT_HERSHEY_SIMPLEX, fontScale=text_scale, color=color, thickness=1)
-                    cv2.putText(overlay, label, (cX - text_width // 2, cY + text_height // 2), cv2.FONT_HERSHEY_SIMPLEX, fontScale=text_scale, color=color, thickness=1)
-                
-        # Alpha blend the overlay with the original image
-        alpha = 0.5
-        cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0, image)
-        return image
-
-
-# get the minimal required config for the predictor
-def get_config(model_config):
-    cfg = get_cfg()
-    add_deeplab_config(cfg)
-    add_maskformer2_config(cfg)
-    model = model_config["model"]
-    cfg.merge_from_file(model)
-    cfg.MODEL.WEIGHTS = os.path.join(model_config["output_dir"], model_config["test_weights"])
-    cfg.TEST.DETECTIONS_PER_IMAGE=model_config["no_of_predictions"] 
-    dataset_classes = MetadataCatalog.get(model_config['test_dataset'][0]).thing_classes
-    cfg.MODEL.SEM_SEG_HEAD.NUM_CLASSES = len(dataset_classes)
-    cfg.freeze()
-    return cfg, dataset_classes
-
-
-def generate_legend(color_map, output):
-    # Create a separate figure for the legend
-    fig, ax = plt.subplots(figsize=(len(color_map) * 2.5, 1))
-    #fig.set_dpi(200)
-
-    # Create legend patches
-    legend_patches = [Patch(color=[r / 255, g / 255, b / 255], label=species) for species, (r, g, b) in color_map.items()]
-
-    # Create legend in the separate figure
-    #ax.legend(handles=legend_patches, loc='center')
-    legend = ax.legend(handles=legend_patches, loc='center', ncol=len(color_map), frameon=False, fontsize=20)
-
-    # Set font size for legend text
-
-    # Set legend patch size
-    for patch in legend.legend_handles:
-        patch.set_height(10)  # Adjust the height of legend patches
-        patch.set_width(30)   # Adjust the width of legend patches
-
-
-    # Remove the axis to make it a clean legend figure
-    ax.axis('off')
-    plt.savefig(os.path.join(output, "legend.png"))
-
+        
 
 def resize_image(image, scale):
         height, width, _ = image.shape
@@ -163,22 +59,35 @@ def concatenate_images(img1, img2, bar_height=10):
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    
-    parser.add_argument('-i', '--input', required=True, type=str, help='Path to a folder with images') 
-    parser.add_argument('-o', '--output', required=True, type=str, help='Output folder')
     parser.add_argument('-y', '--yaml', required=True, type=str, help='Path to a YAML file')
-
-    #parser.add_argument('--labels', type=bool, default=True, help='Draw predicted labels along with the masks')
-    parser.add_argument('--no_labels', action='store_true', help='Draw predicted labels along with the masks')  
-    parser.add_argument('--confidence', type=float, default=-1, help='Filter predictions lower than the given confidence level')
-    parser.add_argument('--length', action='store_true', help='Visualize the length estimation output')
-
+    parser.add_argument('--input', required=True, type=str, help='Path to a folder with images') 
+    parser.add_argument('--output', required=True, type=str, help='Output folder')
     args = parser.parse_args()
     return args
 
 
 def main(args):
     print(args)
+
+    with open(args.yaml, "r") as f:
+        experiment_configuration = yaml.safe_load(f)
+
+    # Create output directory 
+    if os.path.exists(args.output):
+        shutil.rmtree(args.output)
+    os.makedirs(args.output)
+
+    # Config
+    configuration = get_config(experiment_configuration)
+
+    # Predictor
+    #predictor = Predictor(configuration, os.path.join(experiment_configuration['output_dir'], 'model_final.pth'))
+    predictor = Predictor(configuration, configuration.train.init_checkpoint)
+    img = np.array(Image.open(args.input))
+    print(img.shape)
+    print(predictor(img))
+
+    """
     model_config =  yaml.safe_load(open(args.yaml))
     
     dataset = Autofish.instance_from_yaml(model_config)
@@ -247,26 +156,7 @@ def main(args):
     
         output_filename = os.path.join(".", args.output, f"img_{idx}.png")
         cv2.imwrite(output_filename, img_to_save)
-
-        #length_estimation
-        if args.length:
-            estimated_lengths = []
-            for mask in pred_masks:
-                mask = mask.astype(np.uint8)
-                fit = LengthEstimator.get_poly_fit(
-                    binary_mask=mask, 
-                    skeleton_method="zhang", #skeletonization method, this one is the fastest
-                    degree=4, #polynomial degree
-                    #subsample_skeleton=1, #percentage of points to keep of the skeleton 
-                    #subsample_fit=1, #percentage of points to keep of the curve
-                    clip=True #clip to convex hull
-                    )
-                estimated_lengths.append(fit[0])
-            img_with_lengths = LengthEstimator.draw_predicted_lengths(image, estimated_lengths)
-            img_to_save = concatenate_images(img_with_predictions, img_with_lengths)
-            output_filename = os.path.join(".", args.output, f"img_{idx}_lengths.png")
-            cv2.imwrite(output_filename, img_to_save)
-
+    """
 
 if __name__=="__main__":
     main(parse_arguments())

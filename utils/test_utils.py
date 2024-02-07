@@ -5,7 +5,7 @@ import csv
 
 def get_COCO_evaluator(configuration):
     evaluator = COCOEvaluator(
-        dataset_name=configuration.dataloader.evaluator.dataset_name[0],
+        dataset_name=configuration.dataloader.evaluator.dataset_name,
         #tasks=["bbox"],
         output_dir=configuration.dataloader.evaluator.output_dir, 
         use_fast_impl=False,

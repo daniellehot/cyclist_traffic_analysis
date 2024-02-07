@@ -1,6 +1,7 @@
 USER=daniel
 CODE_HOST=/home/daniel/cyclist_traffic_analysis/
 CODE_CONTAINER=/home/daniel/cyclist_traffic_analysis/
+[ -z "$1" ] || CODE_CONTAINER=$1 # replace CODE_CONTAINER in case there is any 
 #DATA_HOST=/home/daniel/OneDrive/autofish_groups/
 #DATA_CONTAINER=/home/create.aau.dk/vo65hs/autofish_groups/
 IMAGE=dale97/detectron2_container

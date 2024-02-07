@@ -5,9 +5,9 @@ output_dir: /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/output/swin_base
 
 # dataset
 dataset_folder: /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/traffic_detection_dataset_generic
-train_dataset: ['traffic_dataset_train']
-val_dataset: ['traffic_dataset_validation']
-test_dataset: ['traffic_dataset_test']
+train_dataset: 'traffic_dataset_train'
+val_dataset: 'traffic_dataset_validation'
+test_dataset: 'traffic_dataset_test'
 classes: ['bicycle', 'bus', 'car', 'motorbike', 'person']
 
 # augmentations

@@ -231,20 +231,23 @@ def get_config(experiment):
     cfg.dataloader.train.dataset.names = experiment['train_dataset']
     cfg.dataloader.test.dataset.names = experiment['test_dataset']
 
-    train_augmentations, test_augmentations = augmentations_utils.get_augmentations(experiment)
-    cfg.dataloader.train.mapper.augmentations = train_augmentations
-    cfg.dataloader.test.mapper.augmentations = test_augmentations
-
     cfg.dataloader.train.num_workers = experiment['num_of_workers'] 
-    cfg.dataloader.test.num_workers = experiment['num_of_workers']
     cfg.dataloader.train.total_batch_size = experiment['batch_size']
+    cfg.dataloader.test.num_workers = experiment['num_of_workers']
 
     # Validation setup (same as train except for the dataset name and augmentations)
     cfg.dataloader.validation = cfg.dataloader.train
     cfg.dataloader.validation.dataset.names = experiment['val_dataset']
-    cfg.dataloader.validation.mapper.augmentations = test_augmentations
 
     cfg.model.roi_heads.num_classes = len(experiment['classes'])
     # save experiment model configuration
     OmegaConf.save(cfg, os.path.join(experiment['output_dir'], "swin_base_experiment.yaml"))
+    return cfg
+
+
+def add_augmentations_to_configuration(cfg, experiment):
+    train_augmentations, test_augmentations = augmentations_utils.get_augmentations(experiment)
+    cfg.dataloader.train.mapper.augmentations = train_augmentations
+    cfg.dataloader.test.mapper.augmentations = test_augmentations
+    cfg.dataloader.validation.mapper.augmentations = test_augmentations
     return cfg
