@@ -1,11 +1,12 @@
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader, DatasetMapper, get_detection_dataset_dicts    
 import augmentations_utils
+import csv
 
 def get_COCO_evaluator(configuration):
     evaluator = COCOEvaluator(
         dataset_name=configuration.dataloader.evaluator.dataset_name[0],
-        tasks="bbox",
+        #tasks=["bbox"],
         output_dir=configuration.dataloader.evaluator.output_dir, 
         use_fast_impl=False,
         allow_cached_coco=False)
@@ -25,6 +26,22 @@ def get_test_data_loader(configuration):
         )
     )
     return data_loader
+
+
+def write_csv(output, data):
+        # Modify the structure
+        modified_data = {}
+        for category, metrics in data.items():
+            for key, value in metrics.items():
+                modified_data[f"{category}/{key}"] = value
+
+        # Write to CSV
+        with open(output, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            # Write the headers
+            writer.writerow(modified_data.keys())
+            # Write the data
+            writer.writerow(modified_data.values())
 
 
 """

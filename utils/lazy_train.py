@@ -11,7 +11,7 @@ from detectron2.config import instantiate
 from detectron2.engine import (
     #default_argument_parser, #replaced with my arguments
     #default_setup, #replaced with my create_log()
-    launch, #used for distributed training 
+    #launch, #used for distributed training 
     default_writers,
     hooks,
     AMPTrainer,
@@ -30,7 +30,11 @@ from train_utils import (
     create_log,
     get_config
 )
-from test_utils import get_COCO_evaluator, get_test_data_loader
+from test_utils import (
+    get_COCO_evaluator, 
+    get_test_data_loader,
+    write_csv
+)
 
 
 def parse_arguments():
@@ -46,10 +50,9 @@ def parse_arguments():
     return args
 
 
-
 def eval(configuration, weights_to_evaluate):
     logger = logging.getLogger("ViTDet")
-    logger.info(f"eval(). weight_to_evaluate{weights_to_evaluate}")
+    logger.info(f"Executing eval(). weights_to_evaluate {weights_to_evaluate}")
 
     model = instantiate(configuration.model)
     model.to(configuration.train.device)
@@ -57,25 +60,18 @@ def eval(configuration, weights_to_evaluate):
     DetectionCheckpointer(model).load(weights_to_evaluate)
 
     test_data_loader = get_test_data_loader(configuration)
-    print(test_data_loader)
-    
+    #print(test_data_loader)
     evaluator = get_COCO_evaluator(configuration)
-    print(evaluator)
+    #print(evaluator)
 
     with autocast():
         results = inference_on_dataset(model, test_data_loader, evaluator)
-    
     logger.info(f"Results {results}")
-    """
-    if "evaluator" in configuration.dataloader:
-        ret = inference_on_dataset(
-            model,
-            instantiate(configuration.dataloader.test),
-            instantiate(configuration.dataloader.evaluator),
-        )
-        print_csv_format(ret)
-        return ret
-    """
+    
+    output_filename = f"ap_{configuration.dataloader.evaluator.dataset_name[0]}.csv"
+    write_csv(output=os.path.join(configuration.dataloader.evaluator.output_dir, output_filename), data=results)      
+    logger.info(f"Results were saved to {os.path.join(configuration.dataloader.evaluator.output_dir, output_filename)}")
+
 
 # TODO Implement resuming from checkpoint
 def train(configuration, resume=False, checkpoint=None):
@@ -140,18 +136,18 @@ def main(args):
     else:
         #train(configuration, resume=args.resume, checkpoint=args.checkpoint)
         train(configuration)
+        # plot collected metrics
+        plot_metrics_json(
+            input=os.path.join(experiment_configuration['output_dir'], "metrics.json"),
+            output_dir=os.path.join(experiment_configuration['output_dir']),
+        )
         eval(configuration, os.path.join(experiment_configuration['output_dir'], "model_final.pth"))
 
-    # plot collected metrics
-    plot_metrics_json(
-        input=os.path.join(experiment_configuration['output_dir'], "metrics.json"),
-        output_dir=os.path.join(experiment_configuration['output_dir']),
-    )
-    
+   
 
 if __name__=="__main__":
-    #main(parse_arguments())
-    launch(
-        main(parse_arguments()), 
-        num_gpus_per_machine=1
-    )
+    main(parse_arguments())
+    #launch(
+    #    main(parse_arguments()), 
+    #    num_gpus_per_machine=1
+    #)
