@@ -1,0 +1,350 @@
+dataloader:
+  train:
+    dataset:
+      names: coco_2017_train
+      _target_: &id001 !!python/name:detectron2.data.build.get_detection_dataset_dicts ''
+    mapper:
+      is_train: true
+      augmentations:
+      - horizontal: true
+        _target_: !!python/name:detectron2.data.transforms.augmentation_impl.RandomFlip ''
+      - min_scale: 0.1
+        max_scale: 2.0
+        target_height: 1024
+        target_width: 1024
+        _target_: !!python/name:detectron2.data.transforms.augmentation_impl.ResizeScale ''
+      - crop_size:
+        - 1024
+        - 1024
+        pad: false
+        _target_: !!python/name:detectron2.data.transforms.augmentation_impl.FixedSizeCrop ''
+      image_format: RGB
+      use_instance_mask: true
+      _target_: &id002 !!python/name:detectron2.data.dataset_mapper.DatasetMapper ''
+      recompute_boxes: true
+    total_batch_size: 64
+    num_workers: 4
+    _target_: !!python/name:detectron2.data.build.build_detection_train_loader ''
+  test:
+    dataset:
+      names: coco_2017_val
+      filter_empty: false
+      _target_: *id001
+    mapper:
+      is_train: false
+      augmentations:
+      - short_edge_length: 1024
+        max_size: 1024
+        _target_: !!python/name:detectron2.data.transforms.augmentation_impl.ResizeShortestEdge ''
+      image_format: ${...train.mapper.image_format}
+      _target_: *id002
+    num_workers: 4
+    _target_: !!python/name:detectron2.data.build.build_detection_test_loader ''
+  evaluator:
+    dataset_name: ${..test.dataset.names}
+    _target_: !!python/name:detectron2.evaluation.coco_evaluation.COCOEvaluator ''
+model:
+  backbone:
+    bottom_up:
+      depths:
+      - 2
+      - 2
+      - 18
+      - 2
+      drop_path_rate: 0.4
+      embed_dim: 128
+      num_heads:
+      - 4
+      - 8
+      - 16
+      - 32
+      _target_: !!python/name:detectron2.modeling.backbone.swin.SwinTransformer ''
+    in_features:
+    - p0
+    - p1
+    - p2
+    - p3
+    out_channels: 256
+    top_block:
+      _target_: !!python/name:detectron2.modeling.backbone.fpn.LastLevelMaxPool ''
+    _target_: !!python/name:detectron2.modeling.backbone.fpn.FPN ''
+    square_pad: 1024
+    norm: LN
+  proposal_generator:
+    in_features:
+    - p2
+    - p3
+    - p4
+    - p5
+    - p6
+    head:
+      in_channels: 256
+      num_anchors: 3
+      _target_: !!python/name:detectron2.modeling.proposal_generator.rpn.StandardRPNHead ''
+      conv_dims:
+      - -1
+      - -1
+    anchor_generator:
+      sizes:
+      - - 32
+      - - 64
+      - - 128
+      - - 256
+      - - 512
+      aspect_ratios:
+      - 0.5
+      - 1.0
+      - 2.0
+      strides:
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      offset: 0.0
+      _target_: !!python/name:detectron2.modeling.anchor_generator.DefaultAnchorGenerator ''
+    anchor_matcher:
+      thresholds:
+      - 0.3
+      - 0.7
+      labels:
+      - 0
+      - -1
+      - 1
+      allow_low_quality_matches: true
+      _target_: &id007 !!python/name:detectron2.modeling.matcher.Matcher ''
+    box2box_transform:
+      weights:
+      - 1.0
+      - 1.0
+      - 1.0
+      - 1.0
+      _target_: &id005 !!python/name:detectron2.modeling.box_regression.Box2BoxTransform ''
+    batch_size_per_image: 256
+    positive_fraction: 0.5
+    pre_nms_topk:
+    - 2000
+    - 1000
+    post_nms_topk:
+    - 1000
+    - 1000
+    nms_thresh: 0.7
+    _target_: !!python/name:detectron2.modeling.proposal_generator.rpn.RPN ''
+  roi_heads:
+    num_classes: 80
+    batch_size_per_image: 512
+    positive_fraction: 0.25
+    box_in_features:
+    - p2
+    - p3
+    - p4
+    - p5
+    box_pooler:
+      output_size: 7
+      scales:
+      - 0.25
+      - 0.125
+      - 0.0625
+      - 0.03125
+      sampling_ratio: 0
+      pooler_type: ROIAlignV2
+      _target_: &id003 !!python/name:detectron2.modeling.poolers.ROIPooler ''
+    mask_in_features:
+    - p2
+    - p3
+    - p4
+    - p5
+    mask_pooler:
+      output_size: 14
+      scales:
+      - 0.25
+      - 0.125
+      - 0.0625
+      - 0.03125
+      sampling_ratio: 0
+      pooler_type: ROIAlignV2
+      _target_: *id003
+    mask_head:
+      input_shape:
+        channels: 256
+        height: 14
+        width: 14
+        stride: null
+      num_classes: ${..num_classes}
+      conv_dims:
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      _target_: !!python/name:detectron2.modeling.roi_heads.mask_head.MaskRCNNConvUpsampleHead ''
+      conv_norm: LN
+    _target_: !!python/name:detectron2.modeling.roi_heads.cascade_rcnn.CascadeROIHeads ''
+    box_heads:
+    - input_shape:
+        channels: 256
+        height: 7
+        width: 7
+        stride: null
+      conv_dims:
+      - 256
+      - 256
+      - 256
+      - 256
+      fc_dims:
+      - 1024
+      conv_norm: LN
+      _target_: &id004 !!python/name:detectron2.modeling.roi_heads.box_head.FastRCNNConvFCHead ''
+    - input_shape:
+        channels: 256
+        height: 7
+        width: 7
+        stride: null
+      conv_dims:
+      - 256
+      - 256
+      - 256
+      - 256
+      fc_dims:
+      - 1024
+      conv_norm: LN
+      _target_: *id004
+    - input_shape:
+        channels: 256
+        height: 7
+        width: 7
+        stride: null
+      conv_dims:
+      - 256
+      - 256
+      - 256
+      - 256
+      fc_dims:
+      - 1024
+      conv_norm: LN
+      _target_: *id004
+    box_predictors:
+    - input_shape:
+        channels: 1024
+        height: null
+        width: null
+        stride: null
+      test_score_thresh: 0.05
+      box2box_transform:
+        weights:
+        - 10
+        - 10
+        - 5
+        - 5
+        _target_: *id005
+      cls_agnostic_bbox_reg: true
+      num_classes: ${...num_classes}
+      _target_: &id006 !!python/name:detectron2.modeling.roi_heads.fast_rcnn.FastRCNNOutputLayers ''
+    - input_shape:
+        channels: 1024
+        height: null
+        width: null
+        stride: null
+      test_score_thresh: 0.05
+      box2box_transform:
+        weights:
+        - 20
+        - 20
+        - 10
+        - 10
+        _target_: *id005
+      cls_agnostic_bbox_reg: true
+      num_classes: ${...num_classes}
+      _target_: *id006
+    - input_shape:
+        channels: 1024
+        height: null
+        width: null
+        stride: null
+      test_score_thresh: 0.05
+      box2box_transform:
+        weights:
+        - 30
+        - 30
+        - 15
+        - 15
+        _target_: *id005
+      cls_agnostic_bbox_reg: true
+      num_classes: ${...num_classes}
+      _target_: *id006
+    proposal_matchers:
+    - thresholds:
+      - 0.5
+      labels:
+      - 0
+      - 1
+      allow_low_quality_matches: false
+      _target_: *id007
+    - thresholds:
+      - 0.6
+      labels:
+      - 0
+      - 1
+      allow_low_quality_matches: false
+      _target_: *id007
+    - thresholds:
+      - 0.7
+      labels:
+      - 0
+      - 1
+      allow_low_quality_matches: false
+      _target_: *id007
+  pixel_mean:
+  - 123.675
+  - 116.28
+  - 103.53
+  pixel_std:
+  - 58.395
+  - 57.12
+  - 57.375
+  input_format: RGB
+  _target_: !!python/name:detectron2.modeling.meta_arch.rcnn.GeneralizedRCNN ''
+train:
+  output_dir: ./output
+  init_checkpoint: /home/create.aau.dk/vo65hs/cyclist_traffic_analysis/weights/cascade_Mask_RCNN_Swin_Base.pkl
+  max_iter: 92187
+  amp:
+    enabled: true
+  ddp:
+    broadcast_buffers: false
+    find_unused_parameters: false
+    fp16_compression: true
+  checkpointer:
+    period: 5000
+    max_to_keep: 100
+  eval_period: 5000
+  log_period: 20
+  device: cuda
+lr_multiplier:
+  scheduler:
+    values:
+    - 1.0
+    - 0.1
+    - 0.01
+    milestones:
+    - 81944
+    - 88773
+    num_updates: 92187
+    _target_: !!python/name:fvcore.common.param_scheduler.MultiStepParamScheduler ''
+  warmup_length: 0.0013559322033898306
+  warmup_factor: 0.001
+  _target_: !!python/name:detectron2.solver.lr_scheduler.WarmupParamScheduler ''
+optimizer:
+  params:
+    base_lr: ${..lr}
+    weight_decay_norm: 0.0
+    _target_: !!python/name:detectron2.solver.build.get_default_optimizer_params ''
+    overrides:
+      relative_position_bias_table:
+        weight_decay: 0.0
+  lr: 4.0e-05
+  betas:
+  - 0.9
+  - 0.999
+  weight_decay: 0.05
+  _target_: !!python/name:torch.optim.adamw.AdamW ''
