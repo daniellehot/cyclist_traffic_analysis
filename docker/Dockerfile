@@ -1,31 +1,17 @@
 # Use an official NVIDIA CUDA base image
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+FROM nvidia/cuda:11.1.1-devel-ubuntu20.04
 
-RUN apt-get update && apt-get install -y software-properties-common git nvidia-cuda-toolkit python3-pip nano
+WORKDIR /repos
 
-WORKDIR /workspace
-
-RUN pip3 install --upgrade pip  && \
-    pip install opencv-python==4.8.0.76 && \
-    pip install torch==2.0.1+cu117 torchvision==0.15.2+cu117 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu117
-
-# Clone the repos
-RUN git clone https://github.com/facebookresearch/detectron2.git 
-
-# Install detectron2
-RUN python3 -m pip install -e detectron2
-
-# Fix various errors regarding version mismatch
-RUN pip3 install seaborn && \
-    pip3 uninstall -y matplotlib && \
-    pip3 uninstall -y shapely && \
-    pip3 install matplotlib==3.7.3 && \
-    pip3 install shapely==1.8.0 
-
-# Install missing packages required for training this specific model    
-RUN pip3 install pip install omegaconf 
-RUN pip3 install timm
-    
-RUN apt-get autoremove -y && \
-    apt-get autoclean -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common 
+RUN apt-get install -y git 
+RUN apt-get install -y python3-pip 
+RUN pip3 install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip3 install ninja
+RUN git clone https://github.com/IDEA-Research/DINO.git
+RUN pip3 install -r DINO/requirements.txt
+COPY compile_MultiScaleDeformableAttention.sh /repos/
+RUN pip3 install opencv-python
+RUN apt-get -y autoremove 
+RUN apt-get -y autoclean 
