@@ -12,6 +12,7 @@ traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip
 dataset_samples
 Multi-View-Data.zip
+multi-view-data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
