@@ -7,12 +7,16 @@ output/**/training_images
 # Weights
 weights
 
-# Dataset
+# Datasets
+datasets/*
 traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip
 dataset_samples
 Multi-View-Data.zip
 multi-view-data
+
+# Visualizations
+visualisation_code/**/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

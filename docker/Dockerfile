@@ -1,30 +1,53 @@
-# Use an official NVIDIA CUDA base image
-FROM nvidia/cuda:11.3.1-devel-ubuntu20.04
+FROM nvcr.io/nvidia/tensorrt:21.09-py3
 
-WORKDIR /workspace
+ENV DEBIAN_FRONTEND=noninteractive
+ARG USERNAME=user
+ARG WORKDIR=/workspace/ByteTrack
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common git python3-pip ffmpeg libsm6 libxext6 nano
-RUN pip3 install ninja
-RUN pip3 install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
-RUN pip3 uninstall -y pillow && pip3 install pillow==9.5.0
-COPY run_dino_demo_detrex.sh /workspace/
-COPY install.sh /workspace/
+RUN apt-get update && apt-get install -y \
+        automake autoconf libpng-dev nano python3-pip \
+        curl zip unzip libtool swig zlib1g-dev pkg-config \
+        python3-mock libpython3-dev libpython3-all-dev \
+        g++ gcc cmake make pciutils cpio gosu wget \
+        libgtk-3-dev libxtst-dev sudo apt-transport-https \
+        build-essential gnupg git xz-utils vim \
+        libva-drm2 libva-x11-2 vainfo libva-wayland2 libva-glx2 \
+        libva-dev libdrm-dev xorg xorg-dev protobuf-compiler \
+        openbox libx11-dev libgl1-mesa-glx libgl1-mesa-dev \
+        libtbb2 libtbb-dev libopenblas-dev libopenmpi-dev \
+    && sed -i 's/# set linenumbers/set linenumbers/g' /etc/nanorc \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# set FORCE_CUDA because during `docker build` cuda is not accessible
-ENV FORCE_CUDA="1"
-# This will by default build detectron2 for all common cuda architectures and take a lot more time,
-# because inside `docker build`, there is no way to tell which architecture will be used.
-ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta;Turing"
-ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
+RUN git clone https://github.com/ifzhang/ByteTrack \
+    && cd ByteTrack \
+    && git checkout 3434c5e8bc6a5ae8ad530528ba8d9a431967f237 \
+    && mkdir -p YOLOX_outputs/yolox_x_mix_det/track_vis \
+    && sed -i 's/torch>=1.7/torch==1.9.1+cu111/g' requirements.txt \
+    && sed -i 's/torchvision==0.10.0/torchvision==0.10.1+cu111/g' requirements.txt \
+    && sed -i "s/'cuda'/0/g" tools/demo_track.py \
+    && pip3 install pip --upgrade \
+    && pip3 install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html \
+    && python3 setup.py develop \
+    && pip3 install cython \
+    && pip3 install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI' \
+    && pip3 install cython_bbox gdown \
+    && ldconfig \
+    && pip cache purge
 
-#ENV TORCH_CUDA_ARCH_LIST=Turing
-RUN git clone https://github.com/IDEA-Research/detrex.git
-RUN cd detrex && \
-    git submodule init && \
-    git submodule update && \
-    python3 -m pip install -e detectron2
-RUN cd detrex && pip3 install -e .
+RUN git clone https://github.com/NVIDIA-AI-IOT/torch2trt \
+    && cd torch2trt \
+    && git checkout 0400b38123d01cc845364870bdf0a0044ea2b3b2 \
+    # https://github.com/NVIDIA-AI-IOT/torch2trt/issues/619
+    && wget https://github.com/NVIDIA-AI-IOT/torch2trt/commit/8b9fb46ddbe99c2ddf3f1ed148c97435cbeb8fd3.patch \
+    && git apply 8b9fb46ddbe99c2ddf3f1ed148c97435cbeb8fd3.patch \
+    && python3 setup.py install
 
-RUN apt-get -y autoremove 
-RUN apt-get -y autoclean 
+RUN echo "root:root" | chpasswd \
+    && adduser --disabled-password --gecos "" "${USERNAME}" \
+    && echo "${USERNAME}:${USERNAME}" | chpasswd \
+    && echo "%${USERNAME}    ALL=(ALL)   NOPASSWD:    ALL" >> /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}
+USER ${USERNAME}
+RUN sudo chown -R ${USERNAME}:${USERNAME} ${WORKDIR}
+WORKDIR ${WORKDIR}
