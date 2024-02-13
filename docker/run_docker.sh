@@ -4,7 +4,7 @@ CODE_CONTAINER=/home/daniel/cyclist_traffic_analysis/
 [ -z "$1" ] || CODE_CONTAINER=$1 # replace CODE_CONTAINER in case there is any 
 #DATA_HOST=/home/daniel/OneDrive/autofish_groups/
 #DATA_CONTAINER=/home/create.aau.dk/vo65hs/autofish_groups/
-IMAGE=dale97/dino_container
+IMAGE=dale97/detrex_container
 
 xhost +local:docker
 XSOCK=/tmp/.X11-unix
