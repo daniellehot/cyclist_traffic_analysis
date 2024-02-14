@@ -1,6 +1,6 @@
 from pycocotools.coco import COCO
 import argparse
-import os
+import os, shutil
 from PIL import Image, ImageDraw
 import random
 import pandas as pd
@@ -52,12 +52,11 @@ def draw_bounding_boxes_mot(image_path, annotations, output):
     # Iterate over annotations and draw bounding boxes
     for _, annotation in annotations.iterrows():
         bbox = [annotation[i] for i in range(2, 6)]  # Bounding box in format [x_min, y_min, width, height]
+        text_position = (bbox[0] + bbox[2] + 5, bbox[1])
         bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]
         object_id = annotation[1] # track id
-        print(object_id)
         draw.rectangle(bbox, outline=generate_random_color(object_id), width=2)  # Draw bounding box with red outline
-        text_position = (bbox[0] + bbox[2] + 5, bbox[1])
-        draw.text(text_position, str(object_id), fill="black")
+        draw.text(text_position, str(object_id), fill="black", font_size=2)
     # Show the image with bounding boxes
     image.save(output)
 
@@ -83,8 +82,9 @@ def draw_bounding_boxes_coco(image_path, annotations, output):
 
 def main(args):
     print(args)
-    if args.output is not None:
-        os.makedirs(args.output, exist_ok=True)
+    if os.path.exists(args.output):
+        shutil.rmtree(args.output)
+    os.makedirs(args.output, exist_ok=True)
 
     sequence = sorted([img for img in os.listdir(f"{args.input}/img1")])
     annotations = f"{args.input}/gt/gt.txt"  
