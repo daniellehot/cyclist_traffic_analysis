@@ -40,7 +40,7 @@ def generate_random_color(seed):
     return (r, g, b)
         
 
-def draw_bounding_boxes(image_path, annotations, output):
+def draw_bounding_boxes_coco(image_path, annotations, output):
     print(f"Drawing {image_path}")
     # Open the image
     image = Image.open(image_path)
@@ -70,7 +70,7 @@ def main(args):
     for idx, img in enumerate(sequence):
         annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
         annotations = coco.loadAnns(annotation_ids)
-        draw_bounding_boxes(image_path = f"{args.seq}/{img}", 
+        draw_bounding_boxes_coco(image_path = f"{args.seq}/{img}", 
                             annotations = annotations, 
                             output = f"{args.output}/{idx}.png"
                             )

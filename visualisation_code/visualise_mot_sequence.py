@@ -5,9 +5,11 @@ from PIL import Image, ImageDraw
 import random
 import pandas as pd
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Script description")
-    parser.add_argument("-i", "--input", type=str, help="Annotation file")
+    parser.add_argument("-i", "--input", type=str, help="MOT folder")
+    parser.add_argument("-c", "--coco", type=str, help="COCO annotations")
     parser.add_argument("-o", "--output", type=str, help="Output folder")
     return parser.parse_args()
 
@@ -39,7 +41,28 @@ def generate_random_color(seed):
     return (r, g, b)
         
 
-def draw_bounding_boxes(image_path, annotations, output):
+def draw_bounding_boxes_mot(image_path, annotations, output):
+    print(f"Drawing {image_path}")
+    # Open the image
+    image = Image.open(image_path)
+    
+    # Create a drawing object
+    draw = ImageDraw.Draw(image)
+    
+    # Iterate over annotations and draw bounding boxes
+    for _, annotation in annotations.iterrows():
+        bbox = [annotation[i] for i in range(2, 6)]  # Bounding box in format [x_min, y_min, width, height]
+        bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]
+        object_id = annotation[1] # track id
+        print(object_id)
+        draw.rectangle(bbox, outline=generate_random_color(object_id), width=2)  # Draw bounding box with red outline
+        text_position = (bbox[0] + bbox[2] + 5, bbox[1])
+        draw.text(text_position, str(object_id), fill="black")
+    # Show the image with bounding boxes
+    image.save(output)
+
+
+def draw_bounding_boxes_coco(image_path, annotations, output):
     print(f"Drawing {image_path}")
     # Open the image
     image = Image.open(image_path)
@@ -49,7 +72,6 @@ def draw_bounding_boxes(image_path, annotations, output):
     
     # Iterate over annotations and draw bounding boxes
     for annotation in annotations:
-        
         bbox = annotation['bbox']  # Bounding box in format [x_min, y_min, width, height]
         object_id = annotation['object_id']
         bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]
@@ -68,7 +90,20 @@ def main(args):
     annotations = f"{args.input}/gt/gt.txt"  
     # panda_frame_data "frame_id", "track_id", "bb_left", "bb_top", "bb_width", "bb_height", "?", "??"]  
     df = pd.read_csv(annotations, header=None)
-    print(df)
+
+    for idx, img in enumerate(sequence):
+        if img.endswith(".jpg"):
+            img_no = int(img.replace(".jpg", ""))
+
+        if img.endswith(".png"):
+            img_no = int(img.replace(".png", ""))
+        
+        annotations = df[df[0] == img_no]
+        draw_bounding_boxes_mot(image_path=f"{args.input}/img1/{img}",
+                                annotations=annotations,
+                                output = f"{args.output}/{idx}.png"
+                                )
+
 
 if __name__=="__main__":
     main(parse_args())
