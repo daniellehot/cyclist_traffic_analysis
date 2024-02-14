@@ -8,7 +8,10 @@ output/**/training_images
 weights
 
 # Datasets
-datasets/*
+datasets/mot
+datasets/MOT20
+datasets/multi_view_mot_dataset
+datasets/*.zip
 traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip
 dataset_samples
