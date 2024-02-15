@@ -10,16 +10,18 @@ weights
 # Datasets
 datasets/mot
 datasets/MOT20
-datasets/multi_view_mot_dataset
+datasets/multi_view_mot
 datasets/*.zip
 traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip
 dataset_samples
 Multi-View-Data.zip
 multi-view-data
+datasets.tar.gz
 
 # Visualizations
-visualisation_code/**/*.png
+datasets_utils/***/*.png
+datasets_utils/***/*.jpg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -3,6 +3,7 @@ import shutil
 import argparse
 from pycocotools.coco import COCO
 import pandas as pd
+import copy
 
 HEADER =  header = ["frame_number", "track_id", "bb_left", "bb_top", "bb_width", "bb_height", "confidence_score", "class_id", "visibility_score"]
 
@@ -43,10 +44,14 @@ def convert_coco_to_mot(coco_annotations, frame_number):
 if __name__=="__main__":
     args = parse_args()
     input = args.input
-    output = args.output
+    output = f"{args.output}/multi_view_mot"
 
-    os.makedirs(f"{output}/multi_view_mot_dataset/train", exist_ok=True)
-    os.makedirs(f"{output}/multi_view_mot_dataset/test", exist_ok=True)
+    #os.makedirs(f"{output}/multi_view_mot_dataset/train", exist_ok=True)
+    #os.makedirs(f"{output}/multi_view_mot_dataset/test", exist_ok=True)
+    if os.path.exists(output):
+        shutil.rmtree(output)
+    data_output_path = f"{output}/data"
+    os.makedirs(data_output_path, exist_ok=True)
 
     infrastructure_coco = coco = COCO(f"{input}/Sequence3-png/Infrastructure/infrastructure-mscoco.json")
     image_ids_map = generate_image_ids_map(infrastructure_coco)
@@ -54,11 +59,9 @@ if __name__=="__main__":
     #all_object_ids = {folder:[] for folder in infrastructure_image_folders}
     infrastructure_image_folders = sorted([folder for folder in os.listdir(f"{input}/Sequence3-png/Infrastructure") if not folder.endswith((".png", ".json"))])
     for folder in infrastructure_image_folders:
-        print(f"Processing forlder {input}/Sequence3-png/Infrastructure/{folder}")
+        print(f"Processing folder {input}/Sequence3-png/Infrastructure/{folder}")
 
-        save_images_to = f"{output}/multi_view_mot_dataset/train/{folder}/img1"
-        if os.path.exists(save_images_to):
-            shutil.rmtree(save_images_to)
+        save_images_to = f"{data_output_path}/{folder}/img1"
         os.makedirs(save_images_to, exist_ok=True)
 
         images = [file for file in os.listdir(f"{input}/Sequence3-png/Infrastructure/{folder}") if file.endswith(".png")]
@@ -80,12 +83,16 @@ if __name__=="__main__":
         track_id_sorted_mot_annotations['track_id'] = track_id_sorted_mot_annotations['track_id'] - track_id_sorted_mot_annotations['track_id'].min() + 1 
         #print(track_id_sorted_mot_annotations)
 
-        save_gt_to = f"{output}/multi_view_mot_dataset/train/{folder}/gt"
-        if os.path.exists(save_gt_to):
-            shutil.rmtree(save_gt_to)
+        save_gt_to = f"{data_output_path}/{folder}/gt"
         os.makedirs(save_gt_to, exist_ok=True)
         track_id_sorted_mot_annotations.to_csv(f"{save_gt_to}/gt.txt", sep=',', header=False, index=False)
-    
+
+        save_det_to = f"{data_output_path}/{folder}/det"
+        os.makedirs(save_det_to, exist_ok=True)
+        no_tracks_sorted_mot_annotations = copy.deepcopy(track_id_sorted_mot_annotations)
+        no_tracks_sorted_mot_annotations['track_id'] = -1
+        no_tracks_sorted_mot_annotations.to_csv(f"{save_det_to}/det.txt", sep=',', header=False, index=False)
+
     #for k,v in all_object_ids.items():
     #    all_object_ids[k] = set(v)
     #print(all_object_ids)
