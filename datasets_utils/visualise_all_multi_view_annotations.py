@@ -1,27 +1,9 @@
 from pycocotools.coco import COCO
-import argparse
 import cv2
 import os, shutil
 import pandas as pd
 import random
 import numpy as np
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Script description")
-    parser.add_argument("-i", "--input", type=str, help="Folder with sequences")
-    parser.add_argument("-c", "--coco", type=str, help="COCO annotations")
-    parser.add_argument("-o", "--output", type=str, help="Output folder")
-    return parser.parse_args()
-
-
-class MultiViewDataset:
-    def __init__(self, coco, mot, COCOmot):
-        self.coco = 
-        self.mot = 
-        self.COCOmot = 
-
-    
 
 def generate_random_color(seed):
     # Set seed for reproducibility

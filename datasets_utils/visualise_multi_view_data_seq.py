@@ -1,7 +1,7 @@
 from pycocotools.coco import COCO
 import argparse
-import os
-from PIL import Image, ImageDraw
+import os, shutil
+import cv2
 import random
 
 
@@ -10,6 +10,8 @@ def parse_args():
     parser.add_argument("-i", "--input", type=str, help="Annotation file")
     parser.add_argument("--seq", type=str, help="Sequence to visualize")
     parser.add_argument("-o", "--output", type=str, help="Output folder")
+    parser.add_argument("--png", action='store_true')
+    parser.add_argument("--jpg", action='store_true')
     return parser.parse_args()
 
 
@@ -38,44 +40,60 @@ def generate_random_color(seed):
     
     # Return the random color as a tuple (R, G, B)
     return (r, g, b)
-        
 
-def draw_bounding_boxes_coco(image_path, annotations, output):
-    print(f"Drawing {image_path}")
+
+def draw_text(image, text, bbox):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    font_thickness = 1
+    # Calculate text size
+    text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
+    text_width, text_height = text_size[0], text_size[1]
+    # Calculate the position to put text (in the middle of the bounding box)
+    text_x = bbox[0] + (bbox[2] - bbox[0]) // 2 - text_width // 2
+    text_y = bbox[1] + (bbox[3] - bbox[1]) // 2 + text_height // 2
+    # Put text on the image
+    cv2.putText(image, text, (text_x, text_y), font, font_scale, (0, 0, 255), font_thickness)
+
+
+def draw_coco_annotations(image_path, annotations):
+    print(f"Drawing COCO annotations")
     # Open the image
-    image = Image.open(image_path)
-    
-    # Create a drawing object
-    draw = ImageDraw.Draw(image)
+    image = cv2.imread(image_path)
     
     # Iterate over annotations and draw bounding boxes
     for annotation in annotations:
-        
         bbox = annotation['bbox']  # Bounding box in format [x_min, y_min, width, height]
+        bbox = list(map(int, [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]))
         object_id = annotation['object_id']
-        bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]
-        draw.rectangle(bbox, outline=generate_random_color(object_id), width=2)  # Draw bounding box with red outline
-    
+        cv2.rectangle(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), generate_random_color(object_id), 2)
+        text = f"{object_id}"
+        draw_text(image, text, bbox)
     # Show the image with bounding boxes
-    image.save(output)
+    return image
 
 
 def main(args):
+    if os.path.exists(args.output):
+        shutil.rmtree(args.output)
     os.makedirs(args.output, exist_ok=True)
+    
+    if args.jpg:
+        sequence = sorted([img for img in os.listdir(args.seq) if img.endswith(".jpg")])
+    if args.png:
+        sequence = sorted([img for img in os.listdir(args.seq) if img.endswith(".png")])
 
-    sequence = sorted([img for img in os.listdir(args.seq) if img.endswith(".jpg")])
     coco = COCO(args.input)
     image_ids_map = generate_image_ids_map(coco, sequence)
 
     for idx, img in enumerate(sequence):
-        annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
-        annotations = coco.loadAnns(annotation_ids)
-        draw_bounding_boxes_coco(image_path = f"{args.seq}/{img}", 
-                            annotations = annotations, 
-                            output = f"{args.output}/{idx}.png"
-                            )
-        
-
+        try:
+            annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
+            annotations = coco.loadAnns(annotation_ids)
+            image = draw_coco_annotations(image_path = f"{args.seq}/{img}", annotations = annotations)
+            cv2.imwrite(f"{args.output}/{idx}.png", image)
+        except:
+            print(f"No annotations for image {img}")
 
 if __name__=="__main__":
     main(parse_args())
