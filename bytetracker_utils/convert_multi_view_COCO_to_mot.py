@@ -4,6 +4,7 @@ import argparse
 from pycocotools.coco import COCO
 import pandas as pd
 import copy
+import numpy as np
 
 HEADER =  header = ["frame_number", "track_id", "bb_left", "bb_top", "bb_width", "bb_height", "confidence_score", "class_id", "visibility_score"]
 
@@ -41,6 +42,96 @@ def convert_coco_to_mot(coco_annotations, frame_number):
     return mot_annotations
 
 
+# remove tracks with only a single occurrence
+def remove_shadow_tracks(df):
+    all_track_ids = df['track_id'].unique()
+    for id in all_track_ids:
+        rows_with_the_given_track_id = df.loc[df['track_id'] == id]
+        print(f"track_id {id} occurences {rows_with_the_given_track_id.shape[0]}")
+        if rows_with_the_given_track_id.shape[0] < 3:
+            print(f"Dropping rows with track_id {id}")
+            df = df.drop(rows_with_the_given_track_id.index)
+    return df
+
+
+def euclidean_distance(box1, box2):
+    # Extracting coordinates from bounding boxes
+    left1, top1, width1, height1 = box1
+    left2, top2, width2, height2 = box2
+    
+    # Computing the center coordinates of each bounding box
+    center1_x = left1 + width1 / 2
+    center1_y = top1 + height1 / 2
+    center2_x = left2 + width2 / 2
+    center2_y = top2 + height2 / 2
+    
+    # Computing the Euclidean distance between the centers
+    distance = np.sqrt((center2_x - center1_x)**2 + (center2_y - center1_y)**2)
+    return distance
+
+
+def correct_object_ids(df):
+    # get all registered IDs
+    all_ids = df['track_id'].unique()
+    print(f"Object ids before correction {all_ids}")
+    corrected_annotations = []
+    for id in all_ids:
+        # get all tracks associated with the id
+        tracks = df.loc[df['track_id'] == id]
+        
+        # sort tracks by a frame number
+        tracks = tracks.sort_values(by=['frame_number'])
+        tracks_np = tracks.to_numpy(dtype=np.float64) 
+
+        # compute distance between bounding boxes in subsequent frames
+        track_id = id
+        for index in range(1, tracks_np.shape[0]):
+            current_frame = tracks_np[index, :]
+            current_bbox = current_frame[2:6]
+            current_class = current_frame[7]
+            previous_frame = tracks_np[index-1, :]
+            previous_bbox = previous_frame[2:6]
+            previous_class = previous_frame[7]
+            distance = euclidean_distance(previous_bbox, current_bbox)
+            if distance > 99 or current_class != previous_class:
+                track_id += 0.1
+            current_frame[1] = track_id
+
+        corrected_annotations.append(tracks_np)
+
+    corrected_annotations = np.vstack(corrected_annotations)
+    df_corrected = pd.DataFrame(corrected_annotations, columns=HEADER)
+    all_ids = df_corrected['track_id'].unique()
+    print(f"Object ids after correction {all_ids}")
+    return df_corrected
+
+
+def order_annotations(df):
+    first_detections = []
+    all_ids = df['track_id'].unique()
+    for id in all_ids:
+        tracks = df.loc[df['track_id'] == id]
+        first_detections.append(tracks.iloc[0]['frame_number'])
+    
+    combined = list(zip(first_detections, all_ids))
+    sorted_combined = sorted(combined)
+    ordered_list_of_track_ids = [x[1] for x in sorted_combined]
+    return ordered_list_of_track_ids
+
+
+# remap track_ids to be linearly increasing
+def ensure_linear_track_ids(df, order):
+    #all_track_ids = df['track_id'].unique()
+    new_ids = np.arange(1, len(order)+1)
+    
+    # Map old track_ids to new ones
+    id_map = {old_id: new_id for old_id, new_id in zip(order, new_ids)}
+    print(id_map)
+    df['track_id'] = df['track_id'].replace(id_map)
+
+    return df
+
+
 if __name__=="__main__":
     args = parse_args()
     input = args.input
@@ -73,27 +164,25 @@ if __name__=="__main__":
             try:
                 annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
                 annotations_coco = coco.loadAnns(annotation_ids)
-                #for ann in annotations_coco:
-                #    all_object_ids[folder].append(ann['object_id'])
             except:
                 print(f"No annotations for image {img}")
                 os.remove(f"{save_images_to}/{str(idx).zfill(6)}.png")
             annotations_mot = pd.concat([annotations_mot, convert_coco_to_mot(annotations_coco, idx)], ignore_index=True)
-        track_id_sorted_mot_annotations = annotations_mot.sort_values(by=['track_id', 'frame_number'])
-        track_id_sorted_mot_annotations['track_id'] = track_id_sorted_mot_annotations['track_id'] - track_id_sorted_mot_annotations['track_id'].min() + 1 
-        #print(track_id_sorted_mot_annotations)
+    
+        annotations_mot = correct_object_ids(annotations_mot)
+        annotations_mot = remove_shadow_tracks(annotations_mot)
+        ordered_ids = order_annotations(annotations_mot)
+        annotations_mot = ensure_linear_track_ids(annotations_mot, ordered_ids)
+        annotations_mot = annotations_mot.astype(int)
+        annotations_mot = annotations_mot.sort_values(by=['track_id', 'frame_number'])
 
         save_gt_to = f"{data_output_path}/{folder}/gt"
         os.makedirs(save_gt_to, exist_ok=True)
-        track_id_sorted_mot_annotations.to_csv(f"{save_gt_to}/gt.txt", sep=',', header=False, index=False)
+        annotations_mot.to_csv(f"{save_gt_to}/gt.txt", sep=',', header=False, index=False)
 
         save_det_to = f"{data_output_path}/{folder}/det"
         os.makedirs(save_det_to, exist_ok=True)
-        no_tracks_sorted_mot_annotations = copy.deepcopy(track_id_sorted_mot_annotations)
+        no_tracks_sorted_mot_annotations = copy.deepcopy(annotations_mot)
         no_tracks_sorted_mot_annotations['track_id'] = -1
         no_tracks_sorted_mot_annotations.to_csv(f"{save_det_to}/det.txt", sep=',', header=False, index=False)
-
-    #for k,v in all_object_ids.items():
-    #    all_object_ids[k] = set(v)
-    #print(all_object_ids)
     
