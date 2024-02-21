@@ -8,6 +8,14 @@ import numpy as np
 
 HEADER =  header = ["frame_number", "track_id", "bb_left", "bb_top", "bb_width", "bb_height", "confidence_score", "class_id", "visibility_score"]
 
+# folder:number of images -> 0:998, 1000:1000, 2000:658, 2659:340, 3000:100
+SPLITS_DEFINITION = {
+    'train': ["1000", "2000", "2659"],
+    'val': ["3000"],
+    'test': ["0"]
+}
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Script description")
     parser.add_argument("-i", "--input", type=str, help="Annotation file")
@@ -136,53 +144,63 @@ if __name__=="__main__":
     args = parse_args()
     input = args.input
     output = f"{args.output}/multi_view_mot"
-
-    #os.makedirs(f"{output}/multi_view_mot_dataset/train", exist_ok=True)
-    #os.makedirs(f"{output}/multi_view_mot_dataset/test", exist_ok=True)
     if os.path.exists(output):
         shutil.rmtree(output)
-    data_output_path = f"{output}/data"
-    os.makedirs(data_output_path, exist_ok=True)
-
+    
+    train_folder = f"{output}/train" 
+    os.makedirs(train_folder, exist_ok=True)
+    test_folder = f"{output}/test"
+    os.makedirs(test_folder, exist_ok=True)
+    
+    #data_output_path = f"{output}/data"
+    #os.makedirs(data_output_path, exist_ok=True)
+    
+    # TODO Add drone data
     infrastructure_coco = coco = COCO(f"{input}/Sequence3-png/Infrastructure/infrastructure-mscoco.json")
     image_ids_map = generate_image_ids_map(infrastructure_coco)
 
-    #all_object_ids = {folder:[] for folder in infrastructure_image_folders}
-    infrastructure_image_folders = sorted([folder for folder in os.listdir(f"{input}/Sequence3-png/Infrastructure") if not folder.endswith((".png", ".json"))])
-    for folder in infrastructure_image_folders:
-        print(f"Processing folder {input}/Sequence3-png/Infrastructure/{folder}")
+    #infrastructure_image_folders = sorted([folder for folder in os.listdir(f"{input}/Sequence3-png/Infrastructure") if not folder.endswith((".png", ".json"))])
+    for split in SPLITS_DEFINITION.keys():
+        if split != "test":
+            data_output_path = train_folder
+        else:
+            data_output_path = test_folder    
+        
+        image_folders = SPLITS_DEFINITION[split]
+        for folder in image_folders:
+            print(f"Processing folder {input}/Sequence3-png/Infrastructure/{folder}")
 
-        save_images_to = f"{data_output_path}/{folder}/img1"
-        os.makedirs(save_images_to, exist_ok=True)
+            save_images_to = f"{data_output_path}/{folder}/img1"
+            os.makedirs(save_images_to, exist_ok=True)
 
-        images = [file for file in os.listdir(f"{input}/Sequence3-png/Infrastructure/{folder}") if file.endswith(".png")]
-        images = sorted(images)
-        annotations_mot = pd.DataFrame(columns=HEADER)
-        for idx, img in enumerate(images):
-            idx += 1 # frame indexing should start at 1
-            shutil.copy(f"{input}/Sequence3-png/Infrastructure/{folder}/{img}", f"{save_images_to}/{str(idx).zfill(6)}.png" )
-            try:
-                annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
-                annotations_coco = coco.loadAnns(annotation_ids)
-            except:
-                print(f"No annotations for image {img}")
-                os.remove(f"{save_images_to}/{str(idx).zfill(6)}.png")
-            annotations_mot = pd.concat([annotations_mot, convert_coco_to_mot(annotations_coco, idx)], ignore_index=True)
-    
-        annotations_mot = correct_object_ids(annotations_mot)
-        annotations_mot = remove_shadow_tracks(annotations_mot)
-        ordered_ids = order_annotations(annotations_mot)
-        annotations_mot = ensure_linear_track_ids(annotations_mot, ordered_ids)
-        annotations_mot = annotations_mot.astype(int)
-        annotations_mot = annotations_mot.sort_values(by=['track_id', 'frame_number'])
+            images = [file for file in os.listdir(f"{input}/Sequence3-png/Infrastructure/{folder}") if file.endswith(".png")]
+            images = sorted(images)
+            annotations_mot = pd.DataFrame(columns=HEADER)
+            for idx, img in enumerate(images):
+                idx += 1 # frame indexing should start at 1
+                shutil.copy(f"{input}/Sequence3-png/Infrastructure/{folder}/{img}", f"{save_images_to}/{str(idx).zfill(6)}.png" )
+                try:
+                    annotation_ids = coco.getAnnIds(imgIds=image_ids_map[img])
+                    annotations_coco = coco.loadAnns(annotation_ids)
+                except:
+                    print(f"No annotations for image {img}")
+                    os.remove(f"{save_images_to}/{str(idx).zfill(6)}.png")
+                annotations_mot = pd.concat([annotations_mot, convert_coco_to_mot(annotations_coco, idx)], ignore_index=True)
+        
+            annotations_mot = correct_object_ids(annotations_mot)
+            annotations_mot = remove_shadow_tracks(annotations_mot)
+            ordered_ids = order_annotations(annotations_mot)
+            annotations_mot = ensure_linear_track_ids(annotations_mot, ordered_ids)
+            annotations_mot = annotations_mot.astype(int)
+            annotations_mot = annotations_mot.sort_values(by=['track_id', 'frame_number'])
 
-        save_gt_to = f"{data_output_path}/{folder}/gt"
-        os.makedirs(save_gt_to, exist_ok=True)
-        annotations_mot.to_csv(f"{save_gt_to}/gt.txt", sep=',', header=False, index=False)
+            save_gt_to = f"{data_output_path}/{folder}/gt"
+            os.makedirs(save_gt_to, exist_ok=True)
+            annotations_mot.to_csv(f"{save_gt_to}/gt.txt", sep=',', header=False, index=False)
 
-        save_det_to = f"{data_output_path}/{folder}/det"
-        os.makedirs(save_det_to, exist_ok=True)
-        no_tracks_sorted_mot_annotations = copy.deepcopy(annotations_mot)
-        no_tracks_sorted_mot_annotations['track_id'] = -1
-        no_tracks_sorted_mot_annotations.to_csv(f"{save_det_to}/det.txt", sep=',', header=False, index=False)
+            save_det_to = f"{data_output_path}/{folder}/det"
+            os.makedirs(save_det_to, exist_ok=True)
+            no_tracks_sorted_mot_annotations = copy.deepcopy(annotations_mot)
+            no_tracks_sorted_mot_annotations['track_id'] = -1
+            no_tracks_sorted_mot_annotations.to_csv(f"{save_det_to}/det.txt", sep=',', header=False, index=False)
     

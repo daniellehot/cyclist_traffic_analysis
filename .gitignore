@@ -3,12 +3,14 @@ output/**/events*
 output/**/plots
 output/**/training_images
 *.pth
+bytetracker_utils/YOLOX_outputs
 
 # Weights
 weights
 
 # Datasets
 datasets/mot
+datasets/crowdhuman
 datasets/MOT20
 datasets/multi_view_mot
 datasets/*.zip

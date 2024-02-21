@@ -3,16 +3,17 @@ import numpy as np
 import json
 from PIL import Image
 import argparse
+#from convert_multi_view_COCO_to_mot import SPLITS_DEFINITION
 
 # TODO test.json can be filled with the annotations unlike the MOT datasets
 
 # Better mix logic, e.g., randomly 70/20/10 pick from a combined set of all images 
 # This would require rewriting some of the downstream logic
-SPLITS_DEFINITION = {
-    'train': ["0", "1000", "2000"],
-    'val': ["3000"],
-    'test': ["2659"]
-}
+#SPLITS_DEFINITION = {
+#    'train': ["0", "1000", "2000"],
+#    'val': ["3000"],
+#    'test': ["2659"]
+#}
 
 
 def parse_args():
@@ -38,7 +39,6 @@ def generate_category_id_list(categories_txt):
 
 def main(args):
     data_root_path = args.input
-    data_path = f"{data_root_path}/data"
     output_path = os.path.join(data_root_path, 'annotations')
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
@@ -47,20 +47,26 @@ def main(args):
     if args.categories_txt is not None:
         categories_ids_list = generate_category_id_list(args.categories_txt)
     else:
-        categories_ids_list = {'id': 1, 'name': 'vehicle'}
+        categories_ids_list = [{'id': 1, 'name': 'vehicle'}]
 
 
-    for split in SPLITS_DEFINITION.keys():
+    #for split in SPLITS_DEFINITION.keys():
+    for split in ["train", "val", "test"]:
+        if split != "test":
+            data_path = f"{data_root_path}/train"
+        else:
+            data_path = f"{data_root_path}/test"
+        
         print(f"Preparing {split} split")
         output_path_JSON = os.path.join(output_path, f"{split}.json")
-
         out = {'images': [], 
                'annotations': [], 
                'videos': [],
                'categories': categories_ids_list
             }
         
-        seqs = SPLITS_DEFINITION[split]
+        #seqs = SPLITS_DEFINITION[split]
+        seqs = os.listdir(data_path)
         image_cnt = 0
         ann_cnt = 0
         video_cnt = 0
@@ -79,8 +85,6 @@ def main(args):
             for i in range(num_images):
                 if i < image_range[0] or i > image_range[1]:
                     continue
-                #img = cv2.imread(os.path.join(data_path, '{}/img1/{:06d}.png'.format(seq, i + 1)))
-                #height, width = img.shape[:2]
                 img = Image.open(os.path.join(data_path, '{}/img1/{:06d}.png'.format(seq, i + 1)))
                 width, height = img.size
                 image_info = {'file_name': '{}/img1/{:06d}.png'.format(seq, i + 1),  # image name.

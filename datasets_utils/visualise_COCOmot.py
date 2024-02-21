@@ -93,6 +93,7 @@ def draw_mot_annotations(image_path, annotations):
 
 
 def main(args):
+    print(args)
     #annotations_coco = f"{args.coco}"
     if os.path.exists(args.output):
         shutil.rmtree(args.output)
