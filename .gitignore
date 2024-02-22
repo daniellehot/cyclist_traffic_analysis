@@ -1,3 +1,5 @@
+ByteTrack/datasets/multi_view_mot
+
 # training files
 output/**/events*
 output/**/plots

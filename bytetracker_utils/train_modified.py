@@ -10,6 +10,8 @@ import argparse
 import random
 import warnings
 
+import sys 
+sys.path.append("../ByteTrack/yolox")
 
 def make_parser():
     parser = argparse.ArgumentParser("YOLOX train parser")

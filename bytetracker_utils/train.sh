@@ -8,4 +8,4 @@
 #   -c STR path to a checkpoint
 ######################
 
-python3 train_modified.py -f multi_view_exp_from_mot.py -c $1 -d 1 -b 5 --fp16 -o
+python3 train_modified.py -f multi_view_exp_from_mot.py -c $1 -d 1 -b 1 --fp16 -o
