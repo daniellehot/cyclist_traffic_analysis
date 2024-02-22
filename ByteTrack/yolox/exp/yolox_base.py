@@ -134,7 +134,6 @@ class Exp(BaseExp):
         dataloader_kwargs = {"num_workers": self.data_num_workers, "pin_memory": True}
         dataloader_kwargs["batch_sampler"] = batch_sampler
         train_loader = DataLoader(self.dataset, **dataloader_kwargs)
-
         return train_loader
 
     def random_resize(self, data_loader, epoch, rank, is_distributed):
