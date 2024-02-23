@@ -3,7 +3,7 @@ from loguru import logger
 import torch
 import torch.backends.cudnn as cudnn
 
-from yolox.core import Trainer, launch
+from yolox.core import Trainer, launch, TrainerModified
 from yolox.exp import get_exp
 
 import argparse
@@ -96,7 +96,7 @@ def main(exp, args):
     # set environment variables for distributed training
     cudnn.benchmark = True
 
-    trainer = Trainer(exp, args)
+    trainer = TrainerModified(exp, args)
     trainer.train()
 
 

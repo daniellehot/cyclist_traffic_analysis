@@ -3,7 +3,7 @@ import numpy as np
 import json
 from PIL import Image
 import argparse
-#from convert_multi_view_COCO_to_mot import SPLITS_DEFINITION
+from convert_multi_view_COCO_to_mot import SPLITS_DEFINITION
 
 # TODO test.json can be filled with the annotations unlike the MOT datasets
 
@@ -50,8 +50,7 @@ def main(args):
         categories_ids_list = [{'id': 1, 'name': 'vehicle'}]
 
 
-    #for split in SPLITS_DEFINITION.keys():
-    for split in ["train", "val", "test"]:
+    for split in SPLITS_DEFINITION.keys():
         if split != "test":
             data_path = f"{data_root_path}/train"
         else:
@@ -65,8 +64,7 @@ def main(args):
                'categories': categories_ids_list
             }
         
-        #seqs = SPLITS_DEFINITION[split]
-        seqs = os.listdir(data_path)
+        seqs = SPLITS_DEFINITION[split]
         image_cnt = 0
         ann_cnt = 0
         video_cnt = 0
@@ -74,6 +72,7 @@ def main(args):
         tid_last = -1
 
         for seq in sorted(seqs):
+            print(f"    Processing sequence {seq}")
             video_cnt += 1  # video sequence number.
             out['videos'].append({'id': video_cnt, 'file_name': seq})
             seq_path = os.path.join(data_path, seq)

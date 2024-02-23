@@ -1,0 +1,11 @@
+- Reliable way to track performance changes given the input parameters
+    - Save losses into a JSON X
+    - Plot all losses at the end of the training X
+    - Save a used model
+    - Do we need val? 
+    - Checkpointing? 
+- Hyperparameter tuning
+- Run tracking 
+    - First we need to train a model that can actually detect something 
+- Tracking evaluatution 
+- Detection evalutation
