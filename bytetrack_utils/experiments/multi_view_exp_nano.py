@@ -8,6 +8,8 @@ import torch.distributed as dist
 from yolox.exp import Exp as MyExp
 from yolox.data import get_yolox_datadir
 
+import os
+
 
 class Exp(MyExp):
     def __init__(self):
@@ -16,7 +18,8 @@ class Exp(MyExp):
         self.depth = 0.33
         self.width = 0.25
         self.scale = (0.5, 1.5)
-        self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
+        #self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
+        self.exp_name = "nano_dummy"
         self.train_ann = "train.json"
         self.val_ann = "val.json"
         self.input_size = (320, 512) #(640, 1024)
@@ -30,6 +33,7 @@ class Exp(MyExp):
         self.no_aug_epochs = 10
         self.basic_lr_per_img = 0.001 / 64.0
         self.warmup_epochs = 1
+        self.output_dir = os.path.expanduser("~/YOLOX_output")
 
     def get_data_loader(self, batch_size, is_distributed, no_aug=False):
         from yolox.data import (

@@ -9,7 +9,7 @@ import torch.nn as nn
 import os
 import random
 
-from .base_exp import BaseExp
+from yolox.exp import BaseExp
 
 
 class Exp(BaseExp):
@@ -245,3 +245,7 @@ class Exp(BaseExp):
 
     def eval(self, model, evaluator, is_distributed, half=False):
         return evaluator.evaluate(model, is_distributed, half)
+
+
+if __name__=="__main__":
+    experiment = Exp()

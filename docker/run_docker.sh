@@ -1,19 +1,21 @@
-USER=daniel
-CODE_PRETRAINED=/home/daniel/cyclist_traffic_analysis/pretrained
-CODE_DATASETS=/home/daniel/cyclist_traffic_analysis/datasets
-CODE_YOLOX_OUTPUTS=/home/daniel/cyclist_traffic_analysis/YOLOX_outputs
-CODE_UTILS=/home/daniel/cyclist_traffic_analysis/bytetracker_utils
+ROOT=~/cyclist_traffic_analysis
+#DOCKER_ROOT=/home/user/cyclist_traffic_analysis
+DOCKER_ROOT=/home/user
+CODE_PRETRAINED=$ROOT/pretrained
+CODE_DATASETS=$ROOT/datasets
+CODE_YOLOX_OUTPUTS=$ROOT/YOLOX_outputs
+CODE_UTILS=$ROOT/bytetrack_utils
 #[ -z "$1" ] || CODE_CONTAINER=$1 # replace CODE_CONTAINER in case there is any 
-IMAGE=bytetrack
+IMAGE=dale97/bytetrack
 
 xhost +local:docker
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
 docker run --gpus all -it --rm \
-    -v $CODE_PRETRAINED:/workspace/ByteTrack/pretrained \
-    -v $CODE_DATASETS:/workspace/ByteTrack/datasets \
-    -v $CODE_YOLOX_OUTPUTS:/workspace/ByteTrack/YOLOX_outputs \
-    -v $CODE_UTILS:/workspace/ByteTrack/bytetracker_utils \
+    -v $CODE_PRETRAINED:$DOCKER_ROOT/pretrained \
+    -v $CODE_DATASETS:$DOCKER_ROOT/datasets \
+    -v $CODE_YOLOX_OUTPUTS:$DOCKER_ROOT/YOLOX_outputs \
+    -v $CODE_UTILS:$DOCKER_ROOT/bytetrack_utils \
     -e DISPLAY=$DISPLAY \
     -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
     -e XAUTHORITY=$XAUTH \
@@ -23,8 +25,6 @@ docker run --gpus all -it --rm \
     --net=host \
     --shm-size 8G \
     --privileged \
+    -w $DOCKER_ROOT \
     $IMAGE
 xhost -local:docker
-
-#echo "Reclaiming all files created by the container with sudo chown -Rc $USER $CODE_HOST"
-#sudo chown -Rc $USER $CODE_HOST

@@ -6,9 +6,10 @@ output/**/plots
 output/**/training_images
 *.pth
 bytetracker_utils/YOLOX_outputs
+YOLOX_outputs
 
 # Weights
-weights
+pretrained/
 
 # Datasets
 datasets/mot

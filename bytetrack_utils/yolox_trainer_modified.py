@@ -78,8 +78,6 @@ class TrainerModified:
         # Save args
         with open(os.path.join(self.file_name, "training_args.json"), "w") as json_file:
                 json.dump(vars(args), json_file)
-        exit()
-
 
     def train(self):
         self.before_train()
@@ -264,7 +262,7 @@ class TrainerModified:
                     loss_str,
                     self.meter["lr"].latest,
                 )
-                + (", size: {:d}, {}".format(self.input_size[0], eta_str))
+                + (", size: {:d}x{:d}, {}".format(self.input_size[0], self.input_size[1], eta_str))
             )
 
             # Writing metrics to JSON file
@@ -273,7 +271,7 @@ class TrainerModified:
                 "iter": self.iter+1,
                 "gpu_memory Mb": int(gpu_mem_usage()),
                 "learning_rate": self.meter["lr"].latest,
-                "size": self.input_size[0],
+                "size": self.input_size,
                 "eta": eta_str.replace("ETA: ", "")
             }
             for k, v in time_meter.items():

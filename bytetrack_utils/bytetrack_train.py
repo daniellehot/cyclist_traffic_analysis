@@ -1,17 +1,16 @@
+# YOLOX, ByteTrack modules
 from loguru import logger
-
 import torch
 import torch.backends.cudnn as cudnn
-
-from yolox.core import Trainer, launch
+from yolox.core import launch
 from yolox.exp import get_exp
-
 import argparse
 import random
 import warnings
 
-import sys 
-sys.path.append("../ByteTrack/yolox")
+# Custom
+from yolox_trainer_modified import TrainerModified
+
 
 def make_parser():
     parser = argparse.ArgumentParser("YOLOX train parser")
@@ -98,7 +97,7 @@ def main(exp, args):
     # set environment variables for distributed training
     cudnn.benchmark = True
 
-    trainer = Trainer(exp, args)
+    trainer = TrainerModified(exp, args)
     trainer.train()
 
 
