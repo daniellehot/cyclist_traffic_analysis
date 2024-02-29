@@ -5,26 +5,28 @@ import torch.nn as nn
 import os
 import random
 
-from yolox.exp import BaseExp
+#from yolox.exp import BaseExp
+from yolox.exp import Exp as YoloxBaseExp
 from yolox.data import get_yolox_datadir
 
-class Exp(BaseExp):
+class Exp(YoloxBaseExp):
     def __init__(self):
         super().__init__()
+        # ---------------- env config ---------------- #
+        os.environ["YOLOX_DATADIR"] = os.path.expanduser("~/datasets")
 
         # ---------------- model config ---------------- #
         self.num_classes = 1
-        self.depth = 1.00
-        self.width = 1.00
+        self.depth = 0.67
+        self.width = 0.75
 
         # ---------------- dataloader config ---------------- #
         # set worker to 4 for shorter dataloader init time
-        self.data_num_workers = 4
-        self.input_size = (640, 640)
-        self.random_size = (14, 26)
-        self.train_ann = "instances_train2017.json"
-        self.val_ann = "instances_val2017.json"
-        os.environ["YOLOX_DATADIR"] = os.path.expanduser("~/datasets")
+        self.data_num_workers = 10
+        self.input_size = (640, 1024)
+        self.random_size = (10, 20)
+        self.train_ann = "train.json"
+        self.val_ann = "test.json"
         
         # --------------- transform config ----------------- #
         self.degrees = 10.0
@@ -36,8 +38,9 @@ class Exp(BaseExp):
         self.enable_mixup = True
 
         # --------------  training config --------------------- #
-        self.warmup_epochs = 5
-        self.max_epoch = 300
+        self.seed = None
+        self.warmup_epochs = 1
+        self.max_epoch = 3
         self.warmup_lr = 0
         self.basic_lr_per_img = 0.01 / 64.0
         self.scheduler = "yoloxwarmcos"
@@ -48,16 +51,15 @@ class Exp(BaseExp):
         self.weight_decay = 5e-4
         self.momentum = 0.9
         self.print_interval = 10
-        self.eval_interval = 10
+        self.eval_interval = 1
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
-
+        self.output_dir = "./YOLOX_outputs"
+        
         # -----------------  testing config ------------------ #
-        self.test_size = (640, 640)
+        self.test_size = (640, 1024)
         self.test_conf = 0.001
         self.nmsthre = 0.65
-
-        self.output_dir = os.path.expanduser("~/YOLOX_outputs")
-
+        
 
     def get_data_loader(self, batch_size, is_distributed, no_aug=False):
         from yolox.data import (
@@ -118,7 +120,7 @@ class Exp(BaseExp):
             data_dir=os.path.join(get_yolox_datadir(), "multi_view_mot"),
             json_file=self.val_ann,
             img_size=self.test_size,
-            name='train',
+            name='test',
             preproc=ValTransform(),
         )
 

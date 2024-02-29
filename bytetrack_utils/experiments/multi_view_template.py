@@ -15,18 +15,16 @@ from yolox.exp import BaseExp
 class Exp(BaseExp):
     def __init__(self):
         super().__init__()
-
         # ---------------- model config ---------------- #
         self.num_classes = 80
-        self.depth = 0.67
-        self.width = 0.75
+        self.depth = 1.0
+        self.width = 1.0
 
         # ---------------- dataloader config ---------------- #
         # set worker to 4 for shorter dataloader init time
         self.data_num_workers = 10
         self.input_size = (640, 1024)
         self.random_size = (14, 26)
-        self.resize_every_itr = 
         self.train_ann = "instances_train2017.json"
         self.val_ann = "instances_val2017.json"
 
