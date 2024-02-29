@@ -40,53 +40,6 @@ class Exp(MyExp):
         os.environ["YOLOX_DATADIR"] = os.path.expanduser("~/datasets")
 
 
-    def get_optimizer(self, batch_size):
-        if "optimizer" not in self.__dict__:
-            if self.warmup_epochs > 0:
-                lr = self.warmup_lr
-            else:
-                lr = self.basic_lr_per_img * batch_size
-                    
-            pg0, pg1, pg2 = [], [], []  # optimizer parameter groups
-
-            for k, v in self.model.named_modules():
-                if hasattr(v, "bias") and isinstance(v.bias, nn.Parameter):
-                    pg2.append(v.bias)  # biases
-                if isinstance(v, nn.BatchNorm2d) or "bn" in k:
-                    pg0.append(v.weight)  # no decay
-                elif hasattr(v, "weight") and isinstance(v.weight, nn.Parameter):
-                    pg1.append(v.weight)  # apply decay
-
-            optimizer = torch.optim.SGD(pg0, lr=lr, momentum=self.momentum, nesterov=True)
-            optimizer.add_param_group(
-                    {"params": pg1, "weight_decay": self.weight_decay}
-            )  # add pg1 with weight_decay
-            optimizer.add_param_group({"params": pg2})
-            self.optimizer = optimizer
-        return self.optimizer
-
-
-    def random_resize(self, data_loader, epoch, rank, is_distributed):
-        tensor = torch.LongTensor(2).cuda()
-        
-        if rank == 0:
-            size_factor = self.input_size[1] * 1.0 / self.input_size[0]
-            size = random.randint(*self.random_size)
-            size = (int(32 * size), 32 * int(size * size_factor))
-            tensor[0] = size[0]
-            tensor[1] = size[1]
-
-        if is_distributed:
-            dist.barrier()
-            dist.broadcast(tensor, 0)
-
-        input_size = data_loader.change_input_dim(
-            multiple=(tensor[0].item(), tensor[1].item()), random_range=None
-        )
-        
-        return input_size
-
-
     def get_data_loader(self, batch_size, is_distributed, no_aug=False):
             from yolox.data import (
                     MOTDataset,
