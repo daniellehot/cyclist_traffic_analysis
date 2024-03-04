@@ -127,9 +127,7 @@ class MOTEvaluator:
             
         tracker = BYTETracker(self.args)
         ori_thresh = self.args.track_thresh
-        for cur_iter, (imgs, _, info_imgs, ids) in enumerate(
-            progress_bar(self.dataloader)
-        ):
+        for cur_iter, (imgs, _, info_imgs, ids) in enumerate(progress_bar(self.dataloader)):
             with torch.no_grad():
                 # init tracker
                 frame_id = info_imgs[2].item()
