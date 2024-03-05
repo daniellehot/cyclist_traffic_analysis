@@ -13,8 +13,13 @@ class Exp(YoloxBaseExp):
     def __init__(self):
         super().__init__()
         # ---------------- env config ---------------- #
-        os.environ["YOLOX_DATADIR"] = os.path.expanduser("~/datasets")
-        os.environ["WORK_DIR"] = os.path.expanduser("~/cyclist_traffic_analysis")
+        # handle container setup
+        if os.path.exists(os.path.expanduser("~/cyclist_traffic_analysis")):
+            workspace = os.path.expanduser("~/cyclist_traffic_analysis")
+        else:
+            workspace = os.path.expanduser("~")
+        os.environ["YOLOX_DATADIR"] = os.path.join(workspace, "datasets")
+        #os.environ["WORK_DIR"] = os.path.expanduser("~/cyclist_traffic_analysis")
 
         # ---------------- model config ---------------- #
         self.num_classes = 1
@@ -54,7 +59,7 @@ class Exp(YoloxBaseExp):
         self.print_interval = 10
         self.eval_interval = 1
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
-        self.output_dir = os.path.expanduser("~/YOLOX_outputs")
+        self.output_dir = os.path.join(workspace, "YOLOX_outputs")
         
         # -----------------  testing config ------------------ #
         self.test_size = (640, 1024)

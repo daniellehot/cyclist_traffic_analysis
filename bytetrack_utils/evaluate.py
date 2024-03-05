@@ -35,9 +35,9 @@ def make_parser():
         type=str,
         help="url used to set up distributed training",
     )
-    parser.add_argument("-b", "--batch-size", type=int, default=64, help="batch size")
+    parser.add_argument("-b", "--batch-size", type=int, default=1, help="batch size")
     parser.add_argument(
-        "-d", "--devices", default=None, type=int, help="device for training"
+        "-d", "--devices", default=1, type=int, help="device for training"
     )
     parser.add_argument(
         "--local_rank", default=0, type=int, help="local rank for dist training"
@@ -98,8 +98,10 @@ def make_parser():
     )
     # det args
     parser.add_argument("-c", "--ckpt", default=None, type=str, help="ckpt for eval")
-    parser.add_argument("--conf", default=0.01, type=float, help="test conf")
-    parser.add_argument("--nms", default=0.7, type=float, help="test nms threshold")
+    #parser.add_argument("--conf", default=0.01, type=float, help="test conf")
+    #parser.add_argument("--nms", default=0.7, type=float, help="test nms threshold")
+    parser.add_argument("--conf", default=None, type=float, help="test conf")
+    parser.add_argument("--nms", default=None, type=float, help="test nms threshold")
     parser.add_argument("--tsize", default=None, type=int, help="test img size")
     parser.add_argument("--seed", default=None, type=int, help="eval seed")
     # tracking args
@@ -153,7 +155,7 @@ def main(exp, args, num_gpu):
 
     setup_logger(file_name, distributed_rank=rank, filename="val_log.txt", mode="a")
     logger.info("Args: {}".format(args))
-
+    
     if args.conf is not None:
         exp.test_conf = args.conf
     if args.nms is not None:
@@ -217,7 +219,7 @@ def main(exp, args, num_gpu):
         model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
     )
     logger.info("\n" + summary)
-
+    exit()
     # evaluate MOTA
     mm.lap.default_solver = 'lap'
 
