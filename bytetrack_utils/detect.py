@@ -1,5 +1,5 @@
 import argparse
-import os
+import os, shutil
 import torch
 import torchvision.transforms as transforms
 from PIL import Image, ImageDraw, ImageFont
@@ -82,7 +82,7 @@ def inference_image(model, exp, image_path, save_dir):
         print(f"Processing image {image_path} {idx+1}/{len(img_list)}")
 
         transform = transforms.Compose([
-            transforms.Resize((exp.input_size[1], exp.input_size[0])),
+            transforms.Resize((exp.input_size[0], exp.input_size[1])),
             transforms.ToTensor(),
         ])
         img_tensor = transform(img).cuda().unsqueeze(0) 
@@ -98,11 +98,16 @@ def inference_image(model, exp, image_path, save_dir):
 def main(args):
     exp = get_exp(args.exp_file, args.model_name)
     model = load_model(exp, args.ckpt_path)
+    
     if args.save_dir is not None:
-        save_dir = args.save_dir
+        #save_dir = args.save_dir
+        save_dir = os.path.join(exp.output_dir, exp.exp_name, args.save_dir)
     else:
         save_dir = os.path.join(exp.output_dir, exp.exp_name, "inference")
+    if os.path.exists(save_dir):
+        shutil.rmtree(save_dir)    
     os.makedirs(save_dir, exist_ok=True)
+
     inference_image(model, exp, args.image_path, save_dir)
 
 if __name__ == "__main__":    

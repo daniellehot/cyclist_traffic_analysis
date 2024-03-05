@@ -1,10 +1,11 @@
 import argparse
-import os
+import os, shutil
 import torch
 import torchvision.transforms as transforms
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import cv2
+import copy
 
 from yolox.exp import get_exp
 from yolox.utils import fuse_model, postprocess
@@ -45,53 +46,37 @@ def load_model(exp, ckpt, rank=0):
     return model
 
 
-def draw_detections(image, detections):
+def draw_detections(img, detections):
+    image = copy.deepcopy(img)
+
     if detections[0] is not None:
         predictions =  detections[0].cpu().numpy()
         for pred in predictions:
-            x1, y1, x2, y2, obj_conf, class_conf, class_pred = pred
-
+            x1, y1, x2, y2, obj_conf, clqass_conf, class_pred = pred
+            top_left = (int(y1), int(x1))
+            bottom_right = (int(y2), int(x2))
             # Draw bounding box rectangle
-            cv2.rectangle(image, (int(y1), int(x1)), (int(y2), int(x2)), (0, 255, 0), 2)
-
-            # Construct label
-            #label = f"{class_names[int(class_pred)]}: {class_conf:.2f}"
-            #label = str(class_conf)
-
-            # Calculate text size and position
-            #text_width, text_height = draw.textsize(label, font=font)
-            #text_x = x1
-            #text_y = y1 - text_height - 5
-
-            # Draw label text
-            #draw.text((text_x, text_y), label, fill="green", font=font)
+            cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
     return image
 
 
-def draw_tracks(image, detections, ids, scores):
-    cv2.rectangle(image, (20, 100), (40, 200), (0, 255, 0), 2)
-    cv2.imshow("test", image)
-    
+#def draw_tracks(img, detections, ids, scores):
+def draw_tracks(img, targets):
+    image = copy.deepcopy(img)
+
     # Iterate through detections, IDs, and scores
-    for bbox, id, score in zip(detections, ids, scores):
-        # Extract bounding box coordinates
-        #bbox = detection[:4]
-        #print(detection)
+    for target in targets:
+        bbox = target.tlbr
+        top_left = (int(bbox[0]), int(bbox[1]))
+        bottom_right = (int(bbox[2]), int(bbox[3]))
+        cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
 
-        # Convert bounding box to integers 
-        bbox_int = [int(coord) for coord in bbox]
-        top, left, width, height = bbox_int
-        bottom = top + height
-        right = left + width
+        track_id = target.track_id
         # Draw bounding box
-        cv2.rectangle(image, (top, left), (bottom, right), (0, 255, 0), 2)
-
-        # Convert float score to string
-        score_str = '{:.2f}'.format(score)
-
         # Write ID and score near the bounding box
-        #cv2.putText(image, f'ID: {id}, Score: {score_str}', (bbox_int[0], bbox_int[1] - 10),
-        #            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        text_position = (int(bbox[0]/2 + bbox[2]/2), int(bbox[1]/2 + bbox[3]/2))
+        cv2.putText(image, f"{track_id}", text_position,
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     return image
 
 
@@ -105,7 +90,7 @@ def read_images(path):
 
 def inference_image(model, exp, img):
     transform = transforms.Compose([
-        transforms.Resize((exp.input_size[1], exp.input_size[0])),
+        transforms.Resize((exp.input_size[0], exp.input_size[1])),
         transforms.ToTensor(),
     ])
 
@@ -136,36 +121,49 @@ def track(tracker, detections, args):
                 online_tlwhs.append(tlwh)
                 online_ids.append(tid)
                 online_scores.append(t.score)
-        return online_targets, online_tlwhs, online_ids, online_scores
+        #return online_targets, online_tlwhs, online_ids, online_scores
+        return online_targets
 
 
 def main(args):
     exp = get_exp(args.exp_file, args.model_name)
     
     if args.save_dir is not None:
-        save_dir = args.save_dir
+        #save_dir = args.save_dir
+        save_dir = os.path.join(exp.output_dir, exp.exp_name, args.save_dir)
     else:
-        save_dir = os.path.join(exp.output_dir, exp.exp_name, "tracking")
+        save_dir = os.path.join(exp.output_dir, exp.exp_name, "inference")
+    if os.path.exists(save_dir):
+        shutil.rmtree(save_dir)    
     os.makedirs(save_dir, exist_ok=True)
     
     counter = 0
     model = load_model(exp, args.ckpt_path)
     tracker = BYTETracker(args)
     img_list = read_images(args.image_path)
+    
     for idx, image_path in enumerate(img_list):
         if image_path.endswith(IMAGE_EXTENSIONS):
             img = Image.open(image_path).convert('RGB')
             img_np = cv2.imread(image_path)
         else:
             continue
+
         print(f"Processing image {image_path} {idx+1}/{len(img_list)}")
         detections = inference_image(model, exp, img)
-        targets, tlwhs, ids, scores = track(tracker, detections, args)
-        img_detections = draw_detections(img_np, detections)
-        img_tracks = draw_tracks(img_np, tlwhs, ids, scores)
-        cv2.imshow("test", img_detections)
-        cv2.waitKey()
-        exit()
+        #img_detections = draw_detections(img_np, detections)
+        
+        #targets, tlwhs, ids, scores = track(tracker, detections, args)
+        targets = track(tracker, detections, args)
+        img_tracks = draw_tracks(img_np, targets)
+
+        #output_img = np.hstack((img_detections, 
+        #                        np.zeros((img_np.shape[0], 5, 3), dtype=np.uint8), 
+        #                        img_tracks
+        #                        ))
+        save_path = os.path.join(save_dir, os.path.basename(image_path))
+        cv2.imwrite(save_path, img_tracks)
+        print(f"Saved image with detection results: {save_path}")
 
 if __name__ == "__main__":    
     main(parse_args())
