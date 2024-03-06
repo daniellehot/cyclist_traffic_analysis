@@ -23,6 +23,8 @@ dataset_samples
 Multi-View-Data.zip
 multi-view-data
 datasets.tar.gz
+AAU_RainSnow_Traffic_Surveillance.zip
+AAU_RainSnow_Traffic_Surveillance
 
 # Visualizations
 datasets_utils/***/*.png

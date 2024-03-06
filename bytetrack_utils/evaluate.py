@@ -105,6 +105,7 @@ def make_parser():
     parser.add_argument("--tsize", default=None, type=int, help="test img size")
     parser.add_argument("--seed", default=None, type=int, help="eval seed")
     # tracking args
+    parser.add_argument("--no_detection", action="store_true", help="only evaluate tracking")
     parser.add_argument("--track_thresh", type=float, default=0.6, help="tracking confidence threshold")
     parser.add_argument("--track_buffer", type=int, default=30, help="the frames for keep lost tracks")
     parser.add_argument("--match_thresh", type=float, default=0.9, help="matching threshold for tracking")
@@ -155,92 +156,85 @@ def main(exp, args, num_gpu):
 
     setup_logger(file_name, distributed_rank=rank, filename="val_log.txt", mode="a")
     logger.info("Args: {}".format(args))
-    
-    if args.conf is not None:
-        exp.test_conf = args.conf
-    if args.nms is not None:
-        exp.nmsthre = args.nms
-    if args.tsize is not None:
-        exp.test_size = (args.tsize, args.tsize)
 
-    model = exp.get_model()
-    logger.info("Model Summary: {}".format(get_model_info(model, exp.test_size)))
-    #logger.info("Model Structure:\n{}".format(str(model)))
+    if not args.no_detection:    
+        if args.conf is not None:
+            exp.test_conf = args.conf
+        if args.nms is not None:
+            exp.nmsthre = args.nms
+        if args.tsize is not None:
+            exp.test_size = (args.tsize, args.tsize)
 
-    val_loader = exp.get_eval_loader(args.batch_size, is_distributed, args.test)
-    evaluator = MOTEvaluator(
-        args=args,
-        dataloader=val_loader,
-        img_size=exp.test_size,
-        confthre=exp.test_conf,
-        nmsthre=exp.nmsthre,
-        num_classes=exp.num_classes,
-        )
+        model = exp.get_model()
+        logger.info("Model Summary: {}".format(get_model_info(model, exp.test_size)))
+        #logger.info("Model Structure:\n{}".format(str(model)))
+        
+        val_loader = exp.get_eval_loader(args.batch_size, is_distributed, args.test)
+        evaluator = MOTEvaluator(
+            args=args,
+            dataloader=val_loader,
+            img_size=exp.test_size,
+            confthre=exp.test_conf,
+            nmsthre=exp.nmsthre,
+            num_classes=exp.num_classes,
+            )
 
-    torch.cuda.set_device(rank)
-    model.cuda(rank)
-    model.eval()
+        torch.cuda.set_device(rank)
+        model.cuda(rank)
+        model.eval()
 
-    if not args.speed and not args.trt:
-        if args.ckpt is None:
-            ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
+        if not args.speed and not args.trt:
+            if args.ckpt is None:
+                ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
+            else:
+                ckpt_file = args.ckpt
+            logger.info("loading checkpoint")
+            loc = "cuda:{}".format(rank)
+            ckpt = torch.load(ckpt_file, map_location=loc)
+            # load the model state dict
+            model.load_state_dict(ckpt["model"])
+            logger.info("loaded checkpoint done.")
+
+        if is_distributed:
+            model = DDP(model, device_ids=[rank])
+
+        if args.fuse:
+            logger.info("\tFusing model...")
+            model = fuse_model(model)
+
+        if args.trt:
+            assert (
+                not args.fuse and not is_distributed and args.batch_size == 1
+            ), "TensorRT model is not support model fusing and distributed inferencing!"
+            trt_file = os.path.join(file_name, "model_trt.pth")
+            assert os.path.exists(
+                trt_file
+            ), "TensorRT model is not found!\n Run tools/trt.py first!"
+            model.head.decode_in_inference = False
+            decoder = model.head.decode_outputs
         else:
-            ckpt_file = args.ckpt
-        logger.info("loading checkpoint")
-        loc = "cuda:{}".format(rank)
-        ckpt = torch.load(ckpt_file, map_location=loc)
-        # load the model state dict
-        model.load_state_dict(ckpt["model"])
-        logger.info("loaded checkpoint done.")
+            trt_file = None
+            decoder = None
 
-    if is_distributed:
-        model = DDP(model, device_ids=[rank])
+        # start evaluate
+        *_, summary = evaluator.evaluate(
+            model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
+        )
+        logger.info("\n" + summary)
 
-    if args.fuse:
-        logger.info("\tFusing model...")
-        model = fuse_model(model)
-
-    if args.trt:
-        assert (
-            not args.fuse and not is_distributed and args.batch_size == 1
-        ), "TensorRT model is not support model fusing and distributed inferencing!"
-        trt_file = os.path.join(file_name, "model_trt.pth")
-        assert os.path.exists(
-            trt_file
-        ), "TensorRT model is not found!\n Run tools/trt.py first!"
-        model.head.decode_in_inference = False
-        decoder = model.head.decode_outputs
-    else:
-        trt_file = None
-        decoder = None
-
-    # start evaluate
-    *_, summary = evaluator.evaluate(
-        model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
-    )
-    logger.info("\n" + summary)
-    exit()
+    logger.info("Evaluating Tracking Performance")
     # evaluate MOTA
     mm.lap.default_solver = 'lap'
 
-    if exp.val_ann == 'val_half.json':
-        gt_type = '_val_half'
-    else:
-        gt_type = ''
-    print('gt_type', gt_type)
-    if args.mot20:
-        gtfiles = glob.glob(os.path.join('datasets/MOT20/train', '*/gt/gt{}.txt'.format(gt_type)))
-    else:
-        #gtfiles = glob.glob(os.path.join('datasets/mot/train', '*/gt/gt{}.txt'.format(gt_type)))
-        #gtfiles = glob.glob(os.path.join('datasets/multi_view_mot/test', '*/gt/gt{}.txt'.format(gt_type)))
-        gtfiles = os.path.join(get_yolox_datadir(), "multi_view_mot/test/gt/gt.txt")
-    print('gt_files', gtfiles)
+    gtfiles = [os.path.join(get_yolox_datadir(), "multi_view_mot", "test", seq, "gt", "gt.txt") for seq in os.listdir(os.path.join(get_yolox_datadir(), "multi_view_mot", "test"))]
     tsfiles = [f for f in glob.glob(os.path.join(results_folder, '*.txt')) if not os.path.basename(f).startswith('eval')]
     logger.info('Found {} groundtruths and {} test files.'.format(len(gtfiles), len(tsfiles)))
+    logger.info(f'Ground truth {gtfiles}')
+    logger.info(f'Tracks {tsfiles}')
     logger.info('Available LAP solvers {}'.format(mm.lap.available_solvers))
     logger.info('Default LAP solver \'{}\''.format(mm.lap.default_solver))
     logger.info('Loading files.')
-    
+
     gt = OrderedDict([(Path(f).parts[-3], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=1)) for f in gtfiles])
     ts = OrderedDict([(os.path.splitext(Path(f).parts[-1])[0], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=-1)) for f in tsfiles])    
     

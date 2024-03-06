@@ -4,6 +4,7 @@ DATASETS=$ROOT/datasets
 YOLOX_OUTPUTS=$ROOT/YOLOX_outputs
 UTILS=$ROOT/bytetrack_utils
 MULTI_VIEW=$ROOT/multi-view-data
+VISUALIZATIONS=$ROOT/visualizations
 
 #DOCKER_ROOT=/home/user/cyclist_traffic_analysis
 DOCKER_ROOT=/home/user
@@ -20,6 +21,7 @@ docker run --gpus all -it --rm \
     -v $YOLOX_OUTPUTS:$DOCKER_ROOT/YOLOX_outputs \
     -v $UTILS:$DOCKER_ROOT/bytetrack_utils \
     -v $MULTI_VIEW:$DOCKER_ROOT/multi-view-data \
+    -v $VISUALIZATIONS:$DOCKER_ROOT/visualizations \
     -e DISPLAY=$DISPLAY \
     -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
     -e XAUTHORITY=$XAUTH \
