@@ -1,13 +1,24 @@
 import torch
 import torch.distributed as dist
-import torch.nn as nn
-
+#import torch.nn as nn
 import os
-import random
+#import sys
 
-#from yolox.exp import BaseExp
 from yolox.exp import Exp as YoloxBaseExp
-from yolox.data import get_yolox_datadir
+from yolox.data import (
+    get_yolox_datadir,
+    MOTDataset,
+    TrainTransform,
+    ValTransform,
+    YoloBatchSampler,
+    DataLoader,
+    InfiniteSampler,
+    MosaicDetection,
+)
+
+#from yolox.evaluators import COCOEvaluator 
+from eval.coco_evaluator import COCOEvaluator
+
 
 class Exp(YoloxBaseExp):
     def __init__(self):
@@ -68,15 +79,6 @@ class Exp(YoloxBaseExp):
         
 
     def get_data_loader(self, batch_size, is_distributed, no_aug=False):
-        from yolox.data import (
-                MOTDataset,
-                TrainTransform,
-                YoloBatchSampler,
-                DataLoader,
-                InfiniteSampler,
-                MosaicDetection,
-        )
-
         dataset = MOTDataset(
             data_dir=os.path.join(get_yolox_datadir(), "multi_view_mot"),
             json_file=self.train_ann,
@@ -119,9 +121,8 @@ class Exp(YoloxBaseExp):
         return train_loader
 
 
-    def get_eval_loader(self, batch_size, is_distributed, testdev=False):
-        from yolox.data import MOTDataset, ValTransform
-
+    #def get_eval_loader(self, batch_size, is_distributed, testdev=False):
+    def get_eval_loader(self, batch_size, is_distributed):
         valdataset = MOTDataset(
             data_dir=os.path.join(get_yolox_datadir(), "multi_view_mot"),
             json_file=self.val_ann,
@@ -147,17 +148,15 @@ class Exp(YoloxBaseExp):
         return val_loader
 
 
-    def get_evaluator(self, batch_size, is_distributed, testdev=False):
-        from yolox.evaluators import COCOEvaluator
-
-        val_loader = self.get_eval_loader(batch_size, is_distributed, testdev=testdev)
+    #def get_evaluator(self, batch_size, is_distributed, testdev=False):
+    def get_evaluator(self, batch_size, is_distributed):
+        val_loader = self.get_eval_loader(batch_size, is_distributed)
         evaluator = COCOEvaluator(
             dataloader=val_loader,
             img_size=self.test_size,
             confthre=self.test_conf,
             nmsthre=self.nmsthre,
             num_classes=self.num_classes,
-            testdev=testdev,
         )
     
         return evaluator
