@@ -73,9 +73,13 @@ class Exp(YoloxBaseExp):
         self.output_dir = os.path.join(workspace, "YOLOX_outputs")
         
         # -----------------  testing config ------------------ #
-        self.test_size = (640, 1024)
-        self.test_conf = 0.001
-        self.nmsthre = 0.65
+        self.test_size = (640, 1024) # test image size
+        self.test_conf = 0.001 # confidence threshold (from 0 to 1, lower means more predictions)
+        self.nmsthre = 0.65 # non-maximum supression threshold (from 0 to 1, higher means more predictions)
+        self.track_thresh = 0.6 # tracking confidence threshold
+        self.track_buffer = 30  # the frames for keep lost tracks
+        self.match_thresh = 0.9 # matching threshold for tracking
+        self.min_box_area = 100 # filter out tiny boxes
         
 
     def get_data_loader(self, batch_size, is_distributed, no_aug=False):

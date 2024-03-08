@@ -20,8 +20,10 @@ import contextlib
 import io
 import itertools
 import json
-import tempfile
+#import tempfile
 import time
+import os, shutil
+import csv
 
 from shared_utils.utils import postprocess
 
@@ -32,7 +34,7 @@ class COCOEvaluator:
     and evaluated by COCO API.
     """
 
-    def __init__(self, dataloader, img_size, confthre, nmsthre, num_classes, distributed=False, fp16=False):
+    def __init__(self, dataloader, img_size, confthre, nmsthre, num_classes, output_dir, distributed=False, fp16=False):
         """
         Args:
             dataloader (Dataloader): evaluate dataloader.
@@ -47,6 +49,10 @@ class COCOEvaluator:
         self.confthre = confthre
         self.nmsthre = nmsthre
         self.num_classes = num_classes
+        
+        self.output_dir_predictions = os.path.join(output_dir, "predicitions")
+        os.makedirs(self.output_dir_predictions, exist_ok=True)
+        
         self.distributed = distributed
         self.fp16 = fp16
         #self.testdev = testdev
@@ -105,24 +111,24 @@ class COCOEvaluator:
                 if is_time_record:
                     start = time.time()
 
-                outputs = model(imgs)
+                model_outputs = model(imgs)
+                
                 #if decoder is not None:
                     #outputs = decoder(outputs, dtype=outputs.type())
 
                 if is_time_record:
                     infer_end = time_synchronized()
                     inference_time += infer_end - start
-
-                outputs = postprocess(outputs, self.num_classes, self.confthre, self.nmsthre)
-
+                
+                outputs = postprocess(model_outputs, self.num_classes, self.confthre, self.nmsthre)
+    
                 if is_time_record:
                     nms_end = time_synchronized()
                     nms_time += nms_end - infer_end
 
             data_list.extend(self.convert_to_coco_format(outputs, info_imgs, ids))
-        print(data_list)
-        #statistics = torch.cuda.FloatTensor([inference_time, nms_time, n_samples])
-        statistics = torch.tensor([inference_time, nms_time, n_samples], dtype=torch.float, device=torch.device('cuda:0'))
+        
+        statistics = torch.tensor([inference_time, nms_time, n_samples], dtype=torch.float, device='cuda:0')
         if self.distributed:
             data_list = gather(data_list, dst=0)
             data_list = list(itertools.chain(*data_list))
@@ -191,21 +197,11 @@ class COCOEvaluator:
         # Evaluate the Dt (detection) json comparing with the ground truth
         if len(data_dict) > 0:
             cocoGt = self.dataloader.dataset.coco
-            # TODO: since pycocotools can't process dict in py36, write data to json file.
-            if self.testdev:
-                json.dump(data_dict, open("./yolox_testdev_2017.json", "w"))
-                cocoDt = cocoGt.loadRes("./yolox_testdev_2017.json")
-            else:
-                _, tmp = tempfile.mkstemp()
-                json.dump(data_dict, open(tmp, "w"))
-                cocoDt = cocoGt.loadRes(tmp)
-            '''
-            try:
-                from yolox.layers import COCOeval_opt as COCOeval
-            except ImportError:
-                from pycocotools import cocoeval as COCOeval
-                logger.warning("Use standard COCOeval.")
-            '''
+            coco_predictions_json = os.path.join(self.output_dir_predictions, f'conf{self.confthre}_nms{self.nmsthre}.json')
+            with open(coco_predictions_json, 'w') as f:
+                json.dump(data_dict, f)
+            cocoDt = cocoGt.loadRes(coco_predictions_json)
+
             #from pycocotools.cocoeval import COCOeval
             from yolox.layers import COCOeval_opt as COCOeval
             cocoEval = COCOeval(cocoGt, cocoDt, annType[1])
@@ -215,6 +211,24 @@ class COCOEvaluator:
             with contextlib.redirect_stdout(redirect_string):
                 cocoEval.summarize()
             info += redirect_string.getvalue()
+            self.save_results(cocoEval)
             return cocoEval.stats[0], cocoEval.stats[1], info
         else:
             return 0, 0, info
+        
+    
+    def save_results(self, cocoEvalObj):
+        #metric_IoU_area_maxDets
+        header = ["AP_0.50:0.95_all_100", "AP_0.50_all_100", "AP_0.75_all_100", 
+                  "AP_0.50:0.95_small_100", "AP_0.50:0.95_medium_100", "AP_0.50:0.95_large_100",
+                  "AR_0.50:0.95_all_1", "AR_0.50:0.95_all_10", "AR_0.50:0.95_all_100",
+                  "AR_0.50:0.95_small_100", "AR_0.50:0.95_medium_100", "AR_0.50:0.95_large_100"
+                ]
+        scores = cocoEvalObj.stats
+
+        scores_csv = os.path.join(self.output_dir_predictions, f'conf{self.confthre}_nms{self.nmsthre}.csv')
+
+        with open(scores_csv, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(header)
+            writer.writerow(scores)

@@ -118,6 +118,7 @@ def main(exp, args, num_gpu):
         confthre=exp.test_conf, 
         nmsthre=exp.nmsthre,
         num_classes=exp.num_classes,
+        output_dir=file_name,
         distributed=is_distributed, 
         fp16=args.fp16,
     )
@@ -161,7 +162,7 @@ def main(exp, args, num_gpu):
     #*_, summary = evaluator.evaluate(
        #model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
     #)
-    summary = evaluator.evaluate(model)
+    ap50_95, ap50, summary = evaluator.evaluate(model)
     logger.info("\n" + summary)
 
 

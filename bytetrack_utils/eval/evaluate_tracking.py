@@ -6,8 +6,14 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 from yolox.core import launch
 from yolox.exp import get_exp
-from yolox.utils import configure_nccl, fuse_model, get_local_rank, get_model_info, setup_logger
-from yolox.evaluators import MOTEvaluator
+from yolox.utils import (
+    configure_nccl, 
+    fuse_model, 
+    get_local_rank, 
+    get_model_info, 
+    setup_logger
+)
+#from yolox.evaluators import MOTEvaluator
 from yolox.data import get_yolox_datadir
 
 import argparse
@@ -18,6 +24,8 @@ import glob
 import motmetrics as mm
 from collections import OrderedDict
 from pathlib import Path
+
+from eval.mot_evaluator import MOTEvaluator
 
 
 def make_parser():
@@ -30,7 +38,7 @@ def make_parser():
     parser.add_argument("-c", "--ckpt", default=None, type=str, help="ckpt for eval")
     parser.add_argument("--fp16", dest="fp16", default=False, action="store_true", help="Adopting mix precision evaluating.")
     parser.add_argument("--fuse", dest="fuse", default=False, action="store_true", help="Fuse conv and bn for testing.")
-    parser.add_argument("--opts", help="Modify config options using the command-line", default=None, nargs=argparse.REMAINDER)
+    parser.add_argument("opts", help="Modify config options using the command-line", default=None, nargs=argparse.REMAINDER)
     # distributed
     parser.add_argument("--dist-backend", default="nccl", type=str, help="distributed backend")
     parser.add_argument("--dist-url", default=None, type=str,help="url used to set up distributed training")
@@ -49,11 +57,15 @@ def make_parser():
     parser.add_argument("--seed", default=None, type=int, help="eval seed")
     # tracking args
     parser.add_argument("--no_detection", action="store_true", help="only evaluate tracking")
-    parser.add_argument("--track_thresh", type=float, default=0.6, help="tracking confidence threshold")
-    parser.add_argument("--track_buffer", type=int, default=30, help="the frames for keep lost tracks")
-    parser.add_argument("--match_thresh", type=float, default=0.9, help="matching threshold for tracking")
-    parser.add_argument("--min-box-area", type=float, default=100, help='filter out tiny boxes')
-    parser.add_argument("--mot20", dest="mot20", default=False, action="store_true", help="test mot20.")
+    parser.add_argument("--track_thresh", type=float, default=None, help="tracking confidence threshold")
+    parser.add_argument("--track_buffer", type=int, default=None, help="the frames for keep lost tracks")
+    parser.add_argument("--match_thresh", type=float, default=None, help="matching threshold for tracking")
+    parser.add_argument("--min-box-area", type=float, default=None, help='filter out tiny boxes')
+    #parser.add_argument("--track_thresh", type=float, default=0.6, help="tracking confidence threshold")
+    #parser.add_argument("--track_buffer", type=int, default=30, help="the frames for keep lost tracks")
+    #parser.add_argument("--match_thresh", type=float, default=0.9, help="matching threshold for tracking")
+    #parser.add_argument("--min-box-area", type=float, default=100, help='filter out tiny boxes')
+    #parser.add_argument("--mot20", dest="mot20", default=False, action="store_true", help="test mot20.")
     return parser
 
 
@@ -100,28 +112,44 @@ def main(exp, args, num_gpu):
     setup_logger(file_name, distributed_rank=rank, filename="val_log.txt", mode="a")
     logger.info("Args: {}".format(args))
 
-    if not args.no_detection:    
-        if args.conf is not None:
-            exp.test_conf = args.conf
-        if args.nms is not None:
-            exp.nmsthre = args.nms
-        if args.tsize is not None:
-            exp.test_size = (args.tsize, args.tsize)
+    # overwrite thresholds from the experiment file with arguments if arguments exist
+    if args.conf is not None:
+        exp.test_conf = args.conf
+    if args.nms is not None:
+        exp.nmsthre = args.nms
+    if args.tsize is not None:
+        exp.test_size = (args.tsize, args.tsize)
+    if args.track_thresh is not None:
+        exp.track_thresh = args.track_thresh
+    if args.track_buffer is not None:
+        exp.track_buffer = args.track_buffer
+    if args.match_thresh is not None:
+        exp.match_thresh = args.match_thresh
+    if args.min_box_area is not None:
+        exp.min_box_area = args.min_box_area
 
+    if not args.no_detection:    
         model = exp.get_model()
         logger.info("Model Summary: {}".format(get_model_info(model, exp.test_size)))
         #logger.info("Model Structure:\n{}".format(str(model)))
         
-        val_loader = exp.get_eval_loader(args.batch_size, is_distributed, args.test)
+        val_loader = exp.get_eval_loader(args.batch_size, is_distributed)
         evaluator = MOTEvaluator(
-            args=args,
             dataloader=val_loader,
-            img_size=exp.test_size,
-            confthre=exp.test_conf,
+            img_size=exp.test_size, 
+            confthre=exp.test_conf, 
             nmsthre=exp.nmsthre,
             num_classes=exp.num_classes,
-            )
-
+            output_dir=file_name,
+            track_thresh=exp.track_thresh, 
+            track_buffer=exp.track_buffer, 
+            match_thresh=exp.match_thresh, 
+            min_box_area=exp.min_box_area,
+            distributed=is_distributed, 
+            fp16=args.fp16,
+        )
+        print(vars(evaluator))
+        exit()
         torch.cuda.set_device(rank)
         model.cuda(rank)
         model.eval()
