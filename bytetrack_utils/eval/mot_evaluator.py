@@ -52,7 +52,7 @@ class MOTEvaluator(COCOEvaluator):
             distributed=distributed, 
             fp16=fp16
         )
-        # initiate tracking variables
+        # initiate MOTEvaluator
         self.track_thresh = track_thresh
         self.track_buffer = track_buffer
         self.match_thresh = match_thresh
@@ -64,18 +64,19 @@ class MOTEvaluator(COCOEvaluator):
         #self.confthre = confthre
         #self.nmsthre = nmsthre
         #self.num_classes = num_classes
+
         
-        
-    def evaluate(
-        self,
-        model,
-        distributed=False,
-        half=False,
-        trt_file=None,
-        decoder=None,
-        test_size=None,
-        result_folder=None
-    ):
+    #def evaluate(
+    #    self,
+    #    model,
+    #    distributed=False,
+    #    half=False,
+    #    trt_file=None,
+    #    decoder=None,
+    #    test_size=None,
+    #    result_folder=None
+    #):
+    def evaluate(self, model):
         """
         COCO average precision (AP) Evaluation. Iterate inference on the test dataset
         and the results are evaluated by COCO API.
@@ -91,32 +92,30 @@ class MOTEvaluator(COCOEvaluator):
             summary (sr): summary info of evaluation.
         """
         # TODO half to amp_test
-        tensor_type = torch.cuda.HalfTensor if half else torch.cuda.FloatTensor
+        tensor_type = torch.cuda.HalfTensor if self.fp16 else torch.cuda.FloatTensor
         model = model.eval()
-        if half:
+        if self.fp16:
             model = model.half()
         ids = []
         data_list = []
-        results = []
-        video_names = defaultdict()
         progress_bar = tqdm if is_main_process() else iter
 
+        results = []
+        video_names = {}
         inference_time = 0
         track_time = 0
         n_samples = len(self.dataloader) - 1
 
-        if trt_file is not None:
-            from torch2trt import TRTModule
-
-            model_trt = TRTModule()
-            model_trt.load_state_dict(torch.load(trt_file))
-
-            x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
-            model(x)
-            model = model_trt
+        #if trt_file is not None:
+            #from torch2trt import TRTModule
+            #model_trt = TRTModule()
+            #model_trt.load_state_dict(torch.load(trt_file))
+            #x = torch.ones(1, 3, test_size[0], test_size[1]).cuda()
+            #model(x)
+            #model = model_trt
             
-        tracker = BYTETracker(self.args)
-        ori_thresh = self.args.track_thresh
+        tracker = BYTETracker(self.args) # TODO adapt
+        ori_thresh = self.track_thresh
         for cur_iter, (imgs, _, info_imgs, ids) in enumerate(progress_bar(self.dataloader)):
             with torch.no_grad():
                 # init tracker
@@ -124,33 +123,33 @@ class MOTEvaluator(COCOEvaluator):
                 video_id = info_imgs[3].item()
                 img_file_name = info_imgs[4]
                 video_name = img_file_name[0].split('/')[0]
-                if video_name == 'MOT17-05-FRCNN' or video_name == 'MOT17-06-FRCNN':
-                    self.args.track_buffer = 14
-                elif video_name == 'MOT17-13-FRCNN' or video_name == 'MOT17-14-FRCNN':
-                    self.args.track_buffer = 25
-                else:
-                    self.args.track_buffer = 30
+                #if video_name == 'MOT17-05-FRCNN' or video_name == 'MOT17-06-FRCNN':
+                #    self.args.track_buffer = 14
+                #elif video_name == 'MOT17-13-FRCNN' or video_name == 'MOT17-14-FRCNN':
+                #    self.args.track_buffer = 25
+                #else:
+                #    self.args.track_buffer = 30
 
-                if video_name == 'MOT17-01-FRCNN':
-                    self.args.track_thresh = 0.65
-                elif video_name == 'MOT17-06-FRCNN':
-                    self.args.track_thresh = 0.65
-                elif video_name == 'MOT17-12-FRCNN':
-                    self.args.track_thresh = 0.7
-                elif video_name == 'MOT17-14-FRCNN':
-                    self.args.track_thresh = 0.67
-                elif video_name in ['MOT20-06', 'MOT20-08']:
-                    self.args.track_thresh = 0.3
-                else:
-                    self.args.track_thresh = ori_thresh
+                #if video_name == 'MOT17-01-FRCNN':
+                #    self.args.track_thresh = 0.65
+                #elif video_name == 'MOT17-06-FRCNN':
+                #    self.args.track_thresh = 0.65
+                #elif video_name == 'MOT17-12-FRCNN':
+                #    self.args.track_thresh = 0.7
+                #elif video_name == 'MOT17-14-FRCNN':
+                #    self.args.track_thresh = 0.67
+                #elif video_name in ['MOT20-06', 'MOT20-08']:
+                #    self.args.track_thresh = 0.3
+                #else:
+                #    self.args.track_thresh = ori_thresh
 
                 if video_name not in video_names:
                     video_names[video_id] = video_name
                 if frame_id == 1:
                     tracker = BYTETracker(self.args)
                     if len(results) != 0:
-                        result_filename = os.path.join(result_folder, '{}.txt'.format(video_names[video_id - 1]))
-                        write_results(result_filename, results)
+                        result_filename = os.path.join(self.output_dir_tracking, '{}.txt'.format(video_names[video_id - 1]))
+                        self.write_results(result_filename, results)
                         results = []
 
                 imgs = imgs.type(tensor_type)
@@ -161,8 +160,9 @@ class MOTEvaluator(COCOEvaluator):
                     start = time.time()
 
                 outputs = model(imgs)
-                if decoder is not None:
-                    outputs = decoder(outputs, dtype=outputs.type())
+                
+                #if decoder is not None:
+                    #outputs = decoder(outputs, dtype=outputs.type())
 
                 outputs = postprocess(outputs, self.num_classes, self.confthre, self.nmsthre)
             
@@ -183,7 +183,7 @@ class MOTEvaluator(COCOEvaluator):
                     tlwh = t.tlwh
                     tid = t.track_id
                     vertical = tlwh[2] / tlwh[3] > 1.6
-                    if tlwh[2] * tlwh[3] > self.args.min_box_area and not vertical:
+                    if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
                         online_tlwhs.append(tlwh)
                         online_ids.append(tid)
                         online_scores.append(t.score)
@@ -195,11 +195,12 @@ class MOTEvaluator(COCOEvaluator):
                 track_time += track_end - infer_end
             
             if cur_iter == len(self.dataloader) - 1:
-                result_filename = os.path.join(result_folder, '{}.txt'.format(video_names[video_id]))
-                write_results(result_filename, results)
+                result_filename = os.path.join(self.output_dir_tracking, '{}.txt'.format(video_names[video_id]))
+                self.write_results(result_filename, results)
 
-        statistics = torch.cuda.FloatTensor([inference_time, track_time, n_samples])
-        if distributed:
+        #statistics = torch.cuda.FloatTensor([inference_time, track_time, n_samples])
+        statistics = torch.tensor([inference_time, track_time, n_samples], dtype=torch.float, device='cuda:0')
+        if self.distributed:
             data_list = gather(data_list, dst=0)
             data_list = list(itertools.chain(*data_list))
             torch.distributed.reduce(statistics, dst=0)
@@ -208,7 +209,8 @@ class MOTEvaluator(COCOEvaluator):
         synchronize()
         return eval_results
 
-
+    # convert_to_coco_format and evaluate_prediction are already defined in the COCO evaluator
+    """ 
     def convert_to_coco_format(self, outputs, info_imgs, ids):
         data_list = []
         for (output, img_h, img_w, img_id) in zip(
@@ -295,7 +297,7 @@ class MOTEvaluator(COCOEvaluator):
             return cocoEval.stats[0], cocoEval.stats[1], info
         else:
             return 0, 0, info
-
+    """
 
     def write_results(self, filename, results):
         save_format = '{frame},{id},{x1},{y1},{w},{h},{s},-1,-1,-1\n'
