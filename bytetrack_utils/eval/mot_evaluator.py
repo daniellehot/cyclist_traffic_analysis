@@ -1,8 +1,18 @@
-from collections import defaultdict
+#from collections import defaultdict
 from loguru import logger
 from tqdm import tqdm
-
+#import contextlib
+#import io
+import os
+import glob
+from collections import OrderedDict
+import itertools
+#import json
+#import tempfile
+import time
 import torch
+import motmetrics as mm
+from pathlib import Path
 
 from yolox.utils import (
     gather,
@@ -10,23 +20,17 @@ from yolox.utils import (
     #postprocess,
     synchronize,
     time_synchronized,
-    xyxy2xywh
+    #xyxy2xywh
 )
-from yolox.tracker.byte_tracker import BYTETracker
+from yolox.data import get_yolox_datadir
+#from yolox.tracker.byte_tracker import BYTETracker
 #from yolox.sort_tracker.sort import Sort
 #from yolox.deepsort_tracker.deepsort import DeepSort
 #from yolox.motdt_tracker.motdt_tracker import OnlineTracker
 
-import contextlib
-import io
-import os
-import itertools
-import json
-import tempfile
-import time
-
 from eval.coco_evaluator import COCOEvaluator
 from shared_utils.utils import postprocess
+from tracker.byte_tracker_modified import BYTETracker
 
 
 class MOTEvaluator(COCOEvaluator):
@@ -57,8 +61,12 @@ class MOTEvaluator(COCOEvaluator):
         self.track_buffer = track_buffer
         self.match_thresh = match_thresh
         self.min_box_area = min_box_area
-        self.output_dir_tracking = os.path.join(output_dir, "tracking")
+        
+        self.output_dir_tracking = os.path.join(output_dir, "tracking_tracks")
         os.makedirs(self.output_dir_tracking, exist_ok=True)
+
+        self.output_dir_tracking_metrics = os.path.join(output_dir, "tracking_metrics")
+        os.makedirs(self.output_dir_tracking_metrics, exist_ok=True)
         #self.dataloader = dataloader
         #self.img_size = img_size
         #self.confthre = confthre
@@ -114,8 +122,8 @@ class MOTEvaluator(COCOEvaluator):
             #model(x)
             #model = model_trt
             
-        tracker = BYTETracker(self.args) # TODO adapt
-        ori_thresh = self.track_thresh
+        #tracker = BYTETracker(self.args) # TODO adapt
+        #ori_thresh = self.track_thresh
         for cur_iter, (imgs, _, info_imgs, ids) in enumerate(progress_bar(self.dataloader)):
             with torch.no_grad():
                 # init tracker
@@ -145,11 +153,17 @@ class MOTEvaluator(COCOEvaluator):
 
                 if video_name not in video_names:
                     video_names[video_id] = video_name
-                if frame_id == 1:
-                    tracker = BYTETracker(self.args)
-                    if len(results) != 0:
+                if frame_id == 1: 
+                    # Initiate a new tracker instance whenever a new video sequence starts
+                    tracker = BYTETracker(
+                        track_thresh = self.track_thresh, 
+                        match_thresh = self.match_thresh,
+                        track_buffer = self.track_buffer
+                    )
+                    # save tracking results before clearing out 
+                    if len(results) != 0: 
                         result_filename = os.path.join(self.output_dir_tracking, '{}.txt'.format(video_names[video_id - 1]))
-                        self.write_results(result_filename, results)
+                        self.write_tracks(result_filename, results)
                         results = []
 
                 imgs = imgs.type(tensor_type)
@@ -182,8 +196,9 @@ class MOTEvaluator(COCOEvaluator):
                 for t in online_targets:
                     tlwh = t.tlwh
                     tid = t.track_id
-                    vertical = tlwh[2] / tlwh[3] > 1.6
-                    if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
+                    #vertical = tlwh[2] / tlwh[3] > 1.6
+                    #if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
+                    if tlwh[2] * tlwh[3] > self.min_box_area:
                         online_tlwhs.append(tlwh)
                         online_ids.append(tid)
                         online_scores.append(t.score)
@@ -196,7 +211,7 @@ class MOTEvaluator(COCOEvaluator):
             
             if cur_iter == len(self.dataloader) - 1:
                 result_filename = os.path.join(self.output_dir_tracking, '{}.txt'.format(video_names[video_id]))
-                self.write_results(result_filename, results)
+                self.write_tracks(result_filename, results)
 
         #statistics = torch.cuda.FloatTensor([inference_time, track_time, n_samples])
         statistics = torch.tensor([inference_time, track_time, n_samples], dtype=torch.float, device='cuda:0')
@@ -208,6 +223,7 @@ class MOTEvaluator(COCOEvaluator):
         eval_results = self.evaluate_prediction(data_list, statistics)
         synchronize()
         return eval_results
+
 
     # convert_to_coco_format and evaluate_prediction are already defined in the COCO evaluator
     """ 
@@ -299,8 +315,12 @@ class MOTEvaluator(COCOEvaluator):
             return 0, 0, info
     """
 
-    def write_results(self, filename, results):
-        save_format = '{frame},{id},{x1},{y1},{w},{h},{s},-1,-1,-1\n'
+    def write_tracks(self, filename, results, no_score = False):
+        if no_score:
+            save_format = '{frame},{id},{x1},{y1},{w},{h},-1,-1,-1,-1\n'
+        else:
+            save_format = '{frame},{id},{x1},{y1},{w},{h},{s},-1,-1,-1\n'
+        
         with open(filename, 'w') as f:
             for frame_id, tlwhs, track_ids, scores in results:
                 for tlwh, track_id, score in zip(tlwhs, track_ids, scores):
@@ -311,8 +331,8 @@ class MOTEvaluator(COCOEvaluator):
                     f.write(line)
         logger.info('save results to {}'.format(filename))
 
-
-    def write_results_no_score(self, filename, results):
+    """
+    def write_tracks_no_score(self, filename, results):
         save_format = '{frame},{id},{x1},{y1},{w},{h},-1,-1,-1,-1\n'
         with open(filename, 'w') as f:
             for frame_id, tlwhs, track_ids in results:
@@ -323,3 +343,55 @@ class MOTEvaluator(COCOEvaluator):
                     line = save_format.format(frame=frame_id, id=track_id, x1=round(x1, 1), y1=round(y1, 1), w=round(w, 1), h=round(h, 1))
                     f.write(line)
         logger.info('save results to {}'.format(filename))
+    """
+    
+    def evaluate_tracking(self):
+        # evaluate MOTA
+        mm.lap.default_solver = 'lap'
+
+        gtfiles = [os.path.join(get_yolox_datadir(), "multi_view_mot", "test", seq, "gt", "gt.txt") for seq in os.listdir(os.path.join(get_yolox_datadir(), "multi_view_mot", "test"))]
+        tsfiles = [f for f in glob.glob(os.path.join(self.output_dir_tracking, '*.txt')) if not os.path.basename(f).startswith('eval')]
+        logger.info('Found {} groundtruths and {} test files.'.format(len(gtfiles), len(tsfiles)))
+        logger.info(f'Ground truth {gtfiles}')
+        logger.info(f'Tracks {tsfiles}')
+        logger.info('Available LAP solvers {}'.format(mm.lap.available_solvers))
+        logger.info('Default LAP solver \'{}\''.format(mm.lap.default_solver))
+        logger.info('Loading files.')
+
+        gt = OrderedDict([(Path(f).parts[-3], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=1)) for f in gtfiles])
+        ts = OrderedDict([(os.path.splitext(Path(f).parts[-1])[0], mm.io.loadtxt(f, fmt='mot15-2D', min_confidence=-1)) for f in tsfiles])    
+        
+        mh = mm.metrics.create()    
+        accs, names = self.__compare_dataframes(gt, ts)
+        
+        logger.info('Running metrics')
+        metrics = mm.metrics.motchallenge_metrics + ['num_objects']
+        summary = mh.compute_many(accs, names=names, metrics=metrics, generate_overall=True)
+        
+        # convert absolute metrics to relative metrics
+        fmt = mh.formatters
+        div_dict = {
+            'num_objects': ['num_false_positives', 'num_misses', 'num_switches', 'num_fragmentations'],
+            'num_unique_objects': ['mostly_tracked', 'partially_tracked', 'mostly_lost']}
+        for divisor in div_dict:
+            for divided in div_dict[divisor]:
+                summary[divided] = (summary[divided] / summary[divisor])
+        change_fmt_list = ['num_false_positives', 'num_misses', 'num_switches', 'num_fragmentations', 'mostly_tracked',
+                        'partially_tracked', 'mostly_lost']
+        for k in change_fmt_list:
+            fmt[k] = fmt['mota']
+        save
+        return mm.io.render_summary(summary, formatters=fmt, namemap=mm.io.motchallenge_metric_names)
+
+    
+    def __compare_dataframes(self, gts, ts):
+        accs = []
+        names = []
+        for k, tsacc in ts.items():
+            if k in gts:            
+                logger.info('Comparing {}...'.format(k))
+                accs.append(mm.utils.compare_to_groundtruth(gts[k], tsacc, 'iou', distth=0.5))
+                names.append(k)
+            else:
+                logger.warning('No ground truth for {}, skipping.'.format(k))
+        return accs, names

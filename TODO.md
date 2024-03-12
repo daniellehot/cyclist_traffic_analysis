@@ -1,9 +1,15 @@
 
 - Tracking evaluation 
 - Detection evaluation
-- Save results - Keep track of performance 
+- Save results + Keep track of performance
+    - Detections 
+    - Tracking 
+        - New logic for getting gt mot txt files
+        - Evaluation with multiple sequences in the test set
+        - evaluate() calls evaluate_tracking() and returns summary for both 
 - Train on CLAAUDIA
-
+- Visualization class
+- 
 - Dataset
     - Multiple classes
     - Drone perspective

@@ -4,7 +4,14 @@
 
 from loguru import logger
 from tqdm import tqdm
-
+import contextlib
+import io
+import itertools
+import json
+#import tempfile
+import time
+import os, shutil
+import csv
 import torch
 
 from yolox.utils import (
@@ -15,15 +22,6 @@ from yolox.utils import (
     time_synchronized,
     xyxy2xywh
 )
-
-import contextlib
-import io
-import itertools
-import json
-#import tempfile
-import time
-import os, shutil
-import csv
 
 from shared_utils.utils import postprocess
 

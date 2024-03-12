@@ -14,7 +14,7 @@ from yolox.utils import (
     setup_logger
 )
 #from yolox.evaluators import MOTEvaluator
-from yolox.data import get_yolox_datadir
+#from yolox.data import get_yolox_datadir
 
 import argparse
 import os
@@ -56,7 +56,7 @@ def make_parser():
     parser.add_argument("--tsize", default=None, type=int, help="test img size")
     parser.add_argument("--seed", default=None, type=int, help="eval seed")
     # tracking args
-    parser.add_argument("--no_detection", action="store_true", help="only evaluate tracking")
+    parser.add_argument("--cache", action="store_true", help="only evaluate tracking")
     parser.add_argument("--track_thresh", type=float, default=None, help="tracking confidence threshold")
     parser.add_argument("--track_buffer", type=int, default=None, help="the frames for keep lost tracks")
     parser.add_argument("--match_thresh", type=float, default=None, help="matching threshold for tracking")
@@ -68,7 +68,7 @@ def make_parser():
     #parser.add_argument("--mot20", dest="mot20", default=False, action="store_true", help="test mot20.")
     return parser
 
-
+"""
 def compare_dataframes(gts, ts):
     accs = []
     names = []
@@ -81,7 +81,7 @@ def compare_dataframes(gts, ts):
             logger.warning('No ground truth for {}, skipping.'.format(k))
 
     return accs, names
-
+"""
 
 @logger.catch
 def main(exp, args, num_gpu):
@@ -106,8 +106,8 @@ def main(exp, args, num_gpu):
     if rank == 0:
         os.makedirs(file_name, exist_ok=True)
 
-    results_folder = os.path.join(file_name, "track_results")
-    os.makedirs(results_folder, exist_ok=True)
+    #results_folder = os.path.join(file_name, "track_results")
+    #os.makedirs(results_folder, exist_ok=True)
 
     setup_logger(file_name, distributed_rank=rank, filename="val_log.txt", mode="a")
     logger.info("Args: {}".format(args))
@@ -128,43 +128,42 @@ def main(exp, args, num_gpu):
     if args.min_box_area is not None:
         exp.min_box_area = args.min_box_area
 
-    if not args.no_detection:    
+    evaluator = MOTEvaluator(
+        dataloader=exp.get_eval_loader(args.batch_size, is_distributed),
+        img_size=exp.test_size, 
+        confthre=exp.test_conf, 
+        nmsthre=exp.nmsthre,
+        num_classes=exp.num_classes,
+        output_dir=file_name,
+        track_thresh=exp.track_thresh, 
+        track_buffer=exp.track_buffer, 
+        match_thresh=exp.match_thresh, 
+        min_box_area=exp.min_box_area,
+        distributed=is_distributed, 
+        fp16=args.fp16,
+    )
+
+    if not args.cache:    
         model = exp.get_model()
         logger.info("Model Summary: {}".format(get_model_info(model, exp.test_size)))
         #logger.info("Model Structure:\n{}".format(str(model)))
         
-        val_loader = exp.get_eval_loader(args.batch_size, is_distributed)
-        evaluator = MOTEvaluator(
-            dataloader=val_loader,
-            img_size=exp.test_size, 
-            confthre=exp.test_conf, 
-            nmsthre=exp.nmsthre,
-            num_classes=exp.num_classes,
-            output_dir=file_name,
-            track_thresh=exp.track_thresh, 
-            track_buffer=exp.track_buffer, 
-            match_thresh=exp.match_thresh, 
-            min_box_area=exp.min_box_area,
-            distributed=is_distributed, 
-            fp16=args.fp16,
-        )
-        print(vars(evaluator))
-        exit()
         torch.cuda.set_device(rank)
         model.cuda(rank)
         model.eval()
 
-        if not args.speed and not args.trt:
-            if args.ckpt is None:
-                ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
-            else:
-                ckpt_file = args.ckpt
-            logger.info("loading checkpoint")
-            loc = "cuda:{}".format(rank)
-            ckpt = torch.load(ckpt_file, map_location=loc)
-            # load the model state dict
-            model.load_state_dict(ckpt["model"])
-            logger.info("loaded checkpoint done.")
+        #if not args.speed and not args.trt:
+        if args.ckpt is None:
+            ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
+        else:
+            ckpt_file = args.ckpt
+        
+        logger.info("loading checkpoint")
+        loc = "cuda:{}".format(rank)
+        ckpt = torch.load(ckpt_file, map_location=loc)
+        # load the model state dict
+        model.load_state_dict(ckpt["model"])
+        logger.info("loaded checkpoint done.")
 
         if is_distributed:
             model = DDP(model, device_ids=[rank])
@@ -173,32 +172,36 @@ def main(exp, args, num_gpu):
             logger.info("\tFusing model...")
             model = fuse_model(model)
 
-        if args.trt:
-            assert (
-                not args.fuse and not is_distributed and args.batch_size == 1
-            ), "TensorRT model is not support model fusing and distributed inferencing!"
-            trt_file = os.path.join(file_name, "model_trt.pth")
-            assert os.path.exists(
-                trt_file
-            ), "TensorRT model is not found!\n Run tools/trt.py first!"
-            model.head.decode_in_inference = False
-            decoder = model.head.decode_outputs
-        else:
-            trt_file = None
-            decoder = None
+        #if args.trt:
+            #assert (
+            #    not args.fuse and not is_distributed and args.batch_size == 1
+            #), "TensorRT model is not support model fusing and distributed inferencing!"
+            #trt_file = os.path.join(file_name, "model_trt.pth")
+            #assert os.path.exists(
+            #    trt_file
+            #), "TensorRT model is not found!\n Run tools/trt.py first!"
+            #model.head.decode_in_inference = False
+            #decoder = model.head.decode_outputs
+        #else:
+            #trt_file = None
+            #decoder = None
 
         # start evaluate
-        *_, summary = evaluator.evaluate(
-            model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
-        )
-        logger.info("\n" + summary)
-
+        #*_, summary = evaluator.evaluate(
+        #    model, is_distributed, args.fp16, trt_file, decoder, exp.test_size, results_folder
+        #)
+        ap50_95, ap50, summary = evaluator.evaluate(model)
+        logger.info("Detection summary \n" + summary)
+    
     logger.info("Evaluating Tracking Performance")
+    summary_tracking = evaluator.evaluate_tracking()
+    logger.info("Tracking summary \n" + summary_tracking)
+    """
     # evaluate MOTA
     mm.lap.default_solver = 'lap'
 
     gtfiles = [os.path.join(get_yolox_datadir(), "multi_view_mot", "test", seq, "gt", "gt.txt") for seq in os.listdir(os.path.join(get_yolox_datadir(), "multi_view_mot", "test"))]
-    tsfiles = [f for f in glob.glob(os.path.join(results_folder, '*.txt')) if not os.path.basename(f).startswith('eval')]
+    tsfiles = [f for f in glob.glob(os.path.join(evaluator.output_dir_tracking, '*.txt')) if not os.path.basename(f).startswith('eval')]
     logger.info('Found {} groundtruths and {} test files.'.format(len(gtfiles), len(tsfiles)))
     logger.info(f'Ground truth {gtfiles}')
     logger.info(f'Tracks {tsfiles}')
@@ -221,24 +224,27 @@ def main(exp, args, num_gpu):
     # print(mm.io.render_summary(
     #   summary, formatters=mh.formatters, 
     #   namemap=mm.io.motchallenge_metric_names))
+    
+    # convert absolute metrics to relative metrics
     div_dict = {
         'num_objects': ['num_false_positives', 'num_misses', 'num_switches', 'num_fragmentations'],
         'num_unique_objects': ['mostly_tracked', 'partially_tracked', 'mostly_lost']}
     for divisor in div_dict:
         for divided in div_dict[divisor]:
             summary[divided] = (summary[divided] / summary[divisor])
+    
     fmt = mh.formatters
     change_fmt_list = ['num_false_positives', 'num_misses', 'num_switches', 'num_fragmentations', 'mostly_tracked',
                        'partially_tracked', 'mostly_lost']
     for k in change_fmt_list:
         fmt[k] = fmt['mota']
     print(mm.io.render_summary(summary, formatters=fmt, namemap=mm.io.motchallenge_metric_names))
-
+    
     metrics = mm.metrics.motchallenge_metrics + ['num_objects']
     summary = mh.compute_many(accs, names=names, metrics=metrics, generate_overall=True)
     print(mm.io.render_summary(summary, formatters=mh.formatters, namemap=mm.io.motchallenge_metric_names))
+    """
     logger.info('Completed')
-
 
 if __name__ == "__main__":
     args = make_parser().parse_args()
