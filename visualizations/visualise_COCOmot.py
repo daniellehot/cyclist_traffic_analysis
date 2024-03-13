@@ -42,16 +42,23 @@ def tag_image(image, tag):
     cv2.putText(image, tag, (text_x, text_y), font, font_scale, (255, 255, 255), font_thickness)
 
 
-def draw_text(image, text, bbox):
+def draw_text(image, text, bbox, placement = "middle"):
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1
     font_thickness = 1
     # Calculate text size
     text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
     text_width, text_height = text_size[0], text_size[1]
+    
     # Calculate the position to put text (in the middle of the bounding box)
-    text_x = bbox[0] + (bbox[2] - bbox[0]) // 2 - text_width // 2
-    text_y = bbox[1] + (bbox[3] - bbox[1]) // 2 + text_height // 2
+    if placement == "middle":
+        text_x = bbox[0] + (bbox[2] - bbox[0]) // 2 - text_width // 2
+        text_y = bbox[1] + (bbox[3] - bbox[1]) // 2 + text_height // 2
+    
+    if placement == "bottom_right":
+        text_x = bbox[2] - text_width
+        text_y = bbox[3] + text_height
+
     # Put text on the image
     cv2.putText(image, text, (text_x, text_y), font, font_scale, (0, 0, 255), font_thickness)
 
@@ -70,7 +77,7 @@ def draw_coco_annotations(image_path, annotations):
         category_id = annotation['category_id']
         cv2.rectangle(image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), generate_random_color(track_id), 2)
         text = f"{track_id}"
-        draw_text(image, text, bbox)
+        draw_text(image, text, bbox, "bottom_right")
     # Show the image with bounding boxes
     return image
 

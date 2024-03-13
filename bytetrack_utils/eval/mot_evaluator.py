@@ -380,7 +380,7 @@ class MOTEvaluator(COCOEvaluator):
                         'partially_tracked', 'mostly_lost']
         for k in change_fmt_list:
             fmt[k] = fmt['mota']
-        save
+        
         return mm.io.render_summary(summary, formatters=fmt, namemap=mm.io.motchallenge_metric_names)
 
     

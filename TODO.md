@@ -7,6 +7,7 @@
         - New logic for getting gt mot txt files
         - Evaluation with multiple sequences in the test set
         - evaluate() calls evaluate_tracking() and returns summary for both 
+        - save csv results with thresholds used somewhere
 - Train on CLAAUDIA
 - Visualization class
 - 
