@@ -16,3 +16,5 @@
     - Drone perspective
     - Snow Rain InDev data ? 
 - Hyperparameter tuning
+- Post-detection FCNN for the fine-grained classification of cyclists
+- Velocity estimation
