@@ -16,6 +16,7 @@ datasets/mot
 datasets/crowdhuman
 datasets/MOT20
 datasets/multi_view_mot
+datasets/traffic_dataset
 datasets/*.zip
 traffic_detection_dataset_generic
 traffic_detection_dataset_generic.zip

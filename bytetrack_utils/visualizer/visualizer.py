@@ -4,6 +4,7 @@ import argparse
 import pandas as pd
 import json
 from pycocotools.coco import COCO
+import random
 
 
 def make_parser():
@@ -21,6 +22,7 @@ def make_parser():
     return parser.parse_args()
 
 
+#TODO Draw class, Add Category-Color map
 class Visualizer():
     # drawing settings
     blue = (255, 0, 0)
@@ -110,6 +112,37 @@ class Visualizer():
                 cv2.imwrite(output_path, img)
                 print(f"Saving image {output_path}")
         return images_with_detections
+    
+
+    @classmethod
+    def draw_coco_annotations(cls, gt_json, output=None, samples=10):
+        coco = COCO(gt_json)
+        images = coco.loadImgs(coco.getImgIds())
+        categories = coco.loadCats(coco.getCatIds())
+        print(categories)
+        images = random.choices(images, k=samples)
+        test_or_train = "train" if "train" in gt_json else "test"
+        for image in images:
+            image_id = image['id']
+            image_annotations = pd.DataFrame(coco.loadAnns(coco.getAnnIds(imgIds=image_id)))
+            data_dir = gt_json.replace(f"annotations/{test_or_train}.json", "")
+            file_name = os.path.join(data_dir, test_or_train, image['file_name'])
+            print(f"Path {file_name} Exists {os.path.exists(file_name)}")
+            print(f"Processing image {file_name}")
+            img = cv2.imread(file_name)
+
+            bboxes = image_annotations['bbox'].to_list()
+            category_ids = image_annotations['category_id'].to_list()
+            for bbox, category_id in zip(bboxes, category_ids):
+                y1 = bbox[0]
+                x1 = bbox[1]
+                y2 = bbox[0]+bbox[2]
+                x2 = bbox[1]+bbox[3]
+                bbox = list(map(int, [y1, x1, y2, x2]))
+                img = cls.draw_bounding_box(bbox, img, cls.red)
+            cv2.imshow("draw_coco_annotations", img)
+            cv2.waitKey()
+
 
     @classmethod
     def draw_model_output(cls, predictions, img):
@@ -151,4 +184,5 @@ if __name__=="__main__":
     args = make_parser()
     #predicted_tracks = Visualizer.draw_mot_sequence(tracks_txt=args.tracks, seq=args.seq, output=args.output)
     #gt_tracks = Visualizer.draw_mot_sequence(tracks_txt=args.gt_tracks, seq=args.seq)
-    Visualizer.draw_json_detections(detections_json=args.detections, gt_json=args.gt_json, img_root=args.img_root, output=args.output)
+    #Visualizer.draw_json_detections(detections_json=args.detections, gt_json=args.gt_json, img_root=args.img_root, output=args.output)
+    Visualizer.draw_coco_annotations(args.gt_json)

@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import argparse
 import os, shutil
+from tqdm import tqdm
 
 """
 There are no object IDs for RainSnow dataset.
@@ -44,7 +45,8 @@ Custom keys can be added, such as 'object_id' in the multi-view-dataset
 
 """
 
-TO_SKIP = ["Egensevej", "Hjorringvej-3", "Hjorringvej-4", "Hobrovej", "Ostre-4"]
+#TO_SKIP = ["Egensevej", "Hjorringvej-3", "Hjorringvej-4", "Hobrovej", "Ostre-4"]
+TO_SKIP = []
 TEST_SEQUENCES = ["Drone"]
 
 class DatasetCompiler:
@@ -55,56 +57,65 @@ class DatasetCompiler:
             self.output_dir = "traffic_dataset"
         else:
             self.output_dir = output_dir
-        
-        #if os.path.exists(self.output_dir):
-        #    remove_output_dir = input(f"{self.output_dir} exists. Overwrite? y/n ")
-        #    if remove_output_dir == "y" or remove_output_dir == "Y":
-        #        shutil.rmtree(self.output_dir)
-        #os.makedirs(self.output_dir)
-            
-        
-        self.images_df = self.get_images_df()
-        train_images, test_images = self.get_images(self.images_df)
-        train_annotations, test_annotations = self.get_annotations()
-        categories = self.get_categories()
+                
+        self.images_df, self.train_images, self.test_images = self.get_images()
+        self.train_annotations, self.test_annotations = self.get_annotations()
+        self.categories = self.get_categories()
 
         self.train_coco = {
-            'images': train_images,
-            'annotations' : train_annotations,
-            'categories' : categories
+            'images': self.train_images,
+            'annotations' : self.train_annotations,
+            'categories' : self.categories
         }
 
         self.test_coco = {
-            'images': test_images,
-            'annotations' : test_annotations,
-            'categories' : categories
+            'images': self.test_images,
+            'annotations' : self.test_annotations,
+            'categories' : self.categories
         }
 
-        #TODO Save jsons
-        #TODO Move and rename files 
-
-    """
-    @staticmethod
-    def state(text, tab=0, tab_space="   "):
-        empty_space = ""
-        for i in range(tab):
-            empty_space += tab_space
-        state_str = f"{empty_space} {text}"
-        print(state_str)    
-    """
-    
-    def get_images_df(self):
+        #TODO Save
+        self.train_json, self.test_json = self.save_dataset()
+        ##test whether jsons are valid COCO annotations
+        #self.validate_coco_json(self.train_json)
+        #self.validate_coco_json(self.test_json)
+        ##TODO Move and rename files 
+        
+    def get_images(self):
+        print("\nget_images")
         images = []
+        root_dirs = []
         for f in self.json_files:
             coco = COCO(f)
             images_coco = coco.loadImgs(coco.getImgIds())
             images.extend(images_coco)
+            root_dirs.extend(self.get_root_dirs(images_coco, f))
         images_df = pd.DataFrame(images)
+        images_df['root_dir'] = root_dirs
         images_df = self.remove_sequences_to_skip(images_df)
         images_df = self.add_new_image_ids(images_df)
         images_df = self.add_new_filenames(images_df)
         images_df = self.add_train_test_tag(images_df)
-        return images_df
+        train_images, test_images = self.get_images_dict(images_df)
+        print(f"Number of train images {len(train_images)}")
+        print(f"Number of test images {len(test_images)}")
+        return images_df, train_images, test_images
+
+    @staticmethod
+    def get_root_dirs(images_coco, json):
+        # remove ***.json from a path
+        json = json.replace(os.path.basename(json), "")
+        # split path into list such that each path member can be compared
+        json = json.split("/")
+        dirs = []
+        for img_data in images_coco:
+            root_dir = ""
+            img = img_data['file_name']
+            for string in json:
+                if string not in img:
+                    root_dir = os.path.join(root_dir, string)
+            dirs.append(root_dir)
+        return dirs
 
     @staticmethod
     def remove_sequences_to_skip(df):
@@ -138,7 +149,7 @@ class DatasetCompiler:
                 previous_seq_dir = current_seq_dir
             else:
                 frame_id += 1  
-            new_filenames.append(os.path.join(seq_location+"-"+current_seq_dir, str(frame_id).zfill(6)+".png"))
+            new_filenames.append(os.path.join(seq_location+"-"+current_seq_dir, "img1", str(frame_id).zfill(6)+".png"))
         df['new_file_name'] = new_filenames
         return df
     
@@ -157,44 +168,47 @@ class DatasetCompiler:
         return df
     
     @staticmethod
-    def get_images(images_df):
+    def get_images_dict(images_df):
         images = images_df[images_df['test'] == False]
-        images = images.drop(['id', 'license', 'file_name', 'test'], axis=1)
+        images = images.drop(['id', 'license', 'file_name', 'test', 'root_dir'], axis=1)
         images = images.rename(columns={"new_id":"id", "new_file_name":"file_name"})
-        train_images = images
+        train_images = images.to_dict(orient='records')
         images = images_df[images_df['test'] == True]
-        images = images.drop(['id', 'license', 'file_name', 'test'], axis=1)
+        images = images.drop(['id', 'license', 'file_name', 'test', 'root_dir'], axis=1)
         images = images.rename(columns={"new_id":"id", "new_file_name":"file_name"})
-        test_images = images
+        test_images = images.to_dict(orient='records')
         return train_images, test_images
         
     def get_annotations(self):
+        print("\nget_annotations")
         train_annotations = []
         test_annotations = []
+        annotation_counter = 1
         for f in self.json_files:
             coco = COCO(f)
             all_images = [img['file_name'] for img in coco.loadImgs(coco.getImgIds())]   
             for image in all_images:
-                image_df = self.images_df[self.images_df['file_name'] == image] 
-                print(image_df)
-                image_id = image_df.iloc[:,2]
-                image_new_id = image_df.iloc[:, 5]
-                print(image_id, image_new_id)
-                exit()
+                image_df = self.images_df[self.images_df['file_name'] == image]
+                if image_df.empty:
+                    continue
+                image_id = int(image_df['id'])
+                image_new_id = int(image_df['new_id'])
+                all_image_annotations = coco.loadAnns(coco.getAnnIds(imgIds=image_id))
+                for ann in all_image_annotations:
+                    ann['image_id'] = image_new_id
+                    ann['id'] = annotation_counter
+                    annotation_counter += 1
                 
-                #all_image_annotations = coco.loadAnns(coco.getAnnIds(imgIds=image_id))
-                #for ann in all_image_annotations:
-                #    ann['id'] = image_new_id
-                
-                #if image_df['test']:
-                #    test_annotations.extend(all_image_annotations)
-                #else:
-                #    train_annotations.extend(all_image_annotations)
-        exit()
+                if image_df['test'].bool():
+                    test_annotations.extend(all_image_annotations)
+                else:
+                    train_annotations.extend(all_image_annotations)
+        print(f"Number of train annotations: {len(train_annotations)}")
+        print(f"Number of test annotations: {len(test_annotations)}")
         return train_annotations, test_annotations
         
-
     def get_categories(self):
+        print("\nget_categories")
         # Create a new category list, but only with categories that were annotated 
         categories = []
         for f in self.json_files:
@@ -205,21 +219,75 @@ class DatasetCompiler:
             categories_coco = coco.loadCats(coco.getCatIds(catIds=categories_ids))
             categories.extend(categories_coco)
         categories_df = pd.DataFrame(categories)
-        categories_df = categories_df.drop_duplicates(subset=['id', 'name'])
         categories_df = categories_df.sort_values(by='id')
-        categories_df = categories_df[:-1]
-        categories_df.loc[categories_df['name'] == 'lorry', 'name'] = 'truck'
-        categories_df = categories_df.drop('other_names', axis=1)
+        categories_df.loc[categories_df['name'] == 'lorry', 'name'] = 'truck'   
+        categories_df = categories_df.drop_duplicates(subset=['id', 'name'])
+        if 'other_names' in categories_df.columns:
+            categories_df = categories_df.drop('other_names', axis=1)
+        print(f"Categories:\n{categories_df}")
         return categories_df.to_dict(orient='records')
+
+    def save_dataset(self):
+        if os.path.exists(self.output_dir):
+            remove_output_dir = input(f"\n{self.output_dir} exists. Overwrite? y/n ")
+            if remove_output_dir == "y" or remove_output_dir == "Y":
+                shutil.rmtree(self.output_dir)
+        os.makedirs(self.output_dir)
+
+        annotations_dir = os.path.join(self.output_dir, "annotations")
+        os.makedirs(annotations_dir)
+        train_data_dir = os.path.join(self.output_dir, "train")
+        os.makedirs(train_data_dir)
+        test_data_dir = os.path.join(self.output_dir, "test")
+        os.makedirs(test_data_dir)
+        # Create json files
+        train_json = os.path.join(annotations_dir, "train.json")
+        data = self.train_coco
+        with open(train_json, "w") as json_file:
+            json.dump(data, json_file)
+        
+        test_json = os.path.join(annotations_dir, "test.json")
+        data = self.test_coco
+        with open(test_json, "w") as json_file:
+            json.dump(data, json_file)
+        
+        # Copy images
+        self.copy_files(df=self.images_df[self.images_df['test'] == False], copy_to=train_data_dir)
+        self.copy_files(df=self.images_df[self.images_df['test'] == True], copy_to=test_data_dir)
+
+        return train_json, test_json
+    
+    @staticmethod
+    def copy_files(df, copy_to):
+        files = df['file_name'].to_list()
+        root_dirs = df['root_dir'].to_list()
+        new_files = df['new_file_name'].to_list()
+
+        with tqdm(total=len(files), desc="Copying images") as pbar:
+            for f, r, nf in zip(files, root_dirs, new_files):
+                copy_from = os.path.join(r, f)
+                _copy_to = os.path.join(copy_to, nf)
+
+                _copy_to_dir = _copy_to.replace(os.path.basename(_copy_to), "")
+                os.makedirs(_copy_to_dir, exist_ok=True)
+                os.makedirs(_copy_to_dir.replace("img1", "det"), exist_ok=True)
+                os.makedirs(_copy_to_dir.replace("img1", "gt"), exist_ok=True)
+                
+                shutil.copy(copy_from, _copy_to)
+                #if os.path.exists(copy_from):
+                    #print(f"FROM {copy_from} TO {os.path.join(copy_to, nf)}")
+                pbar.update(1)
+
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Dataset complier")
     #parser.add_argument("-i", "--input", nargs="+", type=str, help="Annotation file")
     parser.add_argument("-i", "--input", nargs="+")
+    parser.add_argument("-o", "--output", type=str)
     return parser.parse_args()
 
 
 if __name__=="__main__":
     args = parse_args()
-    dataset = DatasetCompiler(json_files=args.input)
+    dataset = DatasetCompiler(json_files=args.input, output_dir=args.output)
