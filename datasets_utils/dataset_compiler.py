@@ -45,9 +45,14 @@ Custom keys can be added, such as 'object_id' in the multi-view-dataset
 
 """
 
-#TO_SKIP = ["Egensevej", "Hjorringvej-3", "Hjorringvej-4", "Hobrovej", "Ostre-4"]
-TO_SKIP = []
+TO_SKIP = ["Egensevej", "Hjorringvej-3", "Hjorringvej-4", "Hobrovej", "Ostre-4"]
+#TO_SKIP = []
 TEST_SEQUENCES = ["Drone"]
+
+# TODO filter annotations that are:
+# 1. too small 
+# 2. cover entire image (compute new bounding boxes from masks)
+# 3. person annotations  
 
 class DatasetCompiler:
     def __init__(self, json_files, output_dir=None):
@@ -74,12 +79,9 @@ class DatasetCompiler:
             'categories' : self.categories
         }
 
-        #TODO Save
+        #TODO Save dataset - save JSONs, copy images 
         self.train_json, self.test_json = self.save_dataset()
-        ##test whether jsons are valid COCO annotations
-        #self.validate_coco_json(self.train_json)
-        #self.validate_coco_json(self.test_json)
-        ##TODO Move and rename files 
+
         
     def get_images(self):
         print("\nget_images")
@@ -274,8 +276,6 @@ class DatasetCompiler:
                 os.makedirs(_copy_to_dir.replace("img1", "gt"), exist_ok=True)
                 
                 shutil.copy(copy_from, _copy_to)
-                #if os.path.exists(copy_from):
-                    #print(f"FROM {copy_from} TO {os.path.join(copy_to, nf)}")
                 pbar.update(1)
 
 

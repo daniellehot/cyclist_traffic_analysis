@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from pycocotools.coco import COCO
 import random
-
+import numpy as np
 
 def make_parser():
     parser = argparse.ArgumentParser("Visualizer")
@@ -22,7 +22,6 @@ def make_parser():
     return parser.parse_args()
 
 
-#TODO Draw class, Add Category-Color map
 class Visualizer():
     # drawing settings
     blue = (255, 0, 0)
@@ -32,7 +31,7 @@ class Visualizer():
     white = (255, 255, 255)
     #text_thickness = 2
 
-    @classmethod
+    @classmethod #TODO implement cat_color_map functionality
     def draw_mot_sequence(cls, tracks_txt, seq, color=None, output=None):
         # "frame_id", "track_id", "bb_left", "bb_top", "bb_width", "bb_height"
         tracks = pd.read_csv(tracks_txt, header=None)
@@ -70,7 +69,7 @@ class Visualizer():
         return annotated_mot_seq
 
 
-    @classmethod
+    @classmethod #TODO implement cat_color_map functionality
     def draw_json_detections(cls, detections_json, gt_json, img_root, color = None, output = None):
         with open(detections_json, 'r') as file:
             detections = pd.DataFrame(json.load(file))
@@ -119,7 +118,7 @@ class Visualizer():
         coco = COCO(gt_json)
         images = coco.loadImgs(coco.getImgIds())
         categories = coco.loadCats(coco.getCatIds())
-        print(categories)
+        cat_color_map = cls.generate_category_color_map(categories_df=pd.DataFrame(categories))
         images = random.choices(images, k=samples)
         test_or_train = "train" if "train" in gt_json else "test"
         for image in images:
@@ -139,12 +138,12 @@ class Visualizer():
                 y2 = bbox[0]+bbox[2]
                 x2 = bbox[1]+bbox[3]
                 bbox = list(map(int, [y1, x1, y2, x2]))
-                img = cls.draw_bounding_box(bbox, img, cls.red)
+                img = cls.draw_bounding_box(bbox, img, cat_color_map[category_id])
             cv2.imshow("draw_coco_annotations", img)
             cv2.waitKey()
 
 
-    @classmethod
+    @classmethod #TODO
     def draw_model_output(cls, predictions, img):
         print("TODO")
 
@@ -158,8 +157,8 @@ class Visualizer():
                 return filename
 
 
-    @staticmethod
-    def draw_bounding_box(bbox, img, color, thickness = 1, object_id=None, class_id=None, track_id=None, confidence=None):
+    @staticmethod #TODO finish functionality for object_id, class_id, track_id, confidence 
+    def draw_bounding_box(bbox, img, color, thickness = 2, object_id=None, class_id=None, track_id=None, confidence=None):
         left_top = (bbox[0], bbox[1])
         right_bottom = (bbox[2], bbox[3])
         cv2.rectangle(img, left_top, right_bottom, color, thickness)
@@ -178,6 +177,43 @@ class Visualizer():
         cv2.putText(img, text, (text_x, text_y), font, font_scale, color, font_thickness)
         return img
         
+
+    @staticmethod
+    def generate_category_color_map(categories_df=None, legend=True):
+        df = categories_df
+        ids = df.id.to_list()
+        generate_random_color = lambda: (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        cat_color_map = {cat_id:generate_random_color() for cat_id in ids}
+        
+        # Generate category legend (ChatGPT)
+        id_name_map = dict(zip(df.id, df.name)) 
+        if legend:
+            circle_radius = 10
+            margin = 10
+            text_height = 20  # Adjust text height based on your font and size
+            legend_width = 2 * circle_radius + 2 * margin + max([cv2.getTextSize(str(id_name_map[cat_id]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0][0] for cat_id in ids])
+            legend_height = len(ids) * (2 * circle_radius + margin) + margin
+
+            legend_img = np.zeros((legend_height, legend_width, 3), dtype=np.uint8)
+            legend_img.fill(255)  # Fill with white background
+            
+            y = margin
+            for cat_id, color in cat_color_map.items():
+                cv2.circle(legend_img, (circle_radius + margin, y + circle_radius), circle_radius, color, -1)
+                cv2.putText(legend_img, str(id_name_map[cat_id]), (2 * circle_radius + 2 * margin, y + text_height),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+                y += 2 * circle_radius + margin
+            
+            cv2.imshow("Legend", legend_img)
+        return cat_color_map 
+        
+
+    @staticmethod
+    def generate_id_category_map(categories_df=None):
+        df = categories_df
+        id_name_map = dict(zip(df.id, df.name))
+        return id_name_map
+    
 
 if __name__=="__main__":
     #print(make_parser())
