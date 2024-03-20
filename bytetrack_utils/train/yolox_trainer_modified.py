@@ -182,7 +182,9 @@ class TrainerModified:
         self.model.train()
 
         self.evaluator = self.exp.get_evaluator(
-            batch_size=self.args.batch_size, is_distributed=self.is_distributed
+            batch_size=self.args.batch_size, 
+            is_distributed=self.is_distributed,
+            fp16=self.args.fp16
         )
         # Tensorboard logger
         if self.rank == 0:
@@ -331,7 +333,7 @@ class TrainerModified:
     def evaluate_and_save_model(self):
         evalmodel = self.ema_model.ema if self.use_model_ema else self.model
         ap50_95, ap50, summary = self.exp.eval(
-            evalmodel, self.evaluator, self.is_distributed
+            self.evaluator, evalmodel
         )
         self.model.train()
         if self.rank == 0:

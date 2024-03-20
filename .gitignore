@@ -10,6 +10,7 @@ YOLOX_outputs
 
 # Weights
 pretrained/
+weights/
 
 # Datasets
 datasets/mot
@@ -26,6 +27,8 @@ multi-view-data
 datasets.tar.gz
 AAU_RainSnow_Traffic_Surveillance.zip
 AAU_RainSnow_Traffic_Surveillance
+multi-view-data.zip
+multi_view_mot.tar.gz
 
 # Visualizations
 datasets_utils/***/*.png
