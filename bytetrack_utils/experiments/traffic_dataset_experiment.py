@@ -38,8 +38,8 @@ class Exp(YoloxBaseExp):
         # set worker to 4 for shorter dataloader init time
         #self.data_num_workers = 20
         self.data_num_workers = int(subprocess.run(["nproc"], capture_output=True, text=True).stdout)
-        self.input_size = (640, 1024)
-        self.random_size = (10, 20)
+        self.input_size = (1088, 1980)
+        self.random_size = (20, 32)
         self.dataset_dir = os.path.join(get_yolox_datadir(), "traffic_dataset")
         self.train_json = "train.json"
         self.train_data_dir = "train"
@@ -64,24 +64,24 @@ class Exp(YoloxBaseExp):
         # --------------  training config --------------------- #
         self.seed = None
         self.warmup_epochs = 1
-        self.no_aug_epochs = 5
-        self.max_epoch = 15
+        self.max_epoch = 3
         self.warmup_lr = 0
-        self.min_lr_ratio = 0.05
         self.basic_lr_per_img = 0.01 / 64.0
         self.scheduler = "yoloxwarmcos"
+        self.no_aug_epochs = 15
+        self.min_lr_ratio = 0.05
         self.ema = True
 
         self.weight_decay = 5e-4
         self.momentum = 0.9
         self.print_interval = 10
-        self.eval_interval = 1 
+        self.eval_interval = 3
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
         self.output_dir = os.path.join(workspace, "YOLOX_outputs")
         
         # -----------------  testing config ------------------ #
         self.num_classes = self._get_num_of_classes() # TODO get from train JSONs
-        self.test_size = (640, 1024) # test image size
+        self.test_size = (1088, 1980) # test image size
         self.test_conf = 0.001 # confidence threshold (from 0 to 1, lower means more predictions)
         self.nmsthre = 0.65 # non-maximum supression threshold (from 0 to 1, higher means more predictions)
         self.track_thresh = 0.6 # tracking confidence threshold
@@ -97,13 +97,13 @@ class Exp(YoloxBaseExp):
         num_of_classes = len(data['categories'])
         return num_of_classes
 
-    def get_data_loader(self, batch_size, is_distributed, no_aug=False):
+    def get_data_loader(self, batch_size, is_distributed, no_aug=True):
         dataset = MOTDataset(
             data_dir=self.dataset_dir,
             json_file=self.train_json,
             name=self.train_data_dir,
             img_size=self.input_size,
-            preproc=TrainTransform(),
+            preproc=ValTransform(),
         )
 
         dataset = MosaicDetection(
