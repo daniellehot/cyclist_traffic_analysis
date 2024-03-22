@@ -1,0 +1,11 @@
+- 30 FPS, 1920x1080 resolution 
+- 4 videos, 35 minutes long sequence split into 4 parts
+- Good quality video, but easy trajectories 
+- So far I have seen
+    - cars
+    - scooters
+    - bus
+    - van
+    - cyclist (good quality regarding fine-grained features ) 
+- Each video is 8:44 min
+    - 8*60+44 = 524 seconds * 30 frames/second = 31400 frames 

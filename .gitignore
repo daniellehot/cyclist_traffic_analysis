@@ -13,7 +13,8 @@ pretrained/
 weights/
 
 # Datasets
-enhancing_cycling_dataset/
+enhancing_cycling_dataset/*.MP4
+enhancing_cycling_dataset/**/*.png
 datasets/mot
 datasets/crowdhuman
 datasets/MOT20
