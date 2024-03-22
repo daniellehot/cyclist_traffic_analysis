@@ -279,7 +279,9 @@ class TrainerModified:
             for k, v in time_meter.items():
                 metrics_data[k] = float(v.avg)
             for k, v in loss_meter.items():
+                print(k, v, type(v))
                 metrics_data[k] = float(v.latest.cpu().numpy())
+                #metrics_data[k] = float(v.latest.numpy())
             
             with open(self.metrics_json, "a") as json_file:
                 json.dump(metrics_data, json_file)
