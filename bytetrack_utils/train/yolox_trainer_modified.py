@@ -279,8 +279,10 @@ class TrainerModified:
             for k, v in time_meter.items():
                 metrics_data[k] = float(v.avg)
             for k, v in loss_meter.items():
-                print(k, v, type(v))
-                metrics_data[k] = float(v.latest.cpu().numpy())
+                if isinstance(v.latest, torch.Tensor):
+                    metrics_data[k] = float(v.latest.cpu().numpy())
+                elif isinstance(v.latest, float):
+                    metrics_data[k] = float(v.latest)
                 #metrics_data[k] = float(v.latest.numpy())
             
             with open(self.metrics_json, "a") as json_file:

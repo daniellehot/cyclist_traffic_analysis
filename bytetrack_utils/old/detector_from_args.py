@@ -1,31 +1,80 @@
 from loguru import logger
-
 import torch
 import torch.backends.cudnn as cudnn
-#from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.nn.parallel import DistributedDataParallel as DDP
+import argparse
+import os
+import random
+import warnings
 
 from yolox.core import launch
 from yolox.exp import get_exp
 from yolox.utils import (
     #configure_nccl, 
-    #fuse_model, 
+    fuse_model, 
     #get_local_rank, 
     get_model_info, 
     setup_logger
 )
-#from yolox.evaluators import MOTEvaluator
-#from yolox.data import get_yolox_datadir
-from eval.coco_evaluator import COCOEvaluator
-from inference.detector import Detector
+#from eval.coco_evaluator import COCOEvaluator
+from shared_utils.utils import postprocess
 
-import argparse
-import os
-import random
-import warnings
-#import glob
-#import motmetrics as mm
-#from collections import OrderedDict
-#from pathlib import Path
+
+
+
+class Detector:
+    def __init__(self, args):
+        # create an experiment object
+        self.exp = get_exp(args.exp_file, args.name)
+        self.exp.merge(args.opts)
+
+        # GPU available? 
+        num_gpu = torch.cuda.device_count() if args.devices is None else args.devices
+        if num_gpu > 1:
+            print("Detector is not supported for multiple GPUs")
+            exit()
+        if num_gpu == 0:
+            print("CPU-only detector is not supported")
+            exit()
+        
+        # overwrite experiment thresholds with input arguments 
+        if args.conf is not None:
+            self.exp.test_conf = args.conf
+        if args.nms is not None:
+            self.exp.nmsthre = args.nms
+        if args.tsize is not None:
+            self.exp.test_size = (args.tsize, args.tsize)
+
+        # create GPU-connected model
+        self.model = self.exp.get_model()
+        torch.cuda.set_device(args.local_rank)
+        self.model.cuda(args.local_rank)
+        self.model.eval()
+        
+        # load in a checkpoint
+        if not args.experiment_name:
+            args.experiment_name = self.exp.exp_name
+        file_name = os.path.join(self.exp.output_dir, args.experiment_name)
+
+        if args.ckpt is None:
+            ckpt_file = os.path.join(file_name, "best_ckpt.pth.tar")
+        else:
+            ckpt_file = args.ckpt
+    
+        logger.info("loading checkpoint")
+        loc = "cuda:{}".format(args.local_rank)
+        ckpt = torch.load(ckpt_file, map_location=loc)
+        self.model.load_state_dict(ckpt["model"])
+        logger.info("loaded checkpoint done.")
+
+        # fuse arguments (whatever this does)
+        if args.fuse:
+            logger.info("\tFusing model...")
+            self.model = fuse_model(self.model)
+    
+    
+    def predict(self, image):
+        print("TODO")
 
 
 def make_parser():
@@ -66,85 +115,11 @@ def make_parser():
 
 
 
-@logger.catch
-def main(exp, args, num_gpu):
-    if args.seed is not None:
-        random.seed(args.seed)
-        torch.manual_seed(args.seed)
-        cudnn.deterministic = True
-        warnings.warn("You have chosen to seed testing. This will turn on the CUDNN deterministic setting, ")
-
-    is_distributed = num_gpu > 1
-
-    # set environment variables for distributed training
-    cudnn.benchmark = True
-
-    rank = args.local_rank
-
-    file_name = os.path.join(exp.output_dir, args.experiment_name)
-
-    if rank == 0:
-        os.makedirs(file_name, exist_ok=True)
-
-    setup_logger(file_name, distributed_rank=rank, filename="val_log.txt", mode="a")
-    logger.info("Args: {}".format(args))
-
-    if args.conf is not None:
-        exp.test_conf = args.conf
-    if args.nms is not None:
-        exp.nmsthre = args.nms
-    if args.tsize is not None:
-        exp.test_size = (args.tsize, args.tsize)
-
-    detector = Detector(
-        exp=exp,
-        rank=rank,
-        ckpt_file=os.path.join(file_name, "best_ckpt.pth.tar") if args.ckpt is None else args.ckpt,
-        is_distributed=is_distributed,
-        fuse=args.fuse,
-        fp16=args.fp16
-        )
-    model = detector.model
-    
-    logger.info("Model Summary: {}".format(get_model_info(model, exp.test_size)))
-    #logger.info("Model Structure:\n{}".format(str(model)))
-    
-    val_loader = exp.get_eval_loader(args.batch_size, is_distributed)
-    evaluator = COCOEvaluator(
-        dataloader=val_loader,
-        img_size=exp.test_size, 
-        confthre=exp.test_conf, 
-        nmsthre=exp.nmsthre,
-        num_classes=exp.num_classes,
-        output_dir=file_name,
-        distributed=is_distributed, 
-        fp16=args.fp16,
-    )
-    logger.info("evaluator :\n{}".format(evaluator))
-
-    ap50_95, ap50, summary = evaluator.evaluate(model)
-    logger.info("\n" + summary)
-
-
-
 if __name__ == "__main__":
     args = make_parser().parse_args()
-    print(args)
-    exp = get_exp(args.exp_file, args.name)
-    exp.merge(args.opts)
+    detector = Detector(args)
 
-    if not args.experiment_name:
-        args.experiment_name = exp.exp_name
+"""
 
-    num_gpu = torch.cuda.device_count() if args.devices is None else args.devices
-    assert num_gpu <= torch.cuda.device_count()
 
-    launch(
-        main,
-        num_gpu,
-        args.num_machines,
-        args.machine_rank,
-        backend=args.dist_backend,
-        dist_url=args.dist_url,
-        args=(exp, args, num_gpu),
-    )
+"""

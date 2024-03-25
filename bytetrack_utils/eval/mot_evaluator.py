@@ -101,8 +101,11 @@ class MOTEvaluator(COCOEvaluator):
         """
         # TODO half to amp_test
         tensor_type = torch.cuda.HalfTensor if self.fp16 else torch.cuda.FloatTensor
-        model = model.eval()
+        if model.training:
+            logger.info("Setting model to the evaluation model")
+            model = model.eval()
         if self.fp16:
+            #logger.info("Setting model to half()")
             model = model.half()
         ids = []
         data_list = []

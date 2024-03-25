@@ -1,0 +1,80 @@
+evaluate_detection.py
+╒════════════════════════╤═══════════════════════════════════════════════════════════════════╕
+│ keys                   │ values                                                            │
+╞════════════════════════╪═══════════════════════════════════════════════════════════════════╡
+│ dataloader             │ <torch.utils.data.dataloader.DataLoader object at 0x7b95aaacc160> │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ img_size               │ (640, 1024)                                                       │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ confthre               │ 0.001                                                             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ nmsthre                │ 0.65                                                              │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ num_classes            │ 1                                                                 │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ output_dir_predictions │ '/home/user/YOLOX_outputs/yolox_med_exp/predicitions'             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ distributed            │ False                                                             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ fp16                   │ True                                                              │
+╘════════════════════════╧═══════════════════════════════════════════════════════════════════╛
+
+Average forward time: 34.76 ms, Average NMS time: 1.11 ms, Average inference time: 35.87 ms
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.623
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.966
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.720
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.449
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.749
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.741
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.125
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.652
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.669
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.511
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.782
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.800
+
+
+evaluate_detection_v2.py
+╒════════════════════════╤═══════════════════════════════════════════════════════════════════╕
+│ keys                   │ values                                                            │
+╞════════════════════════╪═══════════════════════════════════════════════════════════════════╡
+│ dataloader             │ <torch.utils.data.dataloader.DataLoader object at 0x7e15800bdca0> │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ img_size               │ (640, 1024)                                                       │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ confthre               │ 0.001                                                             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ nmsthre                │ 0.65                                                              │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ num_classes            │ 1                                                                 │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ output_dir_predictions │ '/home/user/YOLOX_outputs/yolox_med_exp/predicitions'             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ distributed            │ False                                                             │
+├────────────────────────┼───────────────────────────────────────────────────────────────────┤
+│ fp16                   │ True                                                              │
+╘════════════════════════╧═══════════════════════════════════════════════════════════════════╛
+Average forward time: 33.50 ms, Average NMS time: 1.10 ms, Average inference time: 34.60 ms
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.623
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.966
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.720
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.449
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.749
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.741
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.125
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.652
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.669
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.511
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.782
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.800
+
+evaluate_tracking.py
+
+         IDF1   IDP   IDR  Rcll  Prcn GT    MT    PT   ML   FP   FN  IDs   FM  MOTA  MOTP IDt IDa IDm num_objects
+0       93.8% 94.0% 93.7% 94.3% 94.6% 25 80.0% 16.0% 4.0% 5.4% 5.7% 0.1% 0.2% 88.8% 0.199   0   3   0        7076
+OVERALL 93.8% 94.0% 93.7% 94.3% 94.6% 25 80.0% 16.0% 4.0% 5.4% 5.7% 0.1% 0.2% 88.8% 0.199   0   3   0        7076
+
+evaluate_tracking_v2.py
+         IDF1   IDP   IDR  Rcll  Prcn GT    MT    PT   ML   FP   FN  IDs   FM  MOTA  MOTP IDt IDa IDm num_objects
+0       93.8% 94.0% 93.7% 94.3% 94.6% 25 80.0% 16.0% 4.0% 5.4% 5.7% 0.1% 0.2% 88.8% 0.199   0   3   0        7076
+OVERALL 93.8% 94.0% 93.7% 94.3% 94.6% 25 80.0% 16.0% 4.0% 5.4% 5.7% 0.1% 0.2% 88.8% 0.199   0   3   0        7076

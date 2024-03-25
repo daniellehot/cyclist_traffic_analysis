@@ -13,6 +13,8 @@ import time
 import os, shutil
 import csv
 import torch
+from tabulate import tabulate
+import pprint
 
 from yolox.utils import (
     gather,
@@ -55,6 +57,7 @@ class COCOEvaluator:
         self.fp16 = fp16
         #self.testdev = testdev
 
+
     #def evaluate(
     #    self, 
     #    model,
@@ -80,8 +83,11 @@ class COCOEvaluator:
         """
         # TODO half to amp_test
         tensor_type = torch.cuda.HalfTensor if self.fp16 else torch.cuda.FloatTensor
-        model = model.eval()
+        if model.training:
+            logger.warn("Model is in training mode. Setting mode to evaluation")
+            model = model.eval()
         if self.fp16:
+            #logger.info("Setting model to half()")
             model = model.half()
         ids = []
         data_list = []
@@ -230,3 +236,13 @@ class COCOEvaluator:
             writer = csv.writer(csvfile)
             writer.writerow(header)
             writer.writerow(scores)
+    
+
+    def __repr__(self):
+        table_header = ["keys", "values"]
+        exp_table = [
+            (str(k), pprint.pformat(v))
+            for k, v in vars(self).items()
+            if not k.startswith("_")
+        ]
+        return tabulate(exp_table, headers=table_header, tablefmt="fancy_grid")
