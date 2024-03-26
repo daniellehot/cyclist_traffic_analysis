@@ -110,5 +110,5 @@ def main(args):
 
     inference_image(model, exp, args.image_path, save_dir)
 
-if __name__ == "__main__":    
+if __name__ == "__main__":     
     main(parse_args())

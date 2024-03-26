@@ -58,6 +58,7 @@ class Detector:
     
     def __call__(self, img, img_size = None):
         if self.fp16:
+            logger.info("model.half()")
             self.model.half()
             self.tensor_type = torch.cuda.HalfTensor
         else:
@@ -67,7 +68,9 @@ class Detector:
         
         if img_size is not None:
             transformations.append(transforms.Resize((img_size[0], img_size[1])))
-        
+        else:
+            transformations.append(transforms.Resize(self.exp.test_size))
+            
         transformations.append(transforms.ToTensor())
         transform = transforms.Compose(transformations)
     
@@ -76,5 +79,5 @@ class Detector:
             
         with torch.no_grad():
             output = self.model(img_tensor)
-            output = postprocess(output, 1)[0].cpu().numpy()
-        print(output)
+            output = postprocess(output, self.exp.num_classes, self.exp.test_conf, self.exp.nmsthre)[0].cpu().numpy()
+        return output

@@ -144,8 +144,12 @@ class Visualizer():
 
 
     @classmethod #TODO
-    def draw_model_output(cls, predictions, img):
-        print("TODO")
+    def draw_model_output(cls, predictions, img, categories=None):
+        for pred in predictions:
+            x1, y1, x2, y2, obj_conf, class_conf, class_pred = pred
+            bbox = list(map(int, [x1, y1, x2, y2]))
+            cls.draw_bounding_box(bbox, img, cls.red)
+        return img
 
 
     @staticmethod
