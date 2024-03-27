@@ -1,5 +1,8 @@
 ByteTrack/datasets/multi_view_mot
 
+# weights and biases 
+wandb/wandb
+
 # training files
 output/**/events*
 output/**/plots
